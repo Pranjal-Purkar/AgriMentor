@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { NgClass } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, RouterLinkWithHref } from '@angular/router';
 
 @Component({
   selector: 'app-home',
-  imports: [NgClass,RouterOutlet],
+  imports: [NgClass, RouterLinkWithHref],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })

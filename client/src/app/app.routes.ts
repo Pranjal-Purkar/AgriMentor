@@ -1,21 +1,22 @@
 import { Routes } from '@angular/router';
 import { HomeLayout } from './components/home-layout/home-layout';
 import { Home } from './components/home/home';
+import { Farmer } from './components/register/farmer/farmer';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'home',
-    pathMatch: 'full',
-  },
-  {
-    path: '',
     component: HomeLayout,
     children: [
-      {
-        path: 'home',
-        component: Home,
+      { 
+        path: '',
+        component: Home 
+      }, 
+      { 
+        path: 'register-farmer', 
+        component: Farmer 
       },
     ],
   },
+  { path: '**', redirectTo: '' },
 ];

@@ -1,1 +1,0 @@
-# E-Consultancy-for-Farmers

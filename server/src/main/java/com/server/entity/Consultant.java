@@ -7,9 +7,20 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Data
+
 public class Consultant extends User {
-	    private String expertiseArea;
+	    public Consultant(String firstName, String lastName, String phone, String email, String password, Address address,
+			String expertiseArea, int experienceYears, String qualifications, VerificationStatus verificationStatus
+			)
+	    {
+		super(firstName, lastName, phone, email, password, address);
+		this.expertiseArea = expertiseArea;
+		this.experienceYears = experienceYears;
+		this.qualifications = qualifications;
+		this.verificationStatus = verificationStatus;
+	
+	}
+		private String expertiseArea;
 	    private int experienceYears;
 	    private String qualifications;
 	    @Enumerated(EnumType.STRING)

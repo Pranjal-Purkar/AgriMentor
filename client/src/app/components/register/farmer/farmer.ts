@@ -34,10 +34,6 @@ export class Farmer {
           ],
         ],
         phone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
-        location: ['', Validators.required],
-        soilType: ['', Validators.required],
-        farmSize: ['', [Validators.required, Validators.min(1)]],
-        primaryCrops: ['', Validators.required],
         password: ['', [Validators.required, this.passwordValidator]],
         confirmPassword: ['', Validators.required],
         terms: [false, Validators.requiredTrue],
@@ -88,6 +84,8 @@ export class Farmer {
   onSubmit() {
     console.log(this.farmerForm.invalid);
     // console.log(f.get);
+    console.log(this.farmerForm.value);
+    
     
     
     if (this.farmerForm.valid) {

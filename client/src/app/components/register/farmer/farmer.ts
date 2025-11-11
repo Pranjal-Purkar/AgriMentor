@@ -8,6 +8,7 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
+import { Auth } from '../../../services/auth';
 
 @Component({
   selector: 'app-farmer',
@@ -19,12 +20,15 @@ export class Farmer {
   farmerForm: FormGroup;
   soilTypes = ['Sandy', 'Clay', 'Loamy', 'Peaty', 'Chalky', 'Silty'];
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private authService: Auth
+  ) {
     this.farmerForm = this.fb.group(
       {
         firstName: ['', [Validators.required, Validators.minLength(3)]],
         lastName: ['', [Validators.required, Validators.minLength(3)]],
-       
+
         email: [
           '',
           [
@@ -85,14 +89,12 @@ export class Farmer {
     console.log(this.farmerForm.invalid);
     // console.log(f.get);
     console.log(this.farmerForm.value);
-    
-    
-    
+
     if (this.farmerForm.valid) {
+      this.authService.registerUser(this.farmerForm.value);
       console.log('✅ Farmer registration data:', this.farmerForm.value);
     } else {
       this.farmerForm.markAllAsTouched();
     }
   }
-
 }

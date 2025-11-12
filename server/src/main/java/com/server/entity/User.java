@@ -25,8 +25,8 @@ public class User {
    @OneToOne
    @JoinColumn(nullable = true)
    private Address address;
-//   @Enumerated(EnumType.STRING)
-//   private Role role;
+   @Enumerated(EnumType.STRING)
+   private Role role;
    @Value("true")
    private Boolean isActive;
    @Value("true")
@@ -36,7 +36,7 @@ public class User {
    @LastModifiedDate
    private LocalDateTime updatedAt;
    public User(String firstName, String lastName, String phone, String email, String password, Address address) {
-	super();
+	
 	this.firstName = firstName;
 	this.lastName = lastName;
 	this.phone = phone;
@@ -45,6 +45,9 @@ public class User {
 	this.address = address;
    }
    
+   public User() {
+	// TODO Auto-generated constructor stub
+}
    
    
 }

@@ -9,6 +9,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Auth } from '../../../services/auth';
+import { toast } from 'ngx-sonner';
 
 @Component({
   selector: 'app-farmer',
@@ -86,6 +87,7 @@ export class Farmer {
   }
 
   onSubmit() {
+    toast.success('Farmer registered successfully');
     console.log(this.farmerForm.invalid);
     // console.log(f.get);
     console.log(this.farmerForm.value);

@@ -42,6 +42,7 @@ export class Farmer {
         password: ['', [Validators.required, this.passwordValidator]],
         confirmPassword: ['', Validators.required],
         terms: [false, Validators.requiredTrue],
+        role: ['FARMER'],
       },
       { validators: this.passwordMatchValidator }
     );

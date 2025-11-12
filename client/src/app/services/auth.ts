@@ -17,12 +17,12 @@ export class Auth {
   registerUser(userData: any){
     this.api.registerUser(userData).subscribe({
       next: (res) => {
-        console.log(res);
+        console.log("AUTH::DATA: "+res);
         toast.success("Registration successful")
         this.router.navigate(['/']);
       },
       error: (err) => {
-        console.log(err);
+        console.log("AUTH::ERROR: "+err);
         toast.error("Registration failed")
       }
     })

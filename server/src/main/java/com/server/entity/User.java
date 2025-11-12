@@ -26,6 +26,7 @@ public class User {
    @JoinColumn(nullable = true)
    private Address address;
    @Enumerated(EnumType.STRING)
+   @Column(nullable = false)
    private Role role;
    @Value("true")
    private Boolean isActive;

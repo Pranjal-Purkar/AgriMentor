@@ -14,9 +14,19 @@ public class UserService {
 	@Autowired
 	 private UserRepository userRepository;
 
-     public void registerUser(RegisterRequest request) {
-// 
+     public String registerUser(RegisterRequest request) {
     	 System.out.println("User Service Test" + request.toString());
+    	 
+    	// Check if email exists
+    	 if (userRepository.existsByEmail(request.getEmail())) {
+             return "Email already registered!";
+         }
+    	 
+    	  // Check if phone number exists
+         if (userRepository.existsByPhone(request.getPhone())) {
+             return "Phone number already registered!";
+         }
+    	 
     	 User user = new User();
     	 user.setFirstName(request.getFirstName());
     	 user.setLastName(request.getLastName());
@@ -24,8 +34,8 @@ public class UserService {
     	 user.setPhone(request.getPhone());
     	 user.setPassword(request.getPassword());
     	 user.setRole(request.getRole());
-    	 
     	 userRepository.save(user);
+		 return "User registered successfully";
     	 
      }
 }

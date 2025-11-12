@@ -10,5 +10,6 @@ import com.server.entity.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 
 	void save(RegisterRequest request);
-
+	boolean existsByEmail(String email);
+    boolean existsByPhone(String phone);
 }

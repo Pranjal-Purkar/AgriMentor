@@ -19,7 +19,9 @@ public class User {
    private Integer Id;
    private String firstName;
    private String lastName;
+   @Column(unique = true, nullable = false)
     private String phone;
+    @Column(unique = true, nullable = false)
    private String email;
    private String password;
    @OneToOne

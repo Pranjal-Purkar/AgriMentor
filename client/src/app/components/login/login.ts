@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgClass, NgStyle } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -10,15 +10,16 @@ import { RouterLink } from '@angular/router';
   styleUrl: './login.css',
 })
 export class Login {
-  roles = ['Farmer', 'Consultant', 'Admin'];
-  activeRole = 'Farmer';
+  roles = ['FARMER', 'CONSULTANT', 'ADMIN'];
+  activeRole = 'FARMER';
 
   loginForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder,private router: Router) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
+      password: ['', Validators.required],
+      role: [this.activeRole, Validators.required],
     });
   }
 
@@ -50,6 +51,7 @@ export class Login {
 
 
   onSubmit() {
+    console.log(this.loginForm.value);
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
@@ -57,5 +59,13 @@ export class Login {
 
     console.log('Logging in as:', this.activeRole);
     console.log('Form Value:', this.loginForm.value);
+  }
+
+  toRegister() {
+    if(this.activeRole === 'FARMER') {
+      this.router.navigate(['/register-farmer']);
+    } else if(this.activeRole === 'CONSULTANT') {
+      this.router.navigate(['/register-consultant']);
+    }
   }
 }

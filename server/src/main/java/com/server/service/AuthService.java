@@ -49,6 +49,7 @@ public class AuthService {
 			if (farmer != null) {
 				throw new RuntimeException("Email Already Registered");
 			}
+			farmer = new Farmer();
 			farmer.setFirstName(request.getFirstName());
 			farmer.setLastName(request.getLastName());
 			farmer.setEmail(request.getEmail());

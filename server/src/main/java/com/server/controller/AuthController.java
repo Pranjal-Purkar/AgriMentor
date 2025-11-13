@@ -38,7 +38,7 @@ public class AuthController {
 
 	@PostMapping("/register")
 	public ResponseEntity<?> register(@RequestBody FarmerRegistrationRequest request) {
-		log.info("Registration Request Received: {}", request);
+		log.info("Registration Request Received: {}", request.toString());
 		switch (request.getRole()) {
 		case FARMER:
 			try {

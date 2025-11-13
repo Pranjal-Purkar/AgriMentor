@@ -39,9 +39,9 @@ export class Login {
   if (window.innerWidth < 640) {      // sm
     return `translateX(${index * 310}%)`;
   } else if (window.innerWidth < 1024) { // md
-    return `translateX(${index * 230}%)`;
+    return `translateX(${index * 320}%)`;
   } else {                           // lg
-    return `translateX(${index * 330}%)`;
+    return `translateX(${index * 320}%)`;
   }
 }
 

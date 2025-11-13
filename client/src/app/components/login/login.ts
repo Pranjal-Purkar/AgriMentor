@@ -34,16 +34,19 @@ export class Login {
   }
 
   getResponsiveTranslate() {
-  const index = this.roles.indexOf(this.activeRole);
-
-  if (window.innerWidth < 640) {      // sm
-    return `translateX(${index * 310}%)`;
-  } else if (window.innerWidth < 1024) { // md
-    return `translateX(${index * 320}%)`;
-  } else {                           // lg
+    const index = this.roles.indexOf(this.activeRole);
+    
+    // Check if window is defined (browser environment)
+    if (typeof window !== 'undefined') {
+      if (window.innerWidth < 640) {      // sm
+        return `translateX(${index * 310}%)`;
+      } else if (window.innerWidth < 1024) { // md
+        return `translateX(${index * 320}%)`;
+      }
+    }
+    // Default for server-side rendering and lg screens
     return `translateX(${index * 320}%)`;
   }
-}
 
 
   onSubmit() {

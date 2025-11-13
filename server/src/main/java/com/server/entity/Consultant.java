@@ -27,7 +27,8 @@ public class Consultant extends User {
 		this.verificationStatus = verificationStatus;
 
 	}
-
+	@OneToOne(mappedBy = "consultant", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+	private VerificationDocument verificationDocument;
 	private String expertiseArea;
 	private int experienceYears;
 	private String qualifications;
@@ -36,5 +37,4 @@ public class Consultant extends User {
 	private LocalDateTime verifiedAt;
 	@Value("false")
 	private Boolean isActive;
-	private LocalDateTime createdAt;
 }

@@ -22,7 +22,7 @@ public class VerificationDocument {
 
 	private String documentUrl; // URL or path to the stored document
 
-	@ManyToOne
+	@OneToOne
 	@JoinColumn(name = "consultant_id")
 	private Consultant consultant;
 }

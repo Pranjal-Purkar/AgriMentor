@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.server.dto.FarmerRegistrationRequest;
 import com.server.dto.FarmerRegistrationResponse;
 import com.server.dto.RegisterRequest;
 import com.server.entity.Farmer;
@@ -37,7 +38,7 @@ public class AuthService {
 		}
 	}
 
-	public FarmerRegistrationResponse registerFarmer(RegisterRequest request) {
+	public FarmerRegistrationResponse registerFarmer(FarmerRegistrationRequest request) {
 		System.out.println("Auth Service Test" + request.toString());
 
 		try {
@@ -62,5 +63,10 @@ public class AuthService {
 		} catch (Exception e) {
 			throw new RuntimeException("Farmer Registration Failed: " + e.getMessage());
 		}
+	}
+
+	public Object registerConsultant(FarmerRegistrationRequest request) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -20,6 +20,16 @@ public class AuthController {
 	@Autowired
 	private AuthService authService;
 	
+//	@PostMapping("/register")
+//	public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+//		User user = authService.register(request);
+//		if (user != null) {
+//			return ResponseEntity.ok().body("User registered successfully");
+//		} else {
+//			return ResponseEntity.status(400).build();
+//		}
+//	}
+	
 	@PostMapping("/register")
 	public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
 		User user = authService.register(request);

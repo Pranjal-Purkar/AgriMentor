@@ -7,6 +7,10 @@ import com.server.entity.Farmer;
 
 @Repository
 public interface FarmerRepository extends JpaRepository<Farmer, Long> {
+
+	
+
+	Farmer findByEmail(String email);
 	
 
 }

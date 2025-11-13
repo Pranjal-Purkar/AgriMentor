@@ -3,6 +3,7 @@ import { HomeLayout } from './components/home-layout/home-layout';
 import { Home } from './components/home/home';
 import { Farmer } from './components/register/farmer/farmer';
 import { Consultant } from './components/register/consultant/consultant';
+import { Login } from './components/login/login';
 
 export const routes: Routes = [
   {
@@ -20,6 +21,10 @@ export const routes: Routes = [
       {
         path: 'register-consultant',
         component: Consultant
+      },
+      {
+        path:'login',
+        component:Login
       }
     ],
   },

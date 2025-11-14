@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Auth } from '../../../services/auth';
 
 @Component({
   selector: 'app-consultant',
@@ -11,7 +12,7 @@ export class Consultant {
   consultantForm: FormGroup;
   qualifications = ['B.Sc Agriculture', 'M.Sc Agriculture', 'PhD Agriculture', 'Soil Science', 'Plant Pathology'];
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private auth: Auth) {
     this.consultantForm = this.fb.group({
       firstName: ['', [Validators.required, Validators.minLength(3)]],
       lastName: ['', [Validators.required, Validators.minLength(3)]],
@@ -58,6 +59,7 @@ export class Consultant {
     
     if (this.consultantForm.valid) {
       console.log('✅ Consultant Registration Data:', this.consultantForm.value);
+      this.auth.registerConsultant(this.consultantForm.value);
     } else {
       this.consultantForm.markAllAsTouched();
     }

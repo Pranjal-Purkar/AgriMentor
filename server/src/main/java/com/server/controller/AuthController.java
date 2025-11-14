@@ -16,6 +16,7 @@ import com.server.dto.FarmerRegistrationRequest;
 import com.server.dto.FarmerRegistrationResponse;
 import com.server.dto.RegisterRequest;
 import com.server.entity.User;
+import com.server.enumeration.Role;
 import com.server.response.ApiResponse;
 import com.server.service.AuthService;
 
@@ -39,34 +40,30 @@ public class AuthController {
 //		}
 //	}
 
-	@PostMapping("/register")
+	@PostMapping("/register/farmer")
 	public ResponseEntity<?> register(@RequestBody FarmerRegistrationRequest request) {
 		log.info("Registration Request Received: {}", request.toString());
-		switch (request.getRole()) {
-		case FARMER:
-			try {
-				log.info("Registering Farmer: {}", request.getEmail());
-				return ResponseEntity.ok().body(new ApiResponse(HttpStatus.OK,"User registered successfully", authService.registerFarmer(request)));
-			} catch (Exception e) {
-				return ResponseEntity.status(400).body(new ApiResponse<String>(HttpStatus.BAD_REQUEST,e.getMessage()));
-			}
-		case CONSULTANT:
-			return ResponseEntity.ok().body(authService.registerConsultant(request));
-		default:	
-			return ResponseEntity.status(400).body("Invalid Role for Registration");
+		if (request.getRole() != Role.FARMER) {
+			throw new IllegalArgumentException("Invalid role for farmer registration");
 		}
+		try {
+			log.info("Registering Farmer: {}", request.getEmail());
+			return ResponseEntity.ok().body(new ApiResponse(HttpStatus.OK, "User registered successfully",
+					authService.registerFarmer(request)));
+		} catch (Exception e) {
+			return ResponseEntity.status(400).body(new ApiResponse<String>(HttpStatus.BAD_REQUEST, e.getMessage()));
+		}
+
 	}
-	
-	@PostMapping(
-			value = "/register/consultant",
-			consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-			)
+
+	@PostMapping(value = "/register/consultant", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<?> registerConsultant(@ModelAttribute CunsultantRegisterRequest request) {
 		log.info("Registering Consultant: {}", request);
 		try {
-			return ResponseEntity.ok().body(new ApiResponse(HttpStatus.OK,"User registered successfully", authService.registerConsultant(request)));
+			return ResponseEntity.ok().body(new ApiResponse(HttpStatus.OK, "User registered successfully",
+					authService.registerConsultant(request)));
 		} catch (Exception e) {
-			return ResponseEntity.status(400).body(new ApiResponse<String>(HttpStatus.BAD_REQUEST,e.getMessage()));
+			return ResponseEntity.status(400).body(new ApiResponse<String>(HttpStatus.BAD_REQUEST, e.getMessage()));
 		}
 	}
 

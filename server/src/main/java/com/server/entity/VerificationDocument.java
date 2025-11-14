@@ -16,13 +16,16 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class VerificationDocument {
-		@Id
+	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
 
 	private String documentType; // e.g., "ID Proof", "Qualification Certificate"
 
 	private String documentUrl; // URL or path to the stored document
+
+	@Lob
+	private byte[] fileContent;
 
 	@OneToOne
 	@JoinColumn(name = "consultant_id")

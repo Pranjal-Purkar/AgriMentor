@@ -18,6 +18,19 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class Consultant extends User {
+	@OneToOne(mappedBy = "consultant", cascade = CascadeType.ALL)
+	private VerificationDocument verificationDocument;
+
+	private String expertiseArea;
+	private int experienceYears;
+	private String qualifications;
+	@Enumerated(EnumType.STRING)
+	private VerificationStatus verificationStatus;
+	private LocalDateTime verifiedAt;
+	@Value("false")
+	private Boolean isActive;
+	
+	
 	public Consultant(String firstName, String lastName, String phone, String email, String password, Address address,
 			String expertiseArea, int experienceYears, String qualifications, VerificationStatus verificationStatus) {
 		super(firstName, lastName, phone, email, password, address);
@@ -27,14 +40,5 @@ public class Consultant extends User {
 		this.verificationStatus = verificationStatus;
 
 	}
-	@OneToOne(mappedBy = "consultant", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
-	private VerificationDocument verificationDocument;
-	private String expertiseArea;
-	private int experienceYears;
-	private String qualifications;
-	@Enumerated(EnumType.STRING)
-	private VerificationStatus verificationStatus;
-	private LocalDateTime verifiedAt;
-	@Value("false")
-	private Boolean isActive;
+	
 }

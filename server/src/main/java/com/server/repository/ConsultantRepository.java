@@ -9,4 +9,6 @@ import com.server.entity.Consultant;
 
 public interface ConsultantRepository extends JpaRepository<Consultant, Long> {
 
+	Consultant findByEmail(String email);
+
 }

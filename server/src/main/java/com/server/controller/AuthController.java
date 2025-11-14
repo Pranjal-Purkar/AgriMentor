@@ -2,13 +2,16 @@ package com.server.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.server.dto.CunsultantRegisterRequest;
 import com.server.dto.FarmerRegistrationRequest;
 import com.server.dto.FarmerRegistrationResponse;
 import com.server.dto.RegisterRequest;
@@ -52,6 +55,15 @@ public class AuthController {
 		default:	
 			return ResponseEntity.status(400).body("Invalid Role for Registration");
 		}
+	}
+	
+	@PostMapping(
+			value = "/register/consultant",
+			consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+			)
+	public ResponseEntity<?> registerConsultant(@ModelAttribute CunsultantRegisterRequest request) {
+		log.info("Registering Consultant: {}", request);
+		return null;
 	}
 
 }

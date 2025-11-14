@@ -17,12 +17,12 @@ export class Consultant {
       lastName: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
-      yearsExperience: ['', [Validators.required, Validators.min(1)]],
-      qualification: ['', Validators.required],
+      experienceYears: ['', [Validators.required, Validators.min(1)]],
+      qualifications: ['', Validators.required],
       // licenseNumber: ['', [Validators.required, Validators.minLength(5)]],
-      areaExpertise: ['', Validators.required],
+      experienceArea: ['', Validators.required],
       // bio: ['', [Validators.required, Validators.minLength(20)]],
-      verificationDocs: [null, Validators.required],
+      verificationDocument: [null, Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
       terms: [false, Validators.requiredTrue]
@@ -46,9 +46,9 @@ export class Consultant {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
       if (file.size <= 10 * 1024 * 1024) { // max 10MB
-        this.consultantForm.patchValue({ verificationDocs: file });
+        this.consultantForm.patchValue({ verificationDocument: file });
       } else {
-        this.consultantForm.get('verificationDocs')?.setErrors({ fileTooLarge: true });
+        this.consultantForm.get('verificationDocument')?.setErrors({ fileTooLarge: true });
       }
     }
   }

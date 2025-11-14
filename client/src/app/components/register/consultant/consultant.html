@@ -64,9 +64,9 @@
       <!-- Experience -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Years of Experience *</label>
-        <input formControlName="yearsExperience" type="number" placeholder="e.g., 10"
+        <input formControlName="experienceYears" type="number" placeholder="e.g., 10"
           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-600" />
-        @if (f['yearsExperience'].touched && f['yearsExperience'].invalid) {
+        @if (f['experienceYears'].touched && f['experienceYears'].invalid) {
           <p class="text-red-600 text-sm mt-1">Enter valid years of experience.</p>
         }
       </div>
@@ -74,14 +74,14 @@
       <!-- Qualification -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Highest Qualification *</label>
-        <select formControlName="qualification"
+        <select formControlName="qualifications"
           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-600">
           <option value="" disabled>Select qualification</option>
           @for (q of qualifications; track q) {
             <option [value]="q">{{ q }}</option>
           }
         </select>
-        @if (f['qualification'].touched && f['qualification'].invalid) {
+        @if (f['qualifications'].touched && f['qualifications'].invalid) {
           <p class="text-red-600 text-sm mt-1">Please select a qualification.</p>
         }
       </div>
@@ -99,9 +99,9 @@
       <!-- Area of Expertise -->
       <div class="md:col-span-2">
         <label class="block text-sm font-medium text-gray-700 mb-1">Area of Expertise *</label>
-        <input formControlName="areaExpertise" type="text" placeholder="e.g., Crop Management, Soil Science"
+        <input formControlName="experienceArea" type="text" placeholder="e.g., Crop Management, Soil Science"
           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-600" />
-        @if (f['areaExpertise'].touched && f['areaExpertise'].invalid) {
+        @if (f['experienceArea'].touched && f['experienceArea'].invalid) {
           <p class="text-red-600 text-sm mt-1">Enter your expertise area.</p>
         }
       </div>
@@ -128,7 +128,7 @@
           </svg>
           <span>Click to upload certificates or licenses (PDF, JPG, PNG up to 10MB)</span>
         </label>
-        @if (f['verificationDocs'].touched && f['verificationDocs'].invalid) {
+        @if (f['verificationDocument'].touched && f['verificationDocument'].invalid) {
           <p class="text-red-600 text-sm mt-1">Please upload your verification document.</p>
         }
       </div>

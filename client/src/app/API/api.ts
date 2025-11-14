@@ -23,6 +23,6 @@ export class API {
   }
 
   registerUser(userData: any) :Observable<any>{
-    return this.http.post(this.baseUrl + "auth/register", userData, this.httpOptions);
+    return this.http.post(this.baseUrl + "auth/register/farmer", userData, this.httpOptions);
   }
 }

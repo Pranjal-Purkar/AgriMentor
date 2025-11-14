@@ -28,4 +28,17 @@ export class Auth {
     })
   }
 
+  registerConsultant(userData: any){
+    this.api.registerConsultant(userData).subscribe({
+      next: (res) => {
+        console.log("AUTH:RegisterConsultant::DATA: "+res);
+        toast.success("Registration successful")
+        this.router.navigate(['/']);
+      },
+      error: (err) => {
+        console.log("AUTH:RegisterConsultant::ERROR: "+err);
+        toast.error("Registration failed")
+      }
+    })
+  }
 }

@@ -21,12 +21,22 @@
 
     <form [formGroup]="consultantForm" (ngSubmit)="onSubmit()" class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-      <!-- Full Name -->
+      <!-- first Name -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
-        <input formControlName="fullName" type="text" placeholder="Dr. John Smith"
+        <label class="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
+        <input formControlName="firstName" type="text" placeholder="Dr. John Smith"
           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-600" />
-        @if (f['fullName'].touched && f['fullName'].invalid) {
+        @if (f['firstName'].touched && f['firstName'].invalid) {
+          <p class="text-red-600 text-sm mt-1">Enter at least 3 characters.</p>
+        }
+      </div>
+
+      <!-- Last Name -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
+        <input formControlName="lastName" type="text" placeholder="Dr. John Smith"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-600" />
+        @if (f['lastName'].touched && f['lastName'].invalid) {
           <p class="text-red-600 text-sm mt-1">Enter at least 3 characters.</p>
         }
       </div>
@@ -77,14 +87,14 @@
       </div>
 
       <!-- License Number -->
-      <div>
+      <!-- <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">License/Certificate Number *</label>
         <input formControlName="licenseNumber" type="text" placeholder="AG-12345"
           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-600" />
         @if (f['licenseNumber'].touched && f['licenseNumber'].invalid) {
           <p class="text-red-600 text-sm mt-1">License number is required.</p>
         }
-      </div>
+      </div> -->
 
       <!-- Area of Expertise -->
       <div class="md:col-span-2">
@@ -97,14 +107,14 @@
       </div>
 
       <!-- Bio -->
-      <div class="md:col-span-2">
+      <!-- <div class="md:col-span-2">
         <label class="block text-sm font-medium text-gray-700 mb-1">Professional Bio *</label>
         <textarea formControlName="bio" placeholder="Tell us about your experience and specialization..."
           class="w-full border border-gray-300 rounded-lg px-3 py-2 h-24 resize-none focus:ring-2 focus:ring-blue-600"></textarea>
         @if (f['bio'].touched && f['bio'].invalid) {
           <p class="text-red-600 text-sm mt-1">Bio must be at least 20 characters.</p>
         }
-      </div>
+      </div> -->
 
       <!-- Verification Upload -->
       <div class="md:col-span-2">

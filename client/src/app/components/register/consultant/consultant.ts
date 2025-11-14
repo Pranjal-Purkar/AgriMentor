@@ -13,14 +13,15 @@ export class Consultant {
 
   constructor(private fb: FormBuilder) {
     this.consultantForm = this.fb.group({
-      fullName: ['', [Validators.required, Validators.minLength(3)]],
+      firstName: ['', [Validators.required, Validators.minLength(3)]],
+      lastName: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
       yearsExperience: ['', [Validators.required, Validators.min(1)]],
       qualification: ['', Validators.required],
-      licenseNumber: ['', [Validators.required, Validators.minLength(5)]],
+      // licenseNumber: ['', [Validators.required, Validators.minLength(5)]],
       areaExpertise: ['', Validators.required],
-      bio: ['', [Validators.required, Validators.minLength(20)]],
+      // bio: ['', [Validators.required, Validators.minLength(20)]],
       verificationDocs: [null, Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],

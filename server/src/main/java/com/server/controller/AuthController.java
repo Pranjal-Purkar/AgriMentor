@@ -63,7 +63,11 @@ public class AuthController {
 			)
 	public ResponseEntity<?> registerConsultant(@ModelAttribute CunsultantRegisterRequest request) {
 		log.info("Registering Consultant: {}", request);
-		return null;
+		try {
+			return ResponseEntity.ok().body(new ApiResponse(HttpStatus.OK,"User registered successfully", authService.registerConsultant(request)));
+		} catch (Exception e) {
+			return ResponseEntity.status(400).body(new ApiResponse<String>(HttpStatus.BAD_REQUEST,e.getMessage()));
+		}
 	}
 
 }

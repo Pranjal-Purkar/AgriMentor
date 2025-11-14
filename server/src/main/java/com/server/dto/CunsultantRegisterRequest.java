@@ -1,5 +1,7 @@
 package com.server.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.server.enumeration.Role;
 import com.server.enumeration.VerificationStatus;
 
@@ -19,8 +21,9 @@ public class CunsultantRegisterRequest {
     private String phone;
     private Role role;
     private String expertiseArea;
-    private int experienceYears;
+    private String experienceYears;
     private String qualifications;
-    private VerificationStatus verificationStatus;
+    private MultipartFile verificationDocument;
+    
     
 }

@@ -25,4 +25,10 @@ export class API {
   registerUser(userData: any) :Observable<any>{
     return this.http.post(this.baseUrl + "auth/register/farmer", userData, this.httpOptions);
   }
+
+  registerConsultant(userData: any) :Observable<any>{
+    return this.http.post(this.baseUrl + "auth/register/consultant", userData, this.httpOptions);
+  }
 }
+
+

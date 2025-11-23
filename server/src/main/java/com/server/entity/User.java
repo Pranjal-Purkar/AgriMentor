@@ -1,10 +1,13 @@
 package com.server.entity;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.server.enumeration.Role;
 import jakarta.persistence.*;
@@ -13,7 +16,7 @@ import lombok.Data;
 @Entity
 @Data
 @Inheritance(strategy = InheritanceType.JOINED)
-public class User {
+public class User implements UserDetails{
    @Id
    @GeneratedValue(strategy=GenerationType.AUTO)
    private Long Id;
@@ -38,8 +41,8 @@ public class User {
    private LocalDateTime createdAt ;
    @LastModifiedDate
    private LocalDateTime updatedAt;
+   
    public User(String firstName, String lastName, String phone, String email, String password, Address address) {
-	
 	this.firstName = firstName;
 	this.lastName = lastName;
 	this.phone = phone;
@@ -50,6 +53,17 @@ public class User {
    
    public User() {
 	// TODO Auto-generated constructor stub
+   }
+
+   @Override
+   public Collection<? extends GrantedAuthority> getAuthorities() {
+	// TODO Auto-generated method stub
+	return null;
+   }
+
+   @Override
+   public String getUsername() {
+	return this.email;
    }
    
    

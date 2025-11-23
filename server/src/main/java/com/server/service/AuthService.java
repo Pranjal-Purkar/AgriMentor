@@ -4,13 +4,19 @@ import java.io.File;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.server.controller.AuthController;
 import com.server.dto.ConsultantRegisterResponce;
 import com.server.dto.CunsultantRegisterRequest;
 import com.server.dto.FarmerRegistrationRequest;
 import com.server.dto.FarmerRegistrationResponse;
+import com.server.dto.LoginRequest;
+import com.server.dto.LoginResponce;
 import com.server.dto.RegisterRequest;
 import com.server.entity.Consultant;
 import com.server.entity.Farmer;
@@ -22,6 +28,7 @@ import com.server.repository.ConsultantRepository;
 import com.server.repository.FarmerRepository;
 import com.server.repository.UserRepository;
 import com.server.repository.VerificationDocumentRepository;
+import com.server.util.JwtUtil;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +36,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class AuthService {
+
+//    private final AuthController authController;
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
@@ -38,6 +47,19 @@ public class AuthService {
 
 	@Autowired
 	private ConsultantRepository consultantRepository;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private AuthenticationManager authenticationManager;
+	
+	@Autowired 
+	private JwtUtil jwtUtil;
+
+//    AuthService(AuthController authController) {
+//        this.authController = authController;
+//    }
 
 	public User register(RegisterRequest request) {
 		System.out.println("Auth Service Test" + request.toString());
@@ -47,7 +69,7 @@ public class AuthService {
 			user.setLastName(request.getLastName());
 			user.setEmail(request.getEmail());
 			user.setPhone(request.getPhone());
-			user.setPassword(request.getPassword());
+			user.setPassword(passwordEncoder.encode(request.getPassword()));
 			user.setRole(request.getRole());
 
 			userRepository.save(user);
@@ -73,7 +95,7 @@ public class AuthService {
 			farmer.setLastName(request.getLastName());
 			farmer.setEmail(request.getEmail());
 			farmer.setPhone(request.getPhone());
-			farmer.setPassword(request.getPassword());
+			farmer.setPassword(passwordEncoder.encode(request.getPassword()));
 			farmer.setRole(request.getRole());
 			farmerRepository.save(farmer);
 
@@ -103,7 +125,7 @@ public class AuthService {
 			consultant.setLastName(request.getLastName());
 			consultant.setEmail(request.getEmail());
 			consultant.setPhone(request.getPhone());
-			consultant.setPassword(request.getPassword());
+			consultant.setPassword(passwordEncoder.encode(request.getPassword()));
 			consultant.setRole(Role.CONSULTANT);
 			consultant.setExpertiseArea(request.getExpertiseArea());
 			consultant.setExperienceYears(Integer.parseInt(request.getExperienceYears()));
@@ -163,6 +185,21 @@ public class AuthService {
 			log.error("Error during consultant registration: {}", e.getMessage());
 			throw new RuntimeException("Consultant Registration Failed: " + e.getMessage());
 		}
+	}
+
+	public LoginResponce login(LoginRequest loginRequest) {
+		log.info("Login attempt for user: {}", loginRequest.getUsername());
+		Authentication authentication = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+				);
+		log.info("Authentication successful for user: {}", loginRequest.getUsername());
+		User user = (User) authentication.getPrincipal();
+		log.info("User details retrieved: {}", user.getEmail());
+		
+		String token = jwtUtil.generatAccessToken(user);
+		log.info("JWT Token {}", token);
+		return new LoginResponce(user.getEmail(),token);
+		
 	}
 
 }

@@ -71,7 +71,7 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
 		try {
-			return ResponseEntity.ok().body(new ApiResponse<>(HttpStatus.OK, "User registered successfully",
+			return ResponseEntity.ok().body(new ApiResponse<>(HttpStatus.OK, "User Login successfully",
 					authService.login(loginRequest)));
 		} catch (Exception e) {
 			return ResponseEntity.status(400).body(new ApiResponse<String>(HttpStatus.BAD_REQUEST, e.getMessage()));

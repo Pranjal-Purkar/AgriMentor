@@ -194,7 +194,10 @@ public class AuthService {
 				);
 		log.info("Authentication successful for user: {}", loginRequest.getUsername());
 		User user = (User) authentication.getPrincipal();
-		log.info("User details retrieved: {}", user.getEmail());
+		log.info("User details retrieved: {}", user);
+		if(user.getRole() != loginRequest.getRole()) {
+			throw new RuntimeException("Invalid Role for the user");
+		}
 		
 		String token = jwtUtil.generatAccessToken(user);
 		log.info("JWT Token {}", token);

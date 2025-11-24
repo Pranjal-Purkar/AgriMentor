@@ -4,6 +4,7 @@ import { Home } from './components/home/home';
 import { Farmer } from './components/register/farmer/farmer';
 import { Consultant } from './components/register/consultant/consultant';
 import { Login } from './components/login/login';
+import { DashboardLayout } from './components/dashboards/dashboard-layout/dashboard-layout';
 
 export const routes: Routes = [
   {
@@ -27,6 +28,16 @@ export const routes: Routes = [
         component:Login
       }
     ],
+  },
+  {
+    path: 'dashboard',
+    component: DashboardLayout,
+    children: [
+      {
+        path: '',
+        component: DashboardLayout
+      }
+    ]
   },
   { path: '**', redirectTo: '' },
 ];

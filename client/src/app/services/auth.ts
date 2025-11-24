@@ -47,6 +47,8 @@ export class Auth {
       next: (res) => {
         console.log("AUTH:LOGIN::DATA: "+res);
         toast.success("Login successful")
+        console.log(res);
+        
         this.router.navigate(['/']);
       },
       error: (err) => {

@@ -6,12 +6,10 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class API {
+  
   private baseUrl: string = "http://localhost:8080/api/v1/";
 
   private constructor(private http:HttpClient) {
-    // this.baseUrl = window.location.hostname === 'localhost' 
-    // ? "http://localhost:8080/api/v1/"
-    // : "http://10.62.67.228:8080/api/v1/";
   }
 
   private httpOptions = {
@@ -30,6 +28,10 @@ export class API {
 
   registerConsultant(userData: any) :Observable<any>{
     return this.http.post(this.baseUrl + "auth/register/consultant", userData, this.httpOptions);
+  }
+  
+  login(userData: any) :Observable<any>{
+    return this.http.post(this.baseUrl + "auth/login", userData, this.httpOptions);
   }
 }
 

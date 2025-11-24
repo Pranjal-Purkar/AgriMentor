@@ -6,12 +6,12 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class API {
-  private baseUrl: string;
+  private baseUrl: string = "http://localhost:8080/api/v1/";
 
   private constructor(private http:HttpClient) {
-    this.baseUrl = window.location.hostname === 'localhost' 
-    ? "http://localhost:8080/api/v1/"
-    : "http://10.62.67.228:8080/api/v1/";
+    // this.baseUrl = window.location.hostname === 'localhost' 
+    // ? "http://localhost:8080/api/v1/"
+    // : "http://10.62.67.228:8080/api/v1/";
   }
 
   private httpOptions = {

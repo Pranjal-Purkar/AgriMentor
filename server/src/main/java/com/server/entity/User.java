@@ -2,11 +2,13 @@ package com.server.entity;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.server.enumeration.Role;
@@ -57,8 +59,7 @@ public class User implements UserDetails{
 
    @Override
    public Collection<? extends GrantedAuthority> getAuthorities() {
-	// TODO Auto-generated method stub
-	return null;
+	   return List.of(new SimpleGrantedAuthority(role.name()));
    }
 
    @Override

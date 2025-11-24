@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgClass, NgStyle } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { Auth } from '../../services/auth';
 
 @Component({
   selector: 'app-login',
@@ -15,9 +16,9 @@ export class Login {
 
   loginForm: FormGroup;
 
-  constructor(private fb: FormBuilder,private router: Router) {
+  constructor(private fb: FormBuilder,private router: Router,private authService:Auth) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      username: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
       role: [this.activeRole, Validators.required],
     });
@@ -26,7 +27,7 @@ export class Login {
   setRole(role: string) {
     if (this.activeRole !== role) {
       this.activeRole = role;
-      // Add any additional logic you want to trigger on role change
+      this.loginForm.patchValue({ role: role });
     }
   }
 
@@ -51,14 +52,15 @@ export class Login {
 
 
   onSubmit() {
+    
     console.log(this.loginForm.value);
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
     }
-
     console.log('Logging in as:', this.activeRole);
     console.log('Form Value:', this.loginForm.value);
+    this.authService.login(this.loginForm.value)    
   }
 
   toRegister() {

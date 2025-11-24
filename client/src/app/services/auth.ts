@@ -19,7 +19,7 @@ export class Auth {
       next: (res) => {
         console.log("AUTH::DATA: "+res);
         toast.success("Registration successful")
-        this.router.navigate(['/']);
+        this.router.navigate(['/login']);
       },
       error: (err) => {
         console.log("AUTH::ERROR: "+err);
@@ -33,11 +33,25 @@ export class Auth {
       next: (res) => {
         console.log("AUTH:RegisterConsultant::DATA: "+res);
         toast.success("Registration successful")
-        this.router.navigate(['/']);
+        this.router.navigate(['/login']);
       },
       error: (err) => {
         console.log("AUTH:RegisterConsultant::ERROR: "+err);
         toast.error("Registration failed")
+      }
+    })
+  }
+
+   login(userData: any){
+    this.api.login(userData).subscribe({
+      next: (res) => {
+        console.log("AUTH:LOGIN::DATA: "+res);
+        toast.success("Login successful")
+        this.router.navigate(['/']);
+      },
+      error: (err) => {
+        console.log("AUTH:LOGIN::ERROR: "+err);
+        toast.error("Login failed: " + (err.error?.message || err.message || 'Unknown error'));
       }
     })
   }

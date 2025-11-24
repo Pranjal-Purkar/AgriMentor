@@ -9,7 +9,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create        # auto update schema
+      ddl-auto: update        # auto update schema
     show-sql: true              # show SQL queries in console
     properties:
       hibernate:

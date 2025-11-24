@@ -71,9 +71,11 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
 		try {
+			log.info("Login attempt for user: {}", loginRequest.toString());
 			return ResponseEntity.ok().body(new ApiResponse<>(HttpStatus.OK, "User Login successfully",
 					authService.login(loginRequest)));
 		} catch (Exception e) {
+			log.error("Login failed for user: {}", e.getMessage());
 			return ResponseEntity.status(400).body(new ApiResponse<String>(HttpStatus.BAD_REQUEST, e.getMessage()));
 		}
 	}

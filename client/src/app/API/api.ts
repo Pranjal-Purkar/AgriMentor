@@ -27,7 +27,7 @@ export class API {
   }
 
   registerConsultant(userData: any) :Observable<any>{
-    return this.http.post(this.baseUrl + "auth/register/consultant", userData, this.httpOptions);
+    return this.http.post(this.baseUrl + "auth/register/consultant", userData);
   }
   
   login(userData: any) :Observable<any>{

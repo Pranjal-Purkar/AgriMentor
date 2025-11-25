@@ -45,6 +45,8 @@ export class Consultant {
   // ✅ File upload handler
   onFileSelected(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
+    console.log("file : "+file);
+    
     if (file) {
       if (file.size <= 10 * 1024 * 1024) { // max 10MB
         this.consultantForm.patchValue({ verificationDocument: file });
@@ -65,3 +67,4 @@ export class Consultant {
     }
   }
 }
+

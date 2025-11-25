@@ -29,7 +29,25 @@ export class Auth {
   }
 
   registerConsultant(userData: any){
-    this.api.registerConsultant(userData).subscribe({
+
+    const multipartData = new FormData();
+multipartData.append('firstName', userData.firstName);
+    multipartData.append('lastName', userData.lastName);
+    multipartData.append('email', userData.email);
+    multipartData.append('password', userData.password);
+    multipartData.append('phone', userData.phone);
+    multipartData.append('experienceYears', userData.experienceYears);
+    multipartData.append('qualifications', userData.qualifications);
+    multipartData.append('experienceArea', userData.experienceArea);
+    
+    // Append file if exists
+    if (userData.verificationDocument) {
+      multipartData.append('verificationDocument', userData.verificationDocument);
+    }
+    console.log(userData);
+    
+
+    this.api.registerConsultant(multipartData).subscribe({
       next: (res) => {
         console.log("AUTH:RegisterConsultant::DATA: "+res);
         toast.success("Registration successful")
@@ -37,6 +55,8 @@ export class Auth {
       },
       error: (err) => {
         console.log("AUTH:RegisterConsultant::ERROR: "+err);
+        console.log(err);
+        
         toast.error("Registration failed")
       }
     })

@@ -29,8 +29,7 @@ public class Consultant extends User {
 	private LocalDateTime verifiedAt;
 	@Value("false")
 	private Boolean isActive;
-	
-	
+
 	public Consultant(String firstName, String lastName, String phone, String email, String password, Address address,
 			String expertiseArea, int experienceYears, String qualifications, VerificationStatus verificationStatus) {
 		super(firstName, lastName, phone, email, password, address);
@@ -40,5 +39,5 @@ public class Consultant extends User {
 		this.verificationStatus = verificationStatus;
 
 	}
-	
+
 }

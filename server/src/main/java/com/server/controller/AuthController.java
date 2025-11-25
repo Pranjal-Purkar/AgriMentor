@@ -27,16 +27,6 @@ public class AuthController {
 	@Autowired
 	private AuthService authService;
 
-//	@PostMapping("/register")
-//	public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-//		User user = authService.register(request);
-//		if (user != null) {
-//			return ResponseEntity.ok().body("User registered successfully");
-//		} else {
-//			return ResponseEntity.status(400).build();
-//		}
-//	}
-
 	@PostMapping("/register/farmer")
 	public ResponseEntity<?> register(@RequestBody FarmerRegistrationRequest request) {
 		log.info("Registration Request Received: {}", request.toString());
@@ -53,7 +43,6 @@ public class AuthController {
 
 	}
 	
-//	@CrossOrigin(origins = "http://localhost:4200") 
 	@PostMapping(value = "/register/consultant", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<?> registerConsultant(@ModelAttribute CunsultantRegisterRequest request) {
 		log.info("Registering Consultant: {}", request);

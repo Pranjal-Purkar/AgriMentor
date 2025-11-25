@@ -1,6 +1,7 @@
 package com.server.service;
 
 import java.io.File;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -47,19 +48,15 @@ public class AuthService {
 
 	@Autowired
 	private ConsultantRepository consultantRepository;
-	
+
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-	
+
 	@Autowired
 	private AuthenticationManager authenticationManager;
-	
-	@Autowired 
-	private JwtUtil jwtUtil;
 
-//    AuthService(AuthController authController) {
-//        this.authController = authController;
-//    }
+	@Autowired
+	private JwtUtil jwtUtil;
 
 	public User register(RegisterRequest request) {
 		System.out.println("Auth Service Test" + request.toString());
@@ -75,11 +72,11 @@ public class AuthService {
 			userRepository.save(user);
 			return user;
 		} catch (Exception e) {
-			return null;
+			throw new RuntimeException("User Registration Failed");
 		}
 	}
 
-	public FarmerRegistrationResponse registerFarmer(FarmerRegistrationRequest request) {
+	public Optional<FarmerRegistrationResponse> registerFarmer(FarmerRegistrationRequest request) {
 		System.out.println("Auth Service Test" + request.toString());
 
 		try {
@@ -99,18 +96,16 @@ public class AuthService {
 			farmer.setRole(request.getRole());
 			farmerRepository.save(farmer);
 
-			return new FarmerRegistrationResponse(farmer.getId(), farmer.getFirstName(), farmer.getLastName(),
-					farmer.getEmail(), farmer.getPhone(), farmer.getRole());
+			return Optional.of(new FarmerRegistrationResponse(farmer.getId(), farmer.getFirstName(),
+					farmer.getLastName(), farmer.getEmail(), farmer.getPhone(), farmer.getRole()));
 
 		} catch (Exception e) {
 			throw new RuntimeException("Farmer Registration Failed: " + e.getMessage());
 		}
 	}
 
-	
-
 	@Transactional
-	public ConsultantRegisterResponce registerConsultant(CunsultantRegisterRequest request) {
+	public Optional<ConsultantRegisterResponce> registerConsultant(CunsultantRegisterRequest request) {
 
 		// 1. Check if email exists
 		Consultant consultant = consultantRepository.findByEmail(request.getEmail());
@@ -176,10 +171,10 @@ public class AuthService {
 			log.info("Consultant updated with document");
 
 			// 6. Return Response
-			return new ConsultantRegisterResponce(consultant.getId(), consultant.getFirstName(),
+			return Optional.of(new ConsultantRegisterResponce(consultant.getId(), consultant.getFirstName(),
 					consultant.getLastName(), consultant.getEmail(), consultant.getPhone(), consultant.getRole(),
 					consultant.getExpertiseArea(), consultant.getExperienceYears(), consultant.getQualifications(),
-					consultant.getVerificationStatus());
+					consultant.getVerificationStatus()));
 
 		} catch (Exception e) {
 			log.error("Error during consultant registration: {}", e.getMessage());
@@ -190,19 +185,18 @@ public class AuthService {
 	public LoginResponce login(LoginRequest loginRequest) {
 		log.info("Login attempt for user: {}", loginRequest.getUsername());
 		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
-				);
+				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 		log.info("Authentication successful for user: {}", loginRequest.getUsername());
 		User user = (User) authentication.getPrincipal();
 		log.info("User details retrieved: {}", user);
-		if(user.getRole() != loginRequest.getRole()) {
+		if (user.getRole() != loginRequest.getRole()) {
 			throw new RuntimeException("Invalid Role for the user");
 		}
-		
+
 		String token = jwtUtil.generatAccessToken(user);
 		log.info("JWT Token {}", token);
-		return new LoginResponce(user.getEmail(),token);
-		
+		return new LoginResponce(user.getEmail(), token);
+
 	}
 
 }

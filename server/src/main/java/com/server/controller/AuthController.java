@@ -29,18 +29,17 @@ public class AuthController {
 
 	@PostMapping("/register/farmer")
 	public ResponseEntity<?> register(@RequestBody FarmerRegistrationRequest request) {
-		log.info("Registration Request Received: {}", request.toString());
-		if (request.getRole() != Role.FARMER) {
-			throw new IllegalArgumentException("Invalid role for farmer registration");
-		}
-		try {
-			log.info("Registering Farmer: {}", request.getEmail());
-			return ResponseEntity.ok().body(new ApiResponse<>(HttpStatus.OK, "User registered successfully",
-					authService.registerFarmer(request)));
-		} catch (Exception e) {
-			return ResponseEntity.status(400).body(new ApiResponse<String>(HttpStatus.BAD_REQUEST, e.getMessage()));
-		}
+	    log.info("Registration Request Received: {}", request);
 
+	    if (request.getRole() != Role.FARMER) {
+	        throw new IllegalArgumentException("Invalid role for farmer registration");
+	    }
+
+	    return ResponseEntity.ok().body(
+	        new ApiResponse<>(HttpStatus.OK, "User registered successfully",
+	                authService.registerFarmer(request).orElseThrow(() -> new RuntimeException("Registration failed"))
+	                )
+	    );
 	}
 	
 	@PostMapping(value = "/register/consultant", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

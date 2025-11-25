@@ -182,7 +182,7 @@ public class AuthService {
 		}
 	}
 
-	public LoginResponce login(LoginRequest loginRequest) {
+	public Optional<LoginResponce> login(LoginRequest loginRequest) {
 		log.info("Login attempt for user: {}", loginRequest.getUsername());
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -195,8 +195,7 @@ public class AuthService {
 
 		String token = jwtUtil.generatAccessToken(user);
 		log.info("JWT Token {}", token);
-		return new LoginResponce(user.getEmail(), token);
-
+		return Optional.of(new LoginResponce(user.getEmail(), token, user.getRole().name()));
 	}
 
 }

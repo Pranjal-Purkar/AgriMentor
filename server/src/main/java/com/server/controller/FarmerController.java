@@ -24,6 +24,7 @@ public class FarmerController {
 	@Autowired
 	private FarmerService farmerService;
 	
+	
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getFarmerById(@PathVariable Long id,Authentication authentication) {
 		log.info("Received request to get farmer with id: {}", id);

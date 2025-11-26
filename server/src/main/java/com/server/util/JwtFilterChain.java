@@ -36,7 +36,7 @@ public class JwtFilterChain extends OncePerRequestFilter {
 			log.info("Request URI: {}", request.getRequestURI());
 			String authorizationHeader = request.getHeader("Authorization");
 			log.info("Authorization Header: {}", authorizationHeader);
-			if (authorizationHeader == null && !authorizationHeader.startsWith("Bearer ")) {
+			if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
 				log.info("Missing or invalid Authorization header");
 				filterChain.doFilter(request, response);
 				return;
@@ -51,7 +51,7 @@ public class JwtFilterChain extends OncePerRequestFilter {
 //			    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 				User user = userRepository.findByEmail(username).orElse(null);
 				log.info("User fetched from DB: {}", user);
-				Collection<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
+				Collection<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
 				log.info("Authorities: {}", authorities);
 				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null,
 						authorities);

@@ -50,14 +50,16 @@ public class JwtFilterChain extends OncePerRequestFilter {
 
 //			    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 				User user = userRepository.findByEmail(username).orElse(null);
-
+				log.info("User fetched from DB: {}", user);
 				Collection<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
-
+				log.info("Authorities: {}", authorities);
 				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null,
 						authorities);
-
+				log.info("Authentication Token: {}", authToken);
 				SecurityContextHolder.getContext().setAuthentication(authToken);
+				log.info("Security Context updated with authentication");
 			}
+			log.info("Proceeding with filter chain");
 			filterChain.doFilter(request, response);
 
 		} catch (Exception e) {

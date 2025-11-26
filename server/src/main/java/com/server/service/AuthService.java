@@ -186,16 +186,19 @@ public class AuthService {
 		log.info("Login attempt for user: {}", loginRequest.getUsername());
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+		
 		log.info("Authentication successful for user: {}", loginRequest.getUsername());
 		User user = (User) authentication.getPrincipal();
+		
 		log.info("User details retrieved: {}", user);
 		if (user.getRole() != loginRequest.getRole()) {
-			throw new RuntimeException("Invalid Role for the user");
+			log.error("Role mismatch: expected {}, found {}", loginRequest.getRole(), user.getRole());
+			throw new RuntimeException("Invalid Credentials");
 		}
 
 		String token = jwtUtil.generatAccessToken(user);
 		log.info("JWT Token {}", token);
-		return Optional.of(new LoginResponce(user.getEmail(), token, user.getRole().name()));
+		return Optional.of(new LoginResponce(user.getId(), token, user.getRole().name()));
 	}
 
 }

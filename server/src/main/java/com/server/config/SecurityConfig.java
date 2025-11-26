@@ -22,15 +22,21 @@ public class SecurityConfig implements WebMvcConfigurer{
 	private JwtFilterChain jwtFilterChain;
 	
 	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests(
-				auth -> auth.requestMatchers("/api/v1/auth/**").permitAll().anyRequest().authenticated())
-				.addFilterBefore(jwtFilterChain, UsernamePasswordAuthenticationFilter.class)
-				.csrf(csrf -> csrf.disable())
-				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-		return http.build();
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/v1/user/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/api/v1/farmers/**").hasAnyRole("FARMER", "ADMIN")
+                .anyRequest().authenticated()
+            )
+            .addFilterBefore(jwtFilterChain, UsernamePasswordAuthenticationFilter.class);
 
-	}
+        return http.build();
+    }
 	
 	@Override
     public void addCorsMappings(CorsRegistry registry) {

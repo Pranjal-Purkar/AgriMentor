@@ -1,6 +1,8 @@
 package com.server.service;
 
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,4 +40,9 @@ public class UserService {
 		 return "User registered successfully";
     	 
      }
+
+	 public Optional<?> findUserById(Long userId) {
+		// TODO Auto-generated method stub
+		return null;
+	 }
 }

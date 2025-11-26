@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class LoginResponce {
-	private String email;
+	private Long id;
 	private String jwt;
 	private String role;
 }

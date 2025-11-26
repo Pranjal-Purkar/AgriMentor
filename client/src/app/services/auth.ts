@@ -66,7 +66,7 @@ export class Auth {
         const tokens = res.data;
         sessionStorage.setItem('token', tokens.jwt);
         // // sessionStorage.setItem('refresh', tokens.refresh);
-        sessionStorage.setItem('username', tokens.email);
+        sessionStorage.setItem('userId', tokens.id);
         sessionStorage.setItem('role', tokens.role);
         //switch route based on role 
         if(tokens.role === 'CONSULTANT') {

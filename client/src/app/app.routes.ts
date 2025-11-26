@@ -12,22 +12,22 @@ export const routes: Routes = [
     path: '',
     component: HomeLayout,
     children: [
-      { 
+      {
         path: '',
-        component: Home 
-      }, 
-      { 
-        path: 'register-farmer', 
-        component: Farmer 
+        component: Home,
+      },
+      {
+        path: 'register-farmer',
+        component: Farmer,
       },
       {
         path: 'register-consultant',
-        component: Consultant
+        component: Consultant,
       },
       {
-        path:'login',
-        component:Login
-      }
+        path: 'login',
+        component: Login,
+      },
     ],
   },
   {
@@ -35,10 +35,10 @@ export const routes: Routes = [
     component: DashboardLayout,
     children: [
       {
-            path: 'farmer-dashboard',
-            component: FarmerDashboardLayout
-          }
-    ]
+        path: 'farmer-dashboard',
+        component: FarmerDashboardLayout,
+      },
+    ],
   },
   { path: '**', redirectTo: '' },
 ];

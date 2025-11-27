@@ -22,7 +22,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
-@EntityListeners(AuditingEntityListener.class)   // ⬅️ Enables createdAt & updatedAt
+@EntityListeners(AuditingEntityListener.class)   
 public class User implements UserDetails {
 
    @Id

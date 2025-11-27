@@ -30,14 +30,14 @@ public class Consultant extends User {
 	@Value("false")
 	private Boolean isActive;
 
-	public Consultant(String firstName, String lastName, String phone, String email, String password, Address address,
-			String expertiseArea, int experienceYears, String qualifications, VerificationStatus verificationStatus) {
-		super(firstName, lastName, phone, email, password, address);
-		this.expertiseArea = expertiseArea;
-		this.experienceYears = experienceYears;
-		this.qualifications = qualifications;
-		this.verificationStatus = verificationStatus;
-
-	}
+//	public Consultant(String firstName, String lastName, String phone, String email, String password, Address address,
+//			String expertiseArea, int experienceYears, String qualifications, VerificationStatus verificationStatus) {
+//		super(firstName, lastName, phone, email, password, address);
+//		this.expertiseArea = expertiseArea;
+//		this.experienceYears = experienceYears;
+//		this.qualifications = qualifications;
+//		this.verificationStatus = verificationStatus;
+//
+//	}
 
 }

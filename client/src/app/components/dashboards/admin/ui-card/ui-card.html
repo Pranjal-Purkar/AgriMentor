@@ -1,0 +1,10 @@
+<div
+      [ngClass]="{
+        'p-4': !noPadding,
+        'rounded-xl bg-white border shadow-sm': true,
+        'h-full': fullHeight
+      }"
+      class="overflow-hidden"
+    >
+      <ng-content></ng-content>
+    </div>

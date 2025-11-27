@@ -3,10 +3,11 @@ import { Card } from "../../card/card";
 import { Consultation } from "../../consultation/consultation";
 import { FarmerService } from '../../../../services/farmer/farmer-service';
 import { Subscription } from 'rxjs';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-farmer-dashboard-layout',
-  imports: [Card, Consultation],
+  imports: [Card, Consultation, RouterOutlet],
   templateUrl: './farmer-dashboard-layout.html',
   styleUrl: './farmer-dashboard-layout.css',
 })

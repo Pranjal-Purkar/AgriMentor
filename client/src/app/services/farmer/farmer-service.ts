@@ -1,26 +1,33 @@
 import { Injectable } from '@angular/core';
 import { API } from '../../API/api';
-import { Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FarmerService {
-  private farmerDataSubject = new Subject<any>();
+  
+  private farmerDataSubject = new BehaviorSubject<any | null>(null);
   farmerData$ = this.farmerDataSubject.asObservable();
 
   constructor(private api: API) {}
 
-  getFarmer() {
+  getFarmerProfile() {
+    if(!this.farmerDataSubject.getValue()) {   
+      this.getFarmerProfileData();
+    }
+    console.log("getFarmerProfile");
+      console.log(this.farmerDataSubject.getValue());
+    return this.farmerData$;
+  }
+
+  private getFarmerProfileData() {
     this.api.getFarmer().subscribe({
       next: (res: any) => {
-        console.log('FARMER::DATA: ' + res);
-        console.log(res);
-        this.farmerDataSubject.next(res);
+        this.farmerDataSubject.next(res.data);
       },
       error: (err: any) => {
-        console.log('FARMER::ERROR: ' + err);
-        console.log(err);
+        console.log('FARMER::ERROR: ', err);
       },
     });
   }

@@ -3,12 +3,13 @@ import { Injectable } from '@angular/core';
 import { API } from '../API/api';
 import { Router } from '@angular/router';
 import { toast } from 'ngx-sonner';
+import { FarmerService } from './farmer/farmer-service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Auth {
-  constructor(private api: API, private router: Router) {}
+  constructor(private api: API, private router: Router,private farmerService:FarmerService) {}
 
   registerUser(userData: any) {
     this.api.registerUser(userData).subscribe({
@@ -72,6 +73,7 @@ export class Auth {
         if(tokens.role === 'CONSULTANT') {
           this.router.navigate(['/consultant']);
         } else if(tokens.role === 'FARMER'){
+          // this.farmerService.getFarmerProfile();
           this.router.navigate(['dashboard/farmer-dashboard']);
         } 
       },

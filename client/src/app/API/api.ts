@@ -33,6 +33,13 @@ export class API {
   login(userData: any) :Observable<any>{
     return this.http.post(this.baseUrl + "auth/login", userData, this.httpOptions);
   }
+
+  /**
+   * Farmer API endpoints
+   */
+  getFarmer(): any {
+    return this.http.get(this.baseUrl + "farmers/profile");
+  }
 }
 
 

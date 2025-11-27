@@ -32,7 +32,24 @@ public class FarmerService {
 			farmerDTO.setPhone(farmer.getPhone());
 			farmerDTO.setRole(farmer.getRole());
 			farmerDTO.setAddress(farmer.getAddress());
-			farmerDTO.setIsActive(farmer.getIsActive());
+			farmerDTO.setFarmAreaHectares(farmer.getFarmAreaHectares());
+			log.info("Converted Farmer to FarmerDTO: {}", farmerDTO);
+			return Optional.of(farmerDTO);
+	}
+	public Optional<?> findByEmail(String email) {
+		log.info("Fetching farmer with email: {}", email);
+		Farmer farmer = farmerRepository.findByEmail(email).orElseThrow(() -> {
+			throw new RuntimeException("Farmer not found with username: " + email);
+		});
+		log.info("Farmer found: {}", farmer);
+		FarmerDTO farmerDTO = new FarmerDTO();
+		farmerDTO.setId(farmer.getId());
+		farmerDTO.setFirstName(farmer.getFirstName());
+			farmerDTO.setLastName(farmer.getLastName());
+			farmerDTO.setEmail(farmer.getEmail());
+			farmerDTO.setPhone(farmer.getPhone());
+			farmerDTO.setRole(farmer.getRole());
+			farmerDTO.setAddress(farmer.getAddress());
 			farmerDTO.setFarmAreaHectares(farmer.getFarmAreaHectares());
 			log.info("Converted Farmer to FarmerDTO: {}", farmerDTO);
 			return Optional.of(farmerDTO);

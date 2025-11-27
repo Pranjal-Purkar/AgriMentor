@@ -11,6 +11,5 @@ import lombok.NoArgsConstructor;
 @Data
 public class FarmerDTO extends FarmerRegistrationResponse {
 	private Address address;
-	private Boolean isActive;
 	private Double farmAreaHectares;
 }

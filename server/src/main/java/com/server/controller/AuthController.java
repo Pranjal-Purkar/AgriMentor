@@ -13,9 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.server.dto.CunsultantRegisterRequest;
 import com.server.dto.FarmerRegistrationRequest;
 import com.server.dto.LoginRequest;
+import com.server.dto.SendOtpRequest;
+import com.server.dto.VerifyOtpRequest;
 import com.server.enumeration.Role;
 import com.server.response.ApiResponse;
 import com.server.service.AuthService;
+import com.server.service.OtpService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,9 +26,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/v1/auth")
 //@CrossOrigin(origins ="*")
 @Slf4j
-public class AuthController {
+public class AuthController{
 	@Autowired
 	private AuthService authService;
+	 @Autowired
+	    private OtpService otpService;
+
 
 	@PostMapping("/register/farmer")
 	public ResponseEntity<?> register(@RequestBody FarmerRegistrationRequest request) {
@@ -64,5 +70,19 @@ public class AuthController {
 			return ResponseEntity.status(400).body(new ApiResponse<String>(HttpStatus.BAD_REQUEST, e.getMessage()));
 		}
 	}
+	
+	
+	@PostMapping("/send-otp")
+    public ResponseEntity<?> sendOtp(@RequestBody SendOtpRequest req){
+        otpService.sendOtp(req.getEmail());
+        return ResponseEntity.ok("OTP sent");
+    }
+	
+	@PostMapping("/verify-otp")
+    public ResponseEntity<?> verifyOtp(@RequestBody VerifyOtpRequest req){
+        boolean result = otpService.verifyOtp(req.getEmail(), req.getOtp());
+        return result ? ResponseEntity.ok("Verified")
+                      : ResponseEntity.badRequest().body("Invalid or expired OTP");
+    }
 
 }

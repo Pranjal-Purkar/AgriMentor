@@ -83,10 +83,10 @@ public class AuthService {
 			if (!request.getRole().equals(Role.FARMER)) {
 				throw new RuntimeException("Invalid User, Only Farmer allows to Register");
 			}
-			Farmer farmer = farmerRepository.findByEmail(request.getEmail()).orElseThrow(() ->{
+			Farmer farmer = farmerRepository.findByEmail(request.getEmail()).orElse(null);
+			if (farmer != null) {
 				throw new RuntimeException("Email Already Registered");
-			});
-			
+			}
 			farmer = new Farmer();
 			farmer.setFirstName(request.getFirstName());
 			farmer.setLastName(request.getLastName());

@@ -6,6 +6,8 @@ import { Consultant } from './components/register/consultant/consultant';
 import { Login } from './components/login/login';
 import { DashboardLayout } from './components/dashboards/dashboard-layout/dashboard-layout';
 import { FarmerDashboardLayout } from './components/dashboards/farmer/farmer-dashboard-layout/farmer-dashboard-layout';
+import { AdminDashboard } from './components/dashboards/admin/admin-dashboard/admin-dashboard';
+import { AdminDashboardLayout } from './components/dashboards/admin/admin-dashboard-layout/admin-dashboard-layout';
 
 export const routes: Routes = [
   {
@@ -38,7 +40,12 @@ export const routes: Routes = [
         path: 'farmer-dashboard',
         component: FarmerDashboardLayout,
       },
+      {
+        path: 'admin-dashboard',
+        component: AdminDashboardLayout
+      }
     ],
+
   },
   { path: '**', redirectTo: '' },
 ];

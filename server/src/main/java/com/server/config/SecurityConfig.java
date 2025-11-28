@@ -25,8 +25,6 @@ import com.server.util.JwtFilterChain;
 public class SecurityConfig implements WebMvcConfigurer{
 	@Autowired
 	private JwtFilterChain jwtFilterChain;
-	@Autowired
-	private CorsConfigurationSource corsSource;
 	
 	@Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

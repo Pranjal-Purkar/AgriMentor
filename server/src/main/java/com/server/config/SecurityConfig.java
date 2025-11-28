@@ -25,8 +25,8 @@ import com.server.util.JwtFilterChain;
 public class SecurityConfig implements WebMvcConfigurer{
 	@Autowired
 	private JwtFilterChain jwtFilterChain;
-//	@Autowired
-//	private CorsConfigurationSource corsSource;
+
+	
 	
 	@Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -42,10 +42,9 @@ public class SecurityConfig implements WebMvcConfigurer{
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilterChain, UsernamePasswordAuthenticationFilter.class);
+	    return http.build();
+	}
 
-        return http.build();
-    }
-	
 	@Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")

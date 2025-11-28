@@ -1,10 +1,13 @@
 package com.server.controller;
 
+import java.lang.reflect.Constructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,19 +16,38 @@ import org.springframework.web.bind.annotation.RestController;
 import com.server.dto.CunsultantRegisterRequest;
 import com.server.dto.FarmerRegistrationRequest;
 import com.server.dto.LoginRequest;
+import com.server.dto.ResetPasswordRequest;
+import com.server.dto.SendOtpRequest;
+import com.server.dto.VerifyOtpRequest;
 import com.server.enumeration.Role;
+import com.server.repository.EmailOtpRepository;
+import com.server.repository.UserRepository;
 import com.server.response.ApiResponse;
 import com.server.service.AuthService;
-
+import com.server.service.OtpService;
+import com.server.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/v1/auth")
 //@CrossOrigin(origins ="*")
 @Slf4j
-public class AuthController {
+public class AuthController{
+
+	@Autowired
+    private  EmailOtpRepository emailOtpRepository;
+	
+	@Autowired
+	private  UserRepository userRepository;
+	
+	@Autowired
+    private  UserService userService;
 	@Autowired
 	private AuthService authService;
+	 @Autowired
+	    private OtpService otpService;
+
+
 
 	@PostMapping("/register/farmer")
 	public ResponseEntity<?> register(@RequestBody FarmerRegistrationRequest request) {
@@ -64,5 +86,70 @@ public class AuthController {
 			return ResponseEntity.status(400).body(new ApiResponse<String>(HttpStatus.BAD_REQUEST, e.getMessage()));
 		}
 	}
+	
+	
+	@PostMapping("/send-otp/{email}")
+    public ResponseEntity<?> sendOtp(@PathVariable String email){
+        
+        try {
+        	 otpService.sendOtp(email);
+        	 otpService.generateOtp(6);
+             return ResponseEntity.ok().body(new ApiResponse<>(HttpStatus.OK,"OTP send succesfully"));
+		} catch (Exception e) {
+			log.error("Login failed for user: {}", e.getMessage());
+			return ResponseEntity.status(400).body(new ApiResponse<String>(HttpStatus.BAD_REQUEST, e.getMessage()));
+		}
+
+	}
+	
+	@PostMapping("/verify-otp")
+    public ResponseEntity<?> verifyOtp(@RequestBody VerifyOtpRequest req){
+        boolean result = otpService.verifyOtp(req.getEmail(), req.getOtp());
+        return result ? ResponseEntity.ok("Verified")
+                      : ResponseEntity.badRequest().body("Invalid or expired OTP");
+    }
+	
+	//....forgot password....//
+	
+
+    
+    @PostMapping("/Forgot-password/{email}")
+    public ResponseEntity<?> sendForgotPasswordOtp(@PathVariable String email){
+        
+        try {
+        	log.error("in otp forgot for user: {}");
+        	 otpService.sendOtp(email);
+        	 otpService.generateOtp(6);
+             return ResponseEntity.ok().body(new ApiResponse<>(HttpStatus.OK,"OTP send succesfully"));
+		} catch (Exception e) {
+			log.error("password change failed for user: {}", e.getMessage());
+			return ResponseEntity.status(400).body(new ApiResponse<String>(HttpStatus.BAD_REQUEST, e.getMessage()));
+		}
+
+	}
+    
+    
+    
+    
+    @PostMapping("/forgot-password/reset")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        boolean valid = otpService.verifyOtp(request.getEmail(), request.getOtp());
+
+        if (!valid) {
+            return ResponseEntity.badRequest().body("Invalid or expired OTP");
+        }
+
+        userService.updatePassword(request.getEmail(), request.getNewPassword());
+      
+      
+
+        // 🔥 DELETE OTP AFTER SUCCESS
+        emailOtpRepository.deleteByEmail(request.getEmail());
+
+        return ResponseEntity.ok("Password reset successful");
+        
+    }
+
+	
 
 }

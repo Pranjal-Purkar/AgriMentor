@@ -25,14 +25,13 @@ import com.server.util.JwtFilterChain;
 public class SecurityConfig implements WebMvcConfigurer{
 	@Autowired
 	private JwtFilterChain jwtFilterChain;
-//	@Autowired
-//	private CorsConfigurationSource corsSource;
+	@Autowired
+	private CorsConfigurationSource corsSource;
 	
 	@Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll()
@@ -45,6 +44,12 @@ public class SecurityConfig implements WebMvcConfigurer{
 
         return http.build();
     }
+	
+	
+	
+
+
+	
 	
 	@Override
     public void addCorsMappings(CorsRegistry registry) {

@@ -6,14 +6,19 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ConsultationReport {
-	 	@Id
-	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    private Long id;
-//	    private Consultation consultation;
-//	    private Consultant consultant;
-//	    private Crop crop;
-	    private String reportText;
-	    private LocalDateTime createdAt ;
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "consultation_id")
+    private Consultation consultation;
+
+    private String reportText;
+
+    private LocalDateTime createdAt;
 	 
 }

@@ -9,16 +9,22 @@ import com.server.enumeration.VisitStatus;
 
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Farmvisit {
-	   @Id
-	   @GeneratedValue(strategy = GenerationType.IDENTITY)
-	   private Long id;
-//	   private Consultation consultation;
-//	   private Consultant consultant;
-//	   private User farmer;
-//	   private Crop crop;
-	   private LocalDateTime scheduledDate;
-	   private String remarks;
-	   @Enumerated(EnumType.STRING)
-	    private VisitStatus visitStatus;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "consultation_id")
+    private Consultation consultation;
+
+    private LocalDateTime scheduledDate;
+
+    private String remarks;
+
+    @Enumerated(EnumType.STRING)
+    private VisitStatus visitStatus;
 }

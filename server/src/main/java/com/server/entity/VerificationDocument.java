@@ -2,6 +2,8 @@ package com.server.entity;
 
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,7 +29,9 @@ public class VerificationDocument {
 	@Lob
 	private byte[] fileContent;
 
-	@OneToOne
-	@JoinColumn(name = "consultant_id")
+	@JsonIgnore
+    @OneToOne
+    @JoinColumn(name = "consultant_id")
 	private Consultant consultant;
+	
 }

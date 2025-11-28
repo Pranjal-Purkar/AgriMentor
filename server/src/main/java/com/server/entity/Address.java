@@ -33,7 +33,7 @@ public class Address {
     private String longitude;
 
     @OneToOne(mappedBy = "address")
-    @JsonBackReference              // ⬅️ Solves infinite recursion
+    @JsonBackReference              
     @ToString.Exclude
     private User user;
 }

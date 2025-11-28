@@ -74,7 +74,7 @@ export class Auth {
           this.router.navigate(['/consultant']);
         } else if(tokens.role === 'FARMER'){
           // this.farmerService.getFarmerProfile();
-          this.router.navigate(['dashboard/farmer-dashboard']);
+          this.router.navigate(['dashboard/farmer']);
         } 
       },
       error: (err) => {

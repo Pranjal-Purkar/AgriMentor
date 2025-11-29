@@ -19,12 +19,16 @@ import lombok.extern.slf4j.Slf4j;
 public class ConsultantService {
 	@Autowired
 	private ConsultantRepository consultantRepository;
+    @Autowired
+    private EmailService emailService;
+
 	// Get all consultants
 	public List<ConsultantDTO> getAllConsultants() {
 		log.info("Inside ConsultantService.getAllConsultants");
 		List<Consultant> consultants = consultantRepository.findAll();
-		ConsultantDTO constantsDTO = new ConsultantDTO();
+
 		List<ConsultantDTO> dtoList = consultants.stream().map(consultant -> {
+            ConsultantDTO constantsDTO = new ConsultantDTO();
 			constantsDTO.setId(consultant.getId());
 			constantsDTO.setFirstName(consultant.getFirstName());
 			constantsDTO.setLastName(consultant.getLastName());
@@ -101,17 +105,45 @@ public class ConsultantService {
 			throw new RuntimeException("Consultant not found");
 		}
 	}
-	
+
 	//verify consultant
 	public boolean verifyConsultant(String email) {
 		log.info("Inside ConsultantService.verifyConsultant with email: {}", email);
 		try {
 			this.updateVerificationStatus(email, VerificationStatus.VERIFIED);
 			log.info("Consultant with email {} verified successfully", email);
+            this.emailService.sendEmail(
+            	   "Dear Consultant,\n\n" +
+                   "We are pleased to inform you that your account has been successfully verified. " +
+                   "You can now access all the features and services available to verified consultants on our platform.\n\n" +
+                   "Thank you for being a valued member of our community.\n\n" +
+                   "Best regards,\n" +
+                   "The Team");
 			return true;
 		} catch (Exception e) {
 			log.error("Error verifying consultant with email {}: {}", email, e.getMessage());
 			return false;
 		}
 	}
+
+    //Remove Consultant
+    @Transactional
+    public boolean deleteConsultant(String username){
+        log.info("Inside ConsultantService.deleteConsultant with username: {}", username);
+        try {
+            Consultant consultant = this.getConsultantByUsername(username).orElse(null);
+            log.info("Consultant fetched for deletion: {}", consultant);
+            if (consultant != null) {
+                consultantRepository.delete(consultant);
+                log.info("Consultant with username {} deleted successfully", username);
+                return true;
+            } else {
+                log.warn("Consultant with username {} not found. Cannot delete.", username);
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("Error deleting consultant with username {}: {}", username, e.getMessage());
+            return false;
+        }
+    }
 }

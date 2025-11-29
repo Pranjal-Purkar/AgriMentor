@@ -33,7 +33,7 @@ public class AdminController {
         }
     }
 
-    @PostMapping
+    @PostMapping("/verify/consultant/{username}")
     public ResponseEntity<?> verifyConsultant(@PathVariable String username) {
         log.info("Verifying consultant with username: {}", username);
         try {
@@ -47,6 +47,23 @@ public class AdminController {
             );
         } catch (Exception e) {
             log.error("Error verifying consultant", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<String>(HttpStatus.BAD_REQUEST, e.getLocalizedMessage()));
+        }
+    }
+    @PostMapping("/reject/consultant/{username}")
+    public ResponseEntity<?> rejectConsultant(@PathVariable String username) {
+        log.info("Rejecting consultant with username: {}", username);
+        try {
+            if(!adminService.rejectConsultant(username)) {
+                log.error("Consultant rejection failed for username: {}", username);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<String>(HttpStatus.BAD_REQUEST, "Consultant rejection failed"));
+            }
+            log.info("Consultant rejected successfully");
+            return ResponseEntity.ok().body(
+                    new ApiResponse<>(HttpStatus.OK, "Consultant rejected successfully")
+            );
+        } catch (Exception e) {
+            log.error("Error rejecting consultant", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<String>(HttpStatus.BAD_REQUEST, e.getLocalizedMessage()));
         }
     }

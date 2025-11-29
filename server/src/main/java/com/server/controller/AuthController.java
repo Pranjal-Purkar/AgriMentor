@@ -1,6 +1,7 @@
 package com.server.controller;
 
 import java.lang.reflect.Constructor;
+import java.util.concurrent.CompletableFuture;
 
 import com.server.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -168,15 +169,21 @@ public class AuthController{
         
     }
 
-    @PostMapping(" ")
+    @PostMapping("/test/mail")
     public ResponseEntity<?> testEmailSending() {
         try {
+//            CompletableFuture<Boolean> result = emailService.sendEmail(
+//                    "sbhor747@gmail.com",
+//                    "Test Email",
+//                    "This is a test email from the AuthController."
+//            );
 
-            return ResponseEntity.ok().body(new ApiResponse<>(HttpStatus.OK, "Test email sent successfully",this.emailService.sendEmail(
-                    "sbhor747@gmail.com",
-                    "Test Email",
-                    "This is a test email from the AuthController."
-            )));
+            // If you want NON-BLOCKING response:
+            // TODO:change letter email send mail paramiters
+            return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK,
+                    "Email task started in background. Check logs.",
+                    emailService.sendEmail()
+                    ));
         } catch (Exception e) {
             log.error("Test email sending failed", e);
             return ResponseEntity.status(500).body(new ApiResponse<String>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));

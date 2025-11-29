@@ -66,6 +66,60 @@ public class JwtFilterChain extends OncePerRequestFilter {
 			log.error("Error in JwtFilterChain: {}", e.getMessage());
 			filterChain.doFilter(request, response);
 		}
+		
+		/*
+		 * } catch (JwtException e) {
+	        // Handle JWT-specific exceptions (invalid token, malformed token, etc.)
+	        log.error("JWT Token error: {}", e.getMessage());
+	        ApiErrorRespomse errorResponse = new ApiErrorRespomse(
+	                "Invalid or expired JWT token",
+	                new Date(),
+	                e.getMessage(),
+	                HttpStatus.UNAUTHORIZED
+	        );
+	        writeErrorResponse(response, errorResponse);
+	    } catch (UsernameNotFoundException e) {
+	        // Handle cases where the user is not found in the database
+	        log.error("User not found: {}", e.getMessage());
+	        ApiErrorRespomse errorResponse = new ApiErrorRespomse(
+	                "User not found",
+	                new Date(),
+	                e.getMessage(),
+	                HttpStatus.UNAUTHORIZED
+	        );
+	        writeErrorResponse(response, errorResponse);
+	    } catch (Exception e) {
+	        // Handle any other generic exceptions
+	        log.error("Unexpected error: {}", e.getMessage());
+	        ApiErrorRespomse errorResponse = new ApiErrorRespomse(
+	                "Internal server error",
+	                new Date(),
+	                e.getMessage(),
+	                HttpStatus.INTERNAL_SERVER_ERROR
+	        );
+	        writeErrorResponse(response, errorResponse);
+	    } finally {
+	        // Make sure the filter chain is always proceeded with, even if there's an exception
+	        filterChain.doFilter(request, response);
+	    }
+	}
+
+	// Utility method to write the error response in JSON format
+		private void writeErrorResponse(HttpServletResponse response, ApiErrorRespomse errorResponse) throws IOException {
+			if (response.isCommitted()) {
+				log.warn("Response is already committed; cannot write error response");
+				return;
+			}
+			response.reset();
+			response.setStatus(errorResponse.getStatusCode().value());
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+
+			ObjectMapper objectMapper = new ObjectMapper();
+			response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+			response.getWriter().flush();
+		}
+		 */
 
 	}
 

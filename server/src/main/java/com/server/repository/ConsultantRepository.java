@@ -8,7 +8,6 @@ import com.server.entity.Consultant;
 @Repository
 
 public interface ConsultantRepository extends JpaRepository<Consultant, Long> {
-
 	Consultant findByEmail(String email);
 
 }

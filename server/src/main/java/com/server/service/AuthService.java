@@ -45,19 +45,18 @@ public class AuthService {
 	private FarmerRepository farmerRepository;
 	@Autowired
 	private VerificationDocumentRepository verificationDocumentRepository;
-
 	@Autowired
 	private ConsultantRepository consultantRepository;
-
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-
 	@Autowired
 	private AuthenticationManager authenticationManager;
-
 	@Autowired
 	private JwtUtil jwtUtil;
-
+	@Autowired
+	private ConsultantService consultantService;
+	
+	// Constructor injection (if needed)
 	public User register(RegisterRequest request) {
 		System.out.println("Auth Service Test" + request.toString());
 		try {
@@ -76,6 +75,7 @@ public class AuthService {
 		}
 	}
 
+	// Farmer Registration
 	public Optional<FarmerRegistrationResponse> registerFarmer(FarmerRegistrationRequest request) {
 		System.out.println("Auth Service Test" + request.toString());
 
@@ -104,11 +104,12 @@ public class AuthService {
 		}
 	}
 
+	// Consultant Registration
 	@Transactional
 	public Optional<ConsultantRegisterResponce> registerConsultant(CunsultantRegisterRequest request) {
 
 		// 1. Check if email exists
-		Consultant consultant = consultantRepository.findByEmail(request.getEmail());
+		Consultant consultant = consultantRepository.findByEmail(request.getEmail()).orElse(null);
 		if (consultant != null) {
 			throw new RuntimeException("Email Already Registered");
 		}
@@ -127,6 +128,7 @@ public class AuthService {
 			consultant.setQualifications(request.getQualifications());
 			consultant.setVerificationStatus(VerificationStatus.PENDING);
 			consultant.setIsActive(false);
+			consultant.setIsVerified(false);
 
 			consultantRepository.save(consultant);
 
@@ -182,6 +184,7 @@ public class AuthService {
 		}
 	}
 
+	// User Login
 	public Optional<LoginResponce> login(LoginRequest loginRequest) {
 		log.info("Login attempt for user: {}", loginRequest.getUsername());
 		Authentication authentication = authenticationManager.authenticate(
@@ -190,10 +193,24 @@ public class AuthService {
 		log.info("Authentication successful for user: {}", loginRequest.getUsername());
 		User user = (User) authentication.getPrincipal();
 		
+		if(user == null) {
+			log.error("User not found after authentication for username: {}", loginRequest.getUsername());
+			throw new RuntimeException("Invalid Credentials");
+		}
+		
+		
 		log.info("User details retrieved: {}", user);
 		if (user.getRole() != loginRequest.getRole()) {
 			log.error("Role mismatch: expected {}, found {}", loginRequest.getRole(), user.getRole());
 			throw new RuntimeException("Invalid Credentials");
+		}
+		
+		if(user.getRole() == Role.CONSULTANT) {
+			log.info("Checking consultant verification status for user: {}", user.getEmail());
+			if(user.getIsVerified() == false) {
+				log.error("Consultant not verified: {}", user.getEmail());
+				throw new RuntimeException("Consultant Not Verified Yet");
+			}
 		}
 
 		String token = jwtUtil.generatAccessToken(user);

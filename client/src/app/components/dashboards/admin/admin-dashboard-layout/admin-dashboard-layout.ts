@@ -1,9 +1,10 @@
 import { Component, computed, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { AdminNavbar } from "../admin-navbar/admin-navbar";
 
 @Component({
   selector: 'app-admin-dashboard-layout',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, AdminNavbar],
   templateUrl: './admin-dashboard-layout.html',
   styleUrl: './admin-dashboard-layout.css',
 })

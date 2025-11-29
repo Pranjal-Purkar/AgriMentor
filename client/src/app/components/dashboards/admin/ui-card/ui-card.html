@@ -1,10 +1,9 @@
 <div
+      class="bg-white rounded-xl shadow p-5"
       [ngClass]="{
-        'p-4': !noPadding,
-        'rounded-xl bg-white border shadow-sm': true,
-        'h-full': fullHeight
+        'p-0': noPadding,
+        'h-full': 'fullHeight'
       }"
-      class="overflow-hidden"
     >
       <ng-content></ng-content>
     </div>

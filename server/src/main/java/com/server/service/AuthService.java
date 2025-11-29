@@ -4,14 +4,12 @@ import java.io.File;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import com.server.controller.AuthController;
 import com.server.dto.ConsultantRegisterResponce;
 import com.server.dto.CunsultantRegisterRequest;
 import com.server.dto.FarmerRegistrationRequest;
@@ -53,8 +51,8 @@ public class AuthService {
 	private AuthenticationManager authenticationManager;
 	@Autowired
 	private JwtUtil jwtUtil;
-	@Autowired
-	private ConsultantService consultantService;
+//	@Autowired
+//	private ConsultantService consultantService;
 	
 	// Constructor injection (if needed)
 	public User register(RegisterRequest request) {

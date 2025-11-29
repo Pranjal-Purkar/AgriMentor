@@ -23,7 +23,7 @@ import com.server.repository.EmailOtpRepository;
 @Slf4j
 public class OtpService {
 	 @Autowired
-	    private JavaMailSender mailSender;
+     private JavaMailSender mailSender;
       @Autowired
       private PasswordEncoder passwordEncoder;
 	    @Autowired

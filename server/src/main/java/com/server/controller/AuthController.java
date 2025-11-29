@@ -2,6 +2,7 @@ package com.server.controller;
 
 import java.lang.reflect.Constructor;
 
+import com.server.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,9 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.server.dto.CunsultantRegisterRequest;
 import com.server.dto.FarmerRegistrationRequest;
 import com.server.dto.LoginRequest;
+import com.server.dto.RegisterRequest;
 import com.server.dto.ResetPasswordRequest;
 import com.server.dto.SendOtpRequest;
 import com.server.dto.VerifyOtpRequest;
+import com.server.entity.User;
 import com.server.enumeration.Role;
 import com.server.repository.EmailOtpRepository;
 import com.server.repository.UserRepository;
@@ -47,10 +50,26 @@ public class AuthController{
 	 @Autowired
 	    private OtpService otpService;
 
+     @Autowired
+     private EmailService emailService;
 
+	 @PostMapping("/register")
+	    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
+	        log.info("Received user registration request: {}", request);
+
+	        try {
+	            User user = authService.register(request);
+	            return ResponseEntity.ok(user);   // Or return a DTO (recommended)
+	        } catch (Exception e) {
+	            log.error("User registration failed", e);
+	            return ResponseEntity
+	                    .badRequest()
+	                    .body("User registration failed: " + e.getMessage());
+	        }
+	    }
 
 	@PostMapping("/register/farmer")
-	public ResponseEntity<?> register(@RequestBody FarmerRegistrationRequest request) {
+	public ResponseEntity<?> registerFarmer(@RequestBody FarmerRegistrationRequest request) {
 	    log.info("Registration Request Received: {}", request);
 
 	    if (request.getRole() != Role.FARMER) {
@@ -63,6 +82,8 @@ public class AuthController{
 	                )
 	    );
 	}
+	
+	
 	
 	@PostMapping(value = "/register/consultant", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<?> registerConsultant(@ModelAttribute CunsultantRegisterRequest request) {
@@ -127,10 +148,7 @@ public class AuthController{
 		}
 
 	}
-    
-    
-    
-    
+
     @PostMapping("/forgot-password/reset")
     public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
         boolean valid = otpService.verifyOtp(request.getEmail(), request.getOtp());
@@ -150,6 +168,20 @@ public class AuthController{
         
     }
 
+    @PostMapping(" ")
+    public ResponseEntity<?> testEmailSending() {
+        try {
+
+            return ResponseEntity.ok().body(new ApiResponse<>(HttpStatus.OK, "Test email sent successfully",this.emailService.sendEmail(
+                    "sbhor747@gmail.com",
+                    "Test Email",
+                    "This is a test email from the AuthController."
+            )));
+        } catch (Exception e) {
+            log.error("Test email sending failed", e);
+            return ResponseEntity.status(500).body(new ApiResponse<String>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
+        }
+    }
 	
 
 }

@@ -7,8 +7,8 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update        # auto update schema
-    show-sql: true              # show SQL queries in console
+      ddl-auto: update
+    show-sql: true
     properties:
       hibernate:
         format_sql: true

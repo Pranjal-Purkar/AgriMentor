@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-consultation',
@@ -7,7 +8,6 @@ import { Component } from '@angular/core';
   styleUrl: './consultation.css',
 })
 export class Consultation {
-
   consultations = [
     {
       doctor: 'Dr. Priya Sharma',
@@ -29,4 +29,11 @@ export class Consultation {
       status: 'pending'
     }
   ];
+
+  constructor(private router: Router) { } 
+
+  navigateNewRequest(){
+    console.log('new Request button clicked');
+    this.router.navigate(['/dashboard/farmer/consultation-request']);
+  }
 }

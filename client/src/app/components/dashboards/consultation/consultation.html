@@ -1,12 +1,12 @@
 <div class="bg-white rounded-xl shadow p-4 mb-8">
   <div class="flex justify-between items-center mb-3">
     <h3 class="text-lg font-semibold text-gray-800">My Consultations</h3>
-    <button class="bg-green-700 text-white px-3 py-1.5 rounded-md">+ New Request</button>
+    <button class="bg-green-700 text-white px-3 py-1.5 rounded-md hover:bg-green-800 transition-colors cursor-pointer" (click)="navigateNewRequest()" >Request Consultation</button>
   </div>
 
   <div class="space-y-4">
     @for (c of consultations; track c.doctor) {
-      <div class="border rounded-xl p-4 flex justify-between items-start">
+      <div class="border rounded-xl p-4 flex justify-between items-start cursor-pointer hover:bg-gray-50 transition-colors">
         <div>
           <p class="font-medium text-gray-800">{{ c.doctor }}</p>
           <p class="text-sm text-gray-500">Crop: {{ c.crop }}</p>

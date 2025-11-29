@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-farmer-navbar',
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './farmer-navbar.html',
   styleUrl: './farmer-navbar.css',
 })

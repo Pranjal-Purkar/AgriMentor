@@ -10,6 +10,9 @@ import { AdminDashboard } from './components/dashboards/admin/admin-dashboard/ad
 import { AdminDashboardLayout } from './components/dashboards/admin/admin-dashboard-layout/admin-dashboard-layout';
 import { Profile } from './components/dashboards/farmer/profile/profile';
 import { FarmerHome } from './components/dashboards/farmer/farmer-home/farmer-home';
+import { ConsultantDashboardLayout } from './components/dashboards/consultant/consultant-dashboard-layout/consultant-dashboard-layout';
+import { ConsultationRequest } from './components/dashboards/farmer/consultation-request/consultation-request';
+import { ConsultantHome } from './components/dashboards/consultant/consultant-home/consultant-home';
 
 export const routes: Routes = [
   {
@@ -34,9 +37,19 @@ export const routes: Routes = [
         children: [
           { path: '', component: FarmerHome },       // /dashboard/farmer
           { path: 'profile', component: Profile },  // /dashboard/farmer/profile
+          {
+            path: 'consultation-request',
+            component: ConsultationRequest,
+          }
         ],
       },
-
+      {
+        path: 'consultant',
+        component: ConsultantDashboardLayout,
+        children: [
+          { path: '', component: ConsultantHome }, // /dashboard/consultant
+        ],
+      },
       {
         path: 'admin',
         component: AdminDashboardLayout,

@@ -21,11 +21,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.server.util.JwtFilterChain;
 
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+
 @Configuration
+@Slf4j
 public class SecurityConfig implements WebMvcConfigurer{
 	@Autowired
 	private JwtFilterChain jwtFilterChain;
 	
+	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
@@ -46,7 +51,7 @@ public class SecurityConfig implements WebMvcConfigurer{
 	@Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedOrigins("http://localhost:4200","http://10.30.100.228:4200")
+            .allowedOrigins("http://localhost:4200")
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
             .allowedHeaders("*")
             .allowCredentials(true)
@@ -56,7 +61,7 @@ public class SecurityConfig implements WebMvcConfigurer{
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 	    CorsConfiguration config = new CorsConfiguration();
-	    config.setAllowedOrigins(List.of("http://localhost:4200","http://10.30.100.228:4200 "));
+	    config.setAllowedOrigins(List.of("http://localhost:4200"));
 	    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 	    config.setAllowedHeaders(List.of("*"));
 	    config.setAllowCredentials(true);

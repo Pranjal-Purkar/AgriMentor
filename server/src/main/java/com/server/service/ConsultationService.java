@@ -44,9 +44,9 @@ public class ConsultationService {
         // 2. Save or get crop
         Crop crop = new Crop();
         crop.setName(request.getCrop().getName());
-        crop.setCategory(null);
-        crop.setType(null);
-        crop.setDescription(null);
+        crop.setCategory(request.getCrop().getCategory());
+        crop.setType(request.getCrop().getType());
+        crop.setDescription(request.getCrop().getDescription());
         crop.setCreatedAt(LocalDateTime.now());
         crop = cropService.save(crop)
                 .orElseThrow(() -> new RuntimeException("Failed to save or fetch crop"));
@@ -96,5 +96,22 @@ public class ConsultationService {
     public List<Consultation> getConsultationsByFarmer(Farmer farmer) {
         log.info("Fetching consultations for farmer: {}", farmer.getEmail());
         return consultationRepository.findByFarmerId(farmer.getId());
+    }
+
+    //find consultation Request by id
+    public Optional<Consultation> getConsultationById(Long id) {
+        log.info("Fetching consultation request with id: {}", id);
+        return consultationRepository.findById(id);
+    }
+
+    //add Farmvisit to Consultation
+    @Transactional
+
+    public Optional<Consultation> addFarmVisitToConsultation(Consultation consultation, Farmvisit farmvisit) {
+        log.info("Adding farm visit to consultation with id: {}", consultation.getId());
+        consultation.getFarmVisits().add(farmvisit);
+        Consultation updatedConsultation = consultationRepository.save(consultation);
+        log.info("Farm visit added to consultation with id: {}", consultation.getId());
+        return Optional.of(updatedConsultation);
     }
 }

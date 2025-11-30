@@ -3,6 +3,11 @@ package com.server.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.server.dto.FarmVisitRequest;
+import com.server.entity.Consultation;
+import com.server.entity.Farmer;
+import com.server.entity.Farmvisit;
+import com.server.enumeration.ConsultationRequestStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +26,8 @@ public class ConsultantService {
 	private ConsultantRepository consultantRepository;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private FarmvisitService farmvisitService;
 
 	// Get all consultants
 	public List<ConsultantDTO> getAllConsultants() {
@@ -146,4 +153,111 @@ public class ConsultantService {
             return false;
         }
     }
+
+    //gell all consultation requests of consultant
+    public Optional<List<Consultation>> getAllConsultationRequests(String username) {
+        log.info("Fetching all consultation requests for username: {}", username);
+        try {
+            // Find farmer by email/username
+            Consultant consultant = consultantRepository.findByEmail(username)
+                    .orElseThrow(() -> new RuntimeException("consultant not found with username: " + username));
+
+//            // Fetch consultations for the farmer
+//            List<Consultation> consultations = consultationService.getConsultationsByFarmer(farmer);
+//            log.info("Found {} consultation requests for username: {}", consultations.size(), username);
+//            return Optional.of(consultations);
+            return Optional.of(consultant.getConsultations());
+
+        } catch (Exception e) {
+            log.error("Failed to fetch consultation requests for username {}: {}", username, e.getMessage(), e);
+            throw new RuntimeException("Failed to fetch consultation requests: " + e.getMessage(), e);
+        }
+    }
+
+    @Transactional
+    public boolean acceptConsultationRequest(String username, Long consultationId) {
+        log.info("Consultant {} is attempting to accept consultation request with id: {}", username, consultationId);
+        try {
+            Consultant consultant = consultantRepository.findByEmail(username)
+                    .orElseThrow(() -> new RuntimeException("Consultant not found with username: " + username));
+
+            Optional<Consultation> consultationOpt = consultant.getConsultations().stream()
+                    .filter(c -> c.getId().equals(consultationId))
+                    .findFirst();
+
+            if (consultationOpt.isPresent()) {
+                Consultation consultation = consultationOpt.get();
+                consultation.setConsultationRequestStatus(ConsultationRequestStatus.APPROVED);
+                log.info("Consultation request with id: {} accepted by consultant: {}", consultationId, username);
+                return true;
+            } else {
+                log.warn("Consultation request with id: {} not found for consultant: {}", consultationId, username);
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("Error accepting consultation request with id: {} for consultant: {}: {}", consultationId, username, e.getMessage());
+            return false;
+        }
+    }
+
+    @Transactional
+    public boolean rejectConsultationRequest(String username, Long consultationId) {
+        log.info("Consultant {} is attempting to accept consultation request with id: {}", username, consultationId);
+        try {
+            Consultant consultant = consultantRepository.findByEmail(username)
+                    .orElseThrow(() -> new RuntimeException("Consultant not found with username: " + username));
+
+            Optional<Consultation> consultationOpt = consultant.getConsultations().stream()
+                    .filter(c -> c.getId().equals(consultationId))
+                    .findFirst();
+
+            if (consultationOpt.isPresent()) {
+                Consultation consultation = consultationOpt.get();
+                consultation.setConsultationRequestStatus(ConsultationRequestStatus.REJECTED);
+                log.info("Consultation request with id: {} accepted by consultant: {}", consultationId, username);
+                return true;
+            } else {
+                log.warn("Consultation request with id: {} not found for consultant: {}", consultationId, username);
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("Error accepting consultation request with id: {} for consultant: {}: {}", consultationId, username, e.getMessage());
+            return false;
+        }
+    }
+
+    @Transactional
+    public boolean scheduleConsultatinVisit(String username, Long consultationId, FarmVisitRequest request) {
+        log.info("Consultant {} is attempting to schedule farm visit for consultation request with id: {}", username, consultationId);
+        try {
+            Consultant consultant = consultantRepository.findByEmail(username)
+                    .orElseThrow(() -> new RuntimeException("Consultant not found with username: " + username));
+
+            Optional<Consultation> consultationOpt = consultant.getConsultations().stream()
+                    .filter(c -> c.getId().equals(consultationId))
+                    .findFirst();
+
+            if (consultationOpt.isPresent()) {
+                Consultation consultation = consultationOpt.get();
+                Farmvisit scheduled = farmvisitService.scheduleFarmVisit(consultation, request).orElse(null);
+                if(scheduled != null){
+                    log.info("Farm visit scheduled for consultation request with id: {} by consultant: {}", consultationId, username);
+                    consultation.getFarmVisits().add(scheduled);
+           log.info("Linked farm visit to consultation successfully for consultation id: {}", consultation.getId());
+                    return true;
+                } else {
+                    log.warn("Failed to schedule farm visit for consultation request with id: {} by consultant: {}", consultationId, username);
+                    return false;
+                }
+            } else {
+                log.warn("Consultation request with id: {} not found for consultant: {}", consultationId, username);
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("Error scheduling farm visit for consultation request with id: {} for consultant: {}: {}", consultationId, username, e.getMessage());
+            return false;
+        }
+    }
+    
+    
 }

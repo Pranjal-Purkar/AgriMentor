@@ -12,7 +12,7 @@ public class ConsultationRequestDTO {
     private String topic;
     private String description;
     private String consultantEmail;
-    private Crop crop;
+    private CropDTO crop;
     private AddressDTO farmAddress;
     private Boolean useExistingAddress;
 }

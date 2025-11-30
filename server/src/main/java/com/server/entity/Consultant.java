@@ -1,6 +1,12 @@
 package com.server.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.beans.factory.annotation.Value;
 import com.server.enumeration.VerificationStatus;
 import jakarta.persistence.*;
@@ -17,27 +23,28 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+
 public class Consultant extends User {
 	@OneToOne(mappedBy = "consultant", cascade = CascadeType.ALL)
-	private VerificationDocument verificationDocument;
+    @JsonBackReference
+    private VerificationDocument verificationDocument;
 
 	private String expertiseArea;
 	private int experienceYears;
 	private String qualifications;
+    private String specialization;
 	@Enumerated(EnumType.STRING)
 	private VerificationStatus verificationStatus;
-	private LocalDateTime verifiedAt;
+
+    @OneToMany(mappedBy = "consultant", cascade = CascadeType.ALL)
+    @JsonBackReference(value = "consultation-consultant")
+    private List<Consultation> consultations = new ArrayList<>();
+
+
+    private LocalDateTime verifiedAt;
 	@Value("false")
 	private Boolean isActive;
 
-//	public Consultant(String firstName, String lastName, String phone, String email, String password, Address address,
-//			String expertiseArea, int experienceYears, String qualifications, VerificationStatus verificationStatus) {
-//		super(firstName, lastName, phone, email, password, address);
-//		this.expertiseArea = expertiseArea;
-//		this.experienceYears = experienceYears;
-//		this.qualifications = qualifications;
-//		this.verificationStatus = verificationStatus;
-//
-//	}
 
 }

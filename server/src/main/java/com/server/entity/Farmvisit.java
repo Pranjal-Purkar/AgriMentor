@@ -1,6 +1,7 @@
 package com.server.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -17,14 +18,36 @@ public class Farmvisit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Each visit belongs to ONE consultation
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "consultation_id")
+    @JsonBackReference
     private Consultation consultation;
 
     private LocalDateTime scheduledDate;
 
-    private String remarks;
+    private String visitNotes;
 
     @Enumerated(EnumType.STRING)
     private VisitStatus visitStatus;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "farm_address_id")
+    @JsonBackReference
+    private Address farmAddress;
+
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

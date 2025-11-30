@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +19,8 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+
 public class VerificationDocument {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
@@ -29,9 +33,10 @@ public class VerificationDocument {
 	@Lob
 	private byte[] fileContent;
 
-	@JsonIgnore
+//	@JsonIgnore
     @OneToOne
     @JoinColumn(name = "consultant_id")
+    @JsonManagedReference
 	private Consultant consultant;
 	
 }

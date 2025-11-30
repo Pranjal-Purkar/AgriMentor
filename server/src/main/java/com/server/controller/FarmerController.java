@@ -2,16 +2,12 @@ package com.server.controller;
 
 import java.util.Optional;
 
+import com.server.dto.ConsultationRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.server.response.ApiResponse;
 import com.server.service.FarmerService;
@@ -96,6 +92,52 @@ public class FarmerController {
 					.body(new ApiResponse<String>(HttpStatus.NOT_FOUND, "Farmer not found"));
 		}
 	}
-	
+
+    @PostMapping("/consultation/request")
+    public ResponseEntity<?> createConsultationRequest(@RequestBody ConsultationRequestDTO request, Authentication authentication) {
+        log.info("Received request to create consultation request: {}", request);
+        if (authentication == null || !authentication.isAuthenticated()) {
+            log.warn("Unauthorized access attempt to create consultation request");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponse<String>(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+        }
+
+        String username = authentication.getName();
+        log.info("Attempting to create consultation request for user: {}", username);
+
+        Optional<?> createdRequest = farmerService.createConsultationRequest(username, request);
+
+        if (createdRequest.isPresent()) {
+            log.info("Consultation request created successfully for user: {}", username);
+            return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK, "Consultation request created successfully", createdRequest.get()));
+        } else {
+            log.error("Failed to create consultation request for user: {}", username);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<String>(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to create consultation request"));
+        }
+    }
+
+    //get all consultation requests of farmer
+    @GetMapping("/consultation/request/all")
+    public ResponseEntity<?> getAllConsultationRequests(Authentication authentication) {
+        log.info("Received request to get all consultation requests");
+        if (authentication == null || !authentication.isAuthenticated()) {
+            log.warn("Unauthorized access attempt to get consultation requests");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponse<String>(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+        }
+        String username = authentication.getName();
+        log.info("Attempting to get consultation requests for user: {}", username);
+        Optional<?> requests = farmerService.getAllConsultationRequests(username);
+        log.info("Consultation requests fetched: {}", requests);
+        if (requests.isPresent()) {
+            log.info("Consultation requests retrieved successfully for user: {}", username);
+            return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK, "Consultation requests retrieved successfully", requests.get()));
+        } else {
+            log.info("No consultation requests found for user: {}", username);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<String>(HttpStatus.NOT_FOUND, "No consultation requests found"));
+        }
+    }
 
 }

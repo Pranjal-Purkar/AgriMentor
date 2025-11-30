@@ -19,7 +19,6 @@ public class AdminService {
 
     public boolean rejectConsultant(String username) {
         try {
-             
             if (!consultantService.deleteConsultant(username)) {
                 log.error("Failed to delete consultant with username: {}", username);
                 return false;

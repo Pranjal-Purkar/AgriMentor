@@ -1,7 +1,10 @@
 package com.server.service;
 
+import java.util.List;
 import java.util.Optional;
 
+import com.server.dto.ConsultationRequestDTO;
+import com.server.entity.Consultation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +23,8 @@ public class FarmerService {
 	
 	@Autowired
 	private FarmerRepository farmerRepository;
+    @Autowired
+    private ConsultationService consultationService;
 	
 	public Optional<?> findById(Long id) {
 		log.info("Fetching farmer with id: {}", id);
@@ -142,4 +147,41 @@ public class FarmerService {
 	}
 
 
+    public Optional<?> createConsultationRequest(String username, ConsultationRequestDTO request) {
+        log.info("Creating consultation request for username: {}", username);
+        try {
+            // Find farmer by email/username
+            Farmer farmer = farmerRepository.findByEmail(username)
+                    .orElseThrow(() -> new RuntimeException("Farmer not found with username: " + username));
+
+            // Delegate creation to ConsultationService
+            Object createdRequest = consultationService.createConsultationRequest(farmer, request);
+            log.info("Consultation request created: {}", createdRequest);
+            log.info("Consultation request created successfully for username: {}", username);
+            return Optional.of(createdRequest);
+
+        } catch (Exception e) {
+            log.error("Failed to create consultation request for username {}: {}", username, e.getMessage(), e);
+            throw new RuntimeException("Failed to create consultation request: " + e.getMessage(), e);
+        }
+    }
+
+    public Optional<List<Consultation>> getAllConsultationRequests(String username) {
+        log.info("Fetching all consultation requests for username: {}", username);
+        try {
+            // Find farmer by email/username
+            Farmer farmer = farmerRepository.findByEmail(username)
+                    .orElseThrow(() -> new RuntimeException("Farmer not found with username: " + username));
+
+//            // Fetch consultations for the farmer
+//            List<Consultation> consultations = consultationService.getConsultationsByFarmer(farmer);
+//            log.info("Found {} consultation requests for username: {}", consultations.size(), username);
+//            return Optional.of(consultations);
+            return Optional.of(farmer.getConsultations());
+
+        } catch (Exception e) {
+            log.error("Failed to fetch consultation requests for username {}: {}", username, e.getMessage(), e);
+            throw new RuntimeException("Failed to fetch consultation requests: " + e.getMessage(), e);
+        }
+    }
 }

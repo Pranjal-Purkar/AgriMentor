@@ -30,26 +30,26 @@ public class ConsultantService {
     private FarmvisitService farmvisitService;
 
 	// Get all consultants
-	public List<ConsultantDTO> getAllConsultants() {
+	public List<?> getAllConsultants() {
 		log.info("Inside ConsultantService.getAllConsultants");
 		List<Consultant> consultants = consultantRepository.findAll();
 
-		List<ConsultantDTO> dtoList = consultants.stream().map(consultant -> {
-            ConsultantDTO constantsDTO = new ConsultantDTO();
-			constantsDTO.setId(consultant.getId());
-			constantsDTO.setFirstName(consultant.getFirstName());
-			constantsDTO.setLastName(consultant.getLastName());
-			constantsDTO.setEmail(consultant.getEmail());
-			constantsDTO.setPhone(consultant.getPhone());
-			constantsDTO.setQualifications(consultant.getQualifications());
-			constantsDTO.setExperienceYears(consultant.getExperienceYears());
-			constantsDTO.setIsVerified(consultant.getIsVerified());
-			constantsDTO.setVerificationStatus(consultant.getVerificationStatus());
-			constantsDTO.setVerificationDocument(null); //TODO: handle document mapping letter
-			return constantsDTO;
-		}).toList();
+//		List<ConsultantDTO> dtoList = consultants.stream().map(consultant -> {
+//            ConsultantDTO constantsDTO = new ConsultantDTO();
+//			constantsDTO.setId(consultant.getId());
+//			constantsDTO.setFirstName(consultant.getFirstName());
+//			constantsDTO.setLastName(consultant.getLastName());
+//			constantsDTO.setEmail(consultant.getEmail());
+//			constantsDTO.setPhone(consultant.getPhone());
+//			constantsDTO.setQualifications(consultant.getQualifications());
+//			constantsDTO.setExperienceYears(consultant.getExperienceYears());
+//			constantsDTO.setIsVerified(consultant.getIsVerified());
+//			constantsDTO.setVerificationStatus(consultant.getVerificationStatus());
+//			constantsDTO.setVerificationDocument(null); //TODO: handle document mapping letter
+//			return constantsDTO;
+//		}).toList();
 		
-		return (List<ConsultantDTO>) dtoList;
+		return consultants;
 		
 	}
 	// Get consultant by ID

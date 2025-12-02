@@ -35,6 +35,51 @@ public class ConsultantController {
 			
 		}
 	}
+
+    //get consultant by username
+    @GetMapping("/{username}")
+    public ResponseEntity<?> getConsultantByUsername(@PathVariable String username) {
+        log.info("Received request to get consultant by username: {}", username);
+        try {
+            Optional<?> consultantDTO = consultantService.getConsultantByUsername(username);
+            log.info("Consultant fetched: {}", consultantDTO);
+            if (consultantDTO.isPresent()) {
+                log.info("Consultant retrieved successfully for username: {}", username);
+                return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK, "Consultant retrieved successfully", consultantDTO.get()));
+            } else {
+                log.info("Consultant not found for username: {}", username);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ApiResponse<String>(HttpStatus.NOT_FOUND, "Consultant not found"));
+            }
+        } catch (Exception e) {
+            log.error("Error fetching consultant for username: {}", username, e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse<String>(HttpStatus.NOT_FOUND, e.getLocalizedMessage()));
+        }
+    }
+
+    //get consulatant Profile
+    @GetMapping("/profile")
+    public ResponseEntity<?> getConsultantByUsername(Authentication authentication) {
+        log.info("Received request to get consultant profile");
+        if (authentication == null || !authentication.isAuthenticated()) {
+            log.warn("Unauthorized access attempt to get consultant profile");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponse<String>(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+        }
+        String username = authentication.getName();
+        log.info("Attempting to get consultant profile for user: {}", username);
+        Optional<?> consultantDTO = consultantService.getConsultantByUsername(username);
+        log.info("Consultant profile fetched: {}", consultantDTO);
+        if (consultantDTO.isPresent()) {
+            log.info("Consultant profile retrieved successfully for user: {}", username);
+            return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK, "Consultant profile retrieved successfully", consultantDTO.get()));
+        } else {
+            log.info("Consultant profile not found for user: {}", username);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<String>(HttpStatus.NOT_FOUND, "Consultant profile not found"));
+        }
+    }
+
     //getAllConsultants requests
     @GetMapping("/consultation/request/all")
     public ResponseEntity<?> getAllConsultationRequests(Authentication authentication) {

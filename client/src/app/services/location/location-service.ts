@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../API/api-service';
 
@@ -6,6 +6,9 @@ import { ApiService } from '../../API/api-service';
   providedIn: 'root',
 })
 export class LocationService {
+
+  latitude = signal<string | null>(null);
+  longitude = signal<string | null>(null);
 
 
 constructor(private api:ApiService) {}

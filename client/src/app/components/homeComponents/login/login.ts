@@ -2,6 +2,7 @@ import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgClass, NgStyle } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../../services/auth/auth-service';
 
 
 @Component({
@@ -20,7 +21,11 @@ export class Login {
 
   loginForm: FormGroup;
 
-  constructor(private fb: FormBuilder,private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private authService: AuthService
+  ) {
     this.customDelay = 0;
     console.log("image::");
     
@@ -82,7 +87,8 @@ export class Login {
     }
     console.log('Logging in as:', this.activeRole);
     console.log('Form Value:', this.loginForm.value);
-    // this.authService.login(this.loginForm.value)    
+
+    this.authService.login(this.loginForm.value);   
   }
 
   toRegister() {

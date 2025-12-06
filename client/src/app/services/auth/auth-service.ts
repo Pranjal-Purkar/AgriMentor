@@ -42,6 +42,55 @@ export class AuthService {
     });
   }
 
+  //REgister consultant
+  registerConsultant(consultantData: any) {
+    console.log("Insede ResgisterConsultant...");
+
+    this.api.registerConsultant(consultantData).subscribe({
+      next: (res) => {
+        console.log('AUTH:RegisterConsultant::DATA: ' + res);
+        toast.success('Registration successful');
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        console.log('AUTH:RegisterConsultant::ERROR: ' + err);
+        console.log(err);
+
+        toast.error('Registration failed');
+      },
+    });
+  }
+
+  login(userData: any) {
+    this.api.login(userData).subscribe({
+      next: (res) => {
+         
+        console.log('AUTH:LOGIN::DATA: ' + res);
+        toast.success('Login successful');
+        console.log(res);
+        const tokens = res.data;
+        sessionStorage.setItem('token', tokens.jwt);
+        // // sessionStorage.setItem('refresh', tokens.refresh);
+        sessionStorage.setItem('userId', tokens.id);
+        sessionStorage.setItem('role', tokens.role);
+        //switch route based on role 
+        if(tokens.role === 'CONSULTANT') {
+          this.router.navigate(['farmer/dashboard']);
+        } else if(tokens.role === 'FARMER'){
+          // this.farmerService.getFarmerProfile();
+          this.router.navigate(['farmer/dashboard']);
+        }else {
+          this.router.navigate(['farmer/dashboard'])
+        }
+      },
+      error: (err) => {
+        console.log('AUTH:LOGIN::ERROR: ');
+        console.log(err);
+        
+        toast.error('Login failed: ' + (err.error?.message || err.message || 'Unknown error'));
+      },
+    });
+  }
 
   
 }

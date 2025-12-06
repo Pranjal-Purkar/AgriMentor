@@ -1,7 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, QueryList, ViewChildren } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnInit,
+  QueryList,
+  ViewChildren,
+} from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from "@angular/router";
+import { RouterLink } from '@angular/router';
+import { AuthService } from '../../../services/auth/auth-service';
+import { toast } from 'ngx-sonner';
+import { LocationService } from '../../../services/location/location-service';
 
 @Component({
   selector: 'app-consultant-register',
@@ -9,44 +19,60 @@ import { RouterLink } from "@angular/router";
   templateUrl: './consultant-register.html',
   styleUrl: './consultant-register.css',
 })
-export class ConsultantRegister {
+export class ConsultantRegister implements OnInit {
   @ViewChildren('otpInput') otpInputs!: QueryList<ElementRef<HTMLInputElement>>;
-  
+
   consultantForm: FormGroup;
   currentStep: number = 1;
   otpCode: string[] = ['', '', '', '', '', ''];
   otpError: string = '';
-  
+  locationCoordinates: any = {
+    Latitude: 0,
+    Longitude: 0,
+  };
+
   qualifications = [
     'B.Sc Agriculture',
     'M.Sc Agriculture',
     'PhD Agriculture',
     'Soil Science',
-    'Plant Pathology'
+    'Plant Pathology',
   ];
 
-  constructor(private fb: FormBuilder) {
-    this.consultantForm = this.fb.group({
-      // Step 1: Basic Information
-      firstName: ['', [Validators.required, Validators.minLength(3)]],
-      lastName: ['', [Validators.required, Validators.minLength(3)]],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
-      experienceYears: ['', [Validators.required, Validators.min(1)]],
-      qualifications: ['', Validators.required],
-      experienceArea: ['', Validators.required],
-      verificationDocument: [null, Validators.required],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', Validators.required],
-      
-      // Step 2: Address Details
-      street: ['', Validators.required],
-      city: ['', Validators.required],
-      state: ['', Validators.required],
-      postalCode: ['', [Validators.required, Validators.pattern('^[0-9]{6}$')]],
-      country: ['', Validators.required],
-      terms: [false, Validators.requiredTrue]
-    }, { validators: this.passwordMatchValidator });
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef,
+    private locationService: LocationService
+  ) {
+    this.consultantForm = this.fb.group(
+      {
+        // Step 1: Basic Information
+        firstName: ['', [Validators.required, Validators.minLength(3)]],
+        lastName: ['', [Validators.required, Validators.minLength(3)]],
+        email: ['', [Validators.required, Validators.email]],
+        phone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
+        experienceYears: ['', [Validators.required, Validators.min(1)]],
+        qualifications: ['', Validators.required],
+        experienceArea: ['', Validators.required],
+        verificationDocument: [null, Validators.required],
+        password: ['', [Validators.required, Validators.minLength(6)]],
+        confirmPassword: ['', Validators.required],
+
+        // Step 2: Address Details
+        street: ['', Validators.required],
+        city: ['', Validators.required],
+        state: ['', Validators.required],
+        postalCode: ['', [Validators.required, Validators.pattern('^[0-9]{6}$')]],
+        country: ['', Validators.required],
+        terms: [false, Validators.requiredTrue],
+      },
+      { validators: this.passwordMatchValidator }
+    );
+  }
+
+  ngOnInit(): void {
+    this.getCurrentLocation();
   }
 
   passwordMatchValidator(form: FormGroup) {
@@ -65,40 +91,63 @@ export class ConsultantRegister {
 
   nextStep() {
     if (this.currentStep === 1) {
-      // Validate Step 1 fields
-      const step1Fields = ['firstName', 'lastName', 'email', 'phone', 'experienceYears', 
-                           'qualifications', 'experienceArea', 'verificationDocument', 
-                           'password', 'confirmPassword'];
-      
+      const step1Fields = [
+        'firstName',
+        'lastName',
+        'email',
+        'phone',
+        'experienceYears',
+        'qualifications',
+        'experienceArea',
+        'verificationDocument',
+        'password',
+        'confirmPassword',
+      ];
+
       let isValid = true;
-      step1Fields.forEach(field => {
+
+      step1Fields.forEach((field) => {
         const control = this.consultantForm.get(field);
         control?.markAsTouched();
-        if (control?.invalid) {
-          isValid = false;
-        }
+        if (control?.invalid) isValid = false;
       });
 
-      if (isValid && !this.consultantForm.hasError('passwordMismatch')) {
-        this.currentStep = 2;
-      }
+      if (!isValid || this.consultantForm.hasError('passwordMismatch')) return;
+
+      // ---------------------------
+      // FIX: async API inside subscribe causes UI not updating
+      // ---------------------------
+      this.authService.isUserAlreadyExist(this.f['email'].value, 'CONSULTANT').subscribe({
+        next: (exists) => {
+          if (exists) {
+            toast.error('Consultant already exists');
+            return;
+          }
+
+          // User does NOT exist → GO NEXT
+          this.currentStep = 2;
+          this.sendOtp();
+
+          // IMPORTANT FIX: force Angular to detect UI update
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          toast.error('Internal server error!');
+        },
+      });
     } else if (this.currentStep === 2) {
-      // Validate Step 2 fields
       const step2Fields = ['street', 'city', 'state', 'postalCode', 'country', 'terms'];
-      console.log("inside step 2");
-      
       let isValid = true;
-      step2Fields.forEach(field => {
+
+      step2Fields.forEach((field) => {
         const control = this.consultantForm.get(field);
         control?.markAsTouched();
-        if (control?.invalid) {
-          isValid = false;
-        }
+        if (control?.invalid) isValid = false;
       });
 
       if (isValid) {
         this.currentStep = 3;
-        this.sendOtp();
+        this.cdr.detectChanges(); // also optional here
       }
     }
   }
@@ -128,7 +177,7 @@ export class ConsultantRegister {
     if (value && /^[0-9]$/.test(value)) {
       this.otpCode[index] = value;
       this.otpError = '';
-      
+
       // Move to next input
       if (index < 5) {
         const nextInput = this.otpInputs.toArray()[index + 1];
@@ -142,7 +191,7 @@ export class ConsultantRegister {
 
   onOtpKeydown(event: KeyboardEvent, index: number) {
     const input = event.target as HTMLInputElement;
-    
+
     // Handle backspace
     if (event.key === 'Backspace' && !input.value && index > 0) {
       const prevInput = this.otpInputs.toArray()[index - 1];
@@ -159,14 +208,14 @@ export class ConsultantRegister {
   resendOtp() {
     this.otpCode = ['', '', '', '', '', ''];
     this.otpError = '';
-    this.otpInputs.toArray().forEach(input => input.nativeElement.value = '');
+    this.otpInputs.toArray().forEach((input) => (input.nativeElement.value = ''));
     this.otpInputs.first?.nativeElement.focus();
     console.log('📧 Resending OTP...');
   }
 
   verifyOtp(): boolean {
     const enteredOtp = this.otpCode.join('');
-    
+
     if (enteredOtp.length !== 6) {
       this.otpError = 'Please enter complete OTP code';
       return false;
@@ -183,15 +232,72 @@ export class ConsultantRegister {
     }
   }
 
+  getCurrentLocation() {
+    this.locationService
+      .getCurrentLocation()
+      .then((location) => {
+        console.log('Latitude:', location.latitude);
+        console.log('Longitude:', location.longitude);
+        console.log('Accuracy:', location.accuracy, 'meters');
+        console.log(location);
+        this.locationCoordinates = {
+          Latitude: location.latitude,
+          Longitude: location.longitude,
+        };
+        this.locationService.getAddress(location.latitude, location.longitude);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
+
   onSubmit() {
-    if (this.currentStep === 3) {
-      if (this.verifyOtp()) {
-        if (this.consultantForm.valid) {
-          console.log('✅ Consultant Registration Data:', this.consultantForm.value);
-          console.log('✅ OTP Verified:', this.otpCode.join(''));
-          // Implement registration logic here
+  if (this.currentStep === 3) {
+    if (this.verifyOtp()) {
+      if (this.consultantForm.valid) {
+
+        const consultantData = new FormData();
+
+        consultantData.append("firstName", this.f['firstName'].value);
+        consultantData.append("lastName", this.f['lastName'].value);
+        consultantData.append("email", this.f['email'].value);
+        consultantData.append("password", this.f['password'].value);
+        consultantData.append("phone", this.f['phone'].value);
+        consultantData.append("role", "CONSULTANT");
+        consultantData.append("expertiseArea", this.f['experienceArea'].value);
+        consultantData.append("experienceYears", this.f['experienceYears'].value);
+        consultantData.append("qualifications", this.f['qualifications'].value);
+
+        // File
+        if (this.f['verificationDocument'].value) {
+          consultantData.append(
+            "verificationDocument",
+            this.f['verificationDocument'].value
+          );
         }
+
+        // Address → Use Spring nested binding (address.propertyName)
+        consultantData.append("address.street", this.f['street'].value);
+        consultantData.append("address.city", this.f['city'].value);
+        consultantData.append("address.state", this.f['state'].value);
+        consultantData.append("address.pinCode", this.f['postalCode'].value);
+        consultantData.append("address.country", this.f['country'].value);
+        consultantData.append("address.latitude", String(this.locationCoordinates.Latitude));
+        consultantData.append("address.longitude", String(this.locationCoordinates.Longitude));
+
+        // Debug: show actual FormData
+        console.log("🔍 REAL FORMDATA CONTENT:");
+        for (let p of consultantData.entries()) {
+          console.log(p[0] + ": ", p[1]);
+        }
+
+        // Call API
+        this.authService.registerConsultant(consultantData);
       }
     }
   }
+}
+
+
+ 
 }

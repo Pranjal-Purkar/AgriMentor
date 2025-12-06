@@ -1,6 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, QueryList, ViewChildren } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
+import { AuthService } from '../../../services/auth/auth-service';
+import { toast } from 'ngx-sonner';
 
 @Component({
   selector: 'app-farmer-register',
@@ -9,17 +18,14 @@ import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validatio
   styleUrl: './farmer-register.css',
 })
 export class FarmerRegister {
-    @ViewChildren('otpInput') otpInputs!: QueryList<ElementRef<HTMLInputElement>>;
-  
+  @ViewChildren('otpInput') otpInputs!: QueryList<ElementRef<HTMLInputElement>>;
+
   farmerForm: FormGroup;
   currentStep: number = 1;
   otpCode: string[] = ['', '', '', '', '', ''];
   otpError: string = '';
 
-  constructor(
-    private fb: FormBuilder,
-    // private authService: Auth
-  ) {
+  constructor(private fb: FormBuilder, private authService: AuthService) {
     this.farmerForm = this.fb.group(
       {
         firstName: ['', [Validators.required, Validators.minLength(3)]],
@@ -88,10 +94,18 @@ export class FarmerRegister {
   nextStep() {
     if (this.currentStep === 1) {
       // Validate Step 1 fields
-      const step1Fields = ['firstName', 'lastName', 'email', 'phone', 'password', 'confirmPassword', 'terms'];
-      
+      const step1Fields = [
+        'firstName',
+        'lastName',
+        'email',
+        'phone',
+        'password',
+        'confirmPassword',
+        'terms',
+      ];
+
       let isValid = true;
-      step1Fields.forEach(field => {
+      step1Fields.forEach((field) => {
         const control = this.farmerForm.get(field);
         control?.markAsTouched();
         if (control?.invalid) {
@@ -99,10 +113,26 @@ export class FarmerRegister {
         }
       });
 
-      if (isValid && !this.farmerForm.hasError('passwordMismatch')) {
-        this.currentStep = 2;
-        this.sendOtp();
+      if (!isValid || this.farmerForm.hasError('passwordMismatch')) {
+        return;
       }
+
+
+      this.authService.isUserAlreadyExist(this.f['email'].value, 'FARMER').subscribe({
+        next: (exists) => {
+          if (exists) {
+            toast.error('User already exists');
+            return; // prevent moving to next step
+          }
+
+          // user does not exist → continue
+          this.currentStep = 2;
+          this.sendOtp();
+        },
+        error: () => {
+          toast.error('Internal server error!');
+        },
+      });
     }
   }
 
@@ -120,7 +150,7 @@ export class FarmerRegister {
     if (value && /^[0-9]$/.test(value)) {
       this.otpCode[index] = value;
       this.otpError = '';
-      
+
       // Move to next input
       if (index < 5) {
         const nextInput = this.otpInputs.toArray()[index + 1];
@@ -134,7 +164,7 @@ export class FarmerRegister {
 
   onOtpKeydown(event: KeyboardEvent, index: number) {
     const input = event.target as HTMLInputElement;
-    
+
     // Handle backspace
     if (event.key === 'Backspace' && !input.value && index > 0) {
       const prevInput = this.otpInputs.toArray()[index - 1];
@@ -153,10 +183,10 @@ export class FarmerRegister {
   resendOtp() {
     this.otpCode = ['', '', '', '', '', ''];
     this.otpError = '';
-    this.otpInputs.toArray().forEach(input => input.nativeElement.value = '');
-//     this.otpInputs.toArray().forEach((input: ElementRef<HTMLInputElement>) => {
-//   input.nativeElement.value = '';
-// });
+    this.otpInputs.toArray().forEach((input) => (input.nativeElement.value = ''));
+    //     this.otpInputs.toArray().forEach((input: ElementRef<HTMLInputElement>) => {
+    //   input.nativeElement.value = '';
+    // });
     this.otpInputs.first?.nativeElement.focus();
     console.log('📧 Resending OTP...');
     this.sendOtp();
@@ -164,7 +194,7 @@ export class FarmerRegister {
 
   verifyOtp(): boolean {
     const enteredOtp = this.otpCode.join('');
-    
+
     if (enteredOtp.length !== 6) {
       this.otpError = 'Please enter complete OTP code';
       return false;
@@ -181,18 +211,21 @@ export class FarmerRegister {
     }
   }
 
+
   verifyAndSubmit() {
     if (this.verifyOtp()) {
       if (this.farmerForm.valid) {
         console.log('✅ Farmer registration data:', this.farmerForm.value);
         console.log('✅ OTP Verified:', this.otpCode.join(''));
-        
-        // Implement actual registration logic
-        // this.authService.registerUser(this.farmerForm.value);
-        
+        this.authService.registerUser(this.farmerForm.value);
+
         // Move to success step
-        this.currentStep = 3;
+        // this.currentStep = 3;
+      } else {
+        console.log('❌ Form is not valid');
       }
+    } else {
+      console.log('❌ Invalid OTP');
     }
   }
 
@@ -210,11 +243,10 @@ export class FarmerRegister {
   resetForm() {
     this.farmerForm.reset({
       role: 'FARMER',
-      terms: false
+      terms: false,
     });
     this.currentStep = 1;
     this.otpCode = ['', '', '', '', '', ''];
     this.otpError = '';
   }
-
 }

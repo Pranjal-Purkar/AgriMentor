@@ -34,6 +34,10 @@ export class ApiService {
     return this.http.post(this.baseUrl + "auth/login", userData, this.httpOptions);
   }
 
+  isUserAlreadyExistst(username: string,role: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}auth/isUserAlreadyExist?username=${username}&role=${role}`);
+  }
+
   /**
    * Farmer API endpoints
    */

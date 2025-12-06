@@ -152,7 +152,7 @@ export class FarmerHome {
 
   navigateNewRequest(){
     console.log('new Request button clicked');
-    this.router.navigate(['/dashboard/farmer/consultation-request']);
+    this.router.navigate(['farmer/consultation-request']);
   }
   ngOnDestroy() {
     if (this.subscription) {

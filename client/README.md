@@ -65,3 +65,6 @@ npm install aos --save
 i have also add animation when switch one component to annother and switching routs
 
 working well but when i have click browser back button then they have reverse animation and content was not displayed
+
+
+## weather api

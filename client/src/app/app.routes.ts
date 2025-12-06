@@ -8,6 +8,10 @@ import { animation } from '@angular/animations';
 import { ForgotPassword } from './components/homeComponents/forgot-password/forgot-password';
 import { FarmerDashboardLayout } from './layouts/farmer-dashboard-layout/farmer-dashboard-layout';
 import { FarmerHome } from './components/farmerComponents/farmer-home/farmer-home';
+import { Consultation } from './components/farmerComponents/consultation/consultation';
+import { ConsultationRequest } from './components/farmerComponents/consultation-request/consultation-request';
+import { FarmerProfile } from './components/farmerComponents/farmer-profile/farmer-profile';
+import { CosultationDetails } from './components/farmerComponents/cosultation-details/cosultation-details';
 
 export const routes: Routes = [
     {
@@ -46,13 +50,36 @@ export const routes: Routes = [
         ]
     },
     {
-        path:'dashboard/farmer',
+        path:'farmer',
         component:FarmerDashboardLayout,
         children:[
             {
-                path: '',
+                path: 'dashboard',
                 component: FarmerHome,
                  data: { animation: 'Home' } 
+            },
+            {
+                path:'consultation',
+                component:Consultation,
+                data: { animation: 'Consultation' }
+                
+            },
+            {
+                path:'consultation-request',
+                component:ConsultationRequest,
+                data: { animation: 'ConsultantRegister' }
+            },
+            {
+                path:'profile',
+                component:FarmerProfile,
+                data: { animation: 'FarmerProfile' },
+
+            },
+            {
+                path:'consultation-request/:id',
+                component:CosultationDetails,
+                data: { animation: 'CosultationDetails' },
+
             }
         ]
         

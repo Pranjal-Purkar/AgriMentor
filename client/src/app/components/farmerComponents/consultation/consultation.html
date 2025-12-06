@@ -1,0 +1,120 @@
+<!-- Consultations Section (Left - Takes 2 columns) -->
+      <div class="lg:col-span-2 w-full px-10  overflow-scroll">
+        <div
+          class="bg-white/40 backdrop-blur-lg rounded-2xl shadow-lg border border-white/50 p-6 hover:shadow-xl transition-all duration-300"
+          data-aos="fade-right"
+          data-aos-duration="600"
+        >
+          <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 bg-re">
+            <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+              <span
+                class="w-1 h-6 bg-gradient-to-b from-green-500 to-emerald-600 rounded-full"
+              ></span>
+              My Consultations
+            </h3>
+            <button
+              class="group flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 sm:px-6 py-2.5 rounded-xl hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 font-medium"
+              (click)="navigateNewRequest()"
+            >
+              <svg
+                class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4v16m8-8H4"
+                ></path>
+              </svg>
+              Request Consultation
+            </button>
+          </div>
+
+          <!-- <consultation list -->
+          <div class="space-y-3 overflow-scroll">
+            @for (c of consultationRequests; track c.consultant.firstName; let i = $index) {
+
+            <div
+              class="group bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl p-4 hover:bg-white/80 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
+              data-aos="fade-up"
+              data-aos-duration="400"
+              (click)="navigateToConsultationDetails(1, c)"
+            >
+              <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                <div class="flex items-start gap-3 flex-1">
+                  <!-- Avatar -->
+                  <div
+                    class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center text-white font-semibold shadow-lg"
+                  >
+                    {{ c.consultant.firstName.charAt(0) }}{{ c.consultant.lastName.charAt(0) }}
+                  </div>
+
+                  <!-- Details -->
+                  <div class="flex-1 min-w-0">
+                    <p
+                      class="font-semibold text-gray-800 group-hover:text-green-700 transition-colors"
+                    >
+                      Dr. {{ c.consultant.firstName | titlecase }} {{ c.consultant.lastName }}
+                    </p>
+
+                    <p class="text-sm text-gray-600 mt-1 flex items-center gap-1">
+                      <svg
+                        class="w-4 h-4 text-green-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path stroke-width="2" d="M7 7h.01"></path>
+                      </svg>
+                      {{ c.topic }}
+                    </p>
+
+                    <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                      <svg
+                        class="w-3.5 h-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path stroke-width="2" d="M8 7V3m8 4V3m-9 8h10"></path>
+                      </svg>
+                      {{ c.date }}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Status Badge -->
+                <div class="flex-shrink-0">
+                  @if(c.consultationRequestStatus === 'PENDING') {
+                  <span
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-amber-100 text-amber-700 rounded-full shadow-sm"
+                  >
+                    <span class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
+                    {{ c.consultationRequestStatus }}
+                  </span>
+                  } @else if(c.consultationRequestStatus === 'APPROVED') {
+                  <span
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-green-100 text-green-700 rounded-full shadow-sm"
+                  >
+                    <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                    {{ c.consultationRequestStatus }}
+                  </span>
+                  } @else {
+                  <span
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-blue-100 text-blue-700 rounded-full shadow-sm"
+                  >
+                    <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                    {{ c.consultationRequestStatus }}
+                  </span>
+                  }
+                </div>
+              </div>
+            </div>
+
+            }
+          </div>
+        </div>
+      </div>

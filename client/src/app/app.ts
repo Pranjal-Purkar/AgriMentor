@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, Inject, PLATFORM_ID, signal } from '@angular/core';
+import { Component, Inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { NavigationEnd, NavigationStart, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { NgxSonnerToaster } from "ngx-sonner";
@@ -12,6 +12,7 @@ import {
   group,
   AnimationMetadata,
 } from '@angular/animations';
+import { LocationService } from './services/location/location-service';
 
 // helper predicates
 const isForward = (from: any, to: any) => {
@@ -73,12 +74,12 @@ export const RouteAnimations = trigger('routeAnimations', [
   animations: [RouteAnimations]
 
 })
-export class App {
+export class App implements OnInit {
 
   protected readonly title = signal('client');
   private navDirection: 'forward' | 'back' = 'forward';
 
-  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: any) {
+  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: any,private locationService:LocationService) {
     // detect navigation trigger
     this.router.events.pipe(
       filter(e => e instanceof NavigationStart)
@@ -93,6 +94,9 @@ export class App {
     });
   }
 
+  ngOnInit(): void {
+    this.getCurrentLocation();
+  }
   // prepareRoute returns a combined state: <routeAnimationToken>-<direction>
   prepareRoute(outlet: RouterOutlet) {
     const token = outlet?.activatedRouteData?.['animation'] ?? null;
@@ -109,4 +113,20 @@ export class App {
         .subscribe(() => setTimeout(() => AOS.refresh(), 50));
     }
   }
+
+  getCurrentLocation(){
+    this.locationService.getCurrentLocation()
+    .then(location => {
+      console.log("Latitude:", location.latitude);
+      console.log("Longitude:", location.longitude);
+      console.log("Accuracy:", location.accuracy, "meters");
+      console.log(location);
+      this.locationService.getAddress(location.latitude,location.longitude);
+        
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+  }
+
 }

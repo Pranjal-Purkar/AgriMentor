@@ -216,4 +216,7 @@ public class AuthService {
 		return Optional.of(new LoginResponce(user.getId(), token, user.getRole().name()));
 	}
 
+    public boolean isUserAlreadyExist(String username, Role role) {
+        return this.userRepository.existsByEmailAndRole(username, role);
+    }
 }

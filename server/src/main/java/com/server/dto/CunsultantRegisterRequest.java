@@ -24,6 +24,7 @@ public class CunsultantRegisterRequest {
     private String experienceYears;
     private String qualifications;
     private MultipartFile verificationDocument;
+    private AddressDTO address;
     
     
 }

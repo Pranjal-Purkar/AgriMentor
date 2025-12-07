@@ -1,5 +1,5 @@
 import { CommonModule, NgTemplateOutlet } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 
@@ -12,6 +12,7 @@ import { RouterModule } from '@angular/router';
 export class FarmerNavbar {
   @Output() closeMenu = new EventEmitter<void>();
   isMobileMenuOpen = false;
+   isInitialized = false;
 
   menuItems = [
     {
@@ -70,7 +71,18 @@ export class FarmerNavbar {
     },
   ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngAfterViewInit() {
+    // Mark the component as initialized
+    this.isInitialized = true;
+    // Trigger change detection
+    this.cdr.detectChanges();
+  }
+
 
   // Close mobile menu when a link is clicked
   onLinkClick() {

@@ -3,6 +3,8 @@ import { ChangeDetectorRef, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { constants } from 'buffer';
 import { Subscription } from 'rxjs';
+import { FarmerService } from '../../../services/farmerService/farmer-service';
+import { get } from 'http';
 
 @Component({
   selector: 'app-farmer-home',
@@ -12,6 +14,7 @@ import { Subscription } from 'rxjs';
 })
 export class FarmerHome {
   farmerProfile: any = null;
+  editMode: boolean = false;
   // consultationRequests: any = null;
   private subscription!: Subscription;
 
@@ -116,38 +119,62 @@ export class FarmerHome {
 
   
   constructor(
-     private router: Router,
-    // private farmerService: FarmerService,
-    // private farmerService: FarmerService,
+    private farmerService: FarmerService,
+    private router: Router,
     private cdr: ChangeDetectorRef
   ) {
     console.log('🚜 FarmerDashboardLayout Constructor Initialized');
   }
 
+  enableEditMode(): void {
+    this.editMode = true;
+  }
+
+  cancelEdit(): void {
+    this.editMode = false;
+    // Reset form to original values if needed
+    if (this.farmerProfile) {
+      // You might want to reset the form here
+    }
+  }
+
   ngOnInit() {
     console.log('📌 ngOnInit() called — subscribing to farmer profile');
+    this.getFarmerProfile()
+    this.getConsultationRequest()
+    
 
-    // this.subscription = this.farmerService.getFarmerProfile().subscribe((state: any) => {
-    //   console.log('🟢 Received farmer profile from service:', state);
+  }
 
-    //   this.farmerProfile = state;
+  getConsultationRequest(){
+    
+    this.subscription = this.farmerService.getConsultationRequest().subscribe((state: any) => {
+      console.log('🟢 Received consultation requests from service:', state);
 
-    //   // FIX: Avoid ExpressionChangedAfterItHasBeenCheckedError
-    //   this.cdr.detectChanges();
-    //   console.log('🛠 ChangeDetectorRef.detectChanges() called — view updated');
-    // });
+      this.consultationRequests = state;
+
+      // FIX: Avoid ExpressionChangedAfterItHasBeenCheckedError
+      this.cdr.detectChanges();
+      console.log('🛠 ChangeDetectorRef.detectChanges() called — view updated');
+      console.log(this.consultationRequests);
+      
+    })
+  }
+
+  getFarmerProfile(){
+    this.subscription = this.farmerService.getFarmerProfile().subscribe((state: any) => {
+      console.log('🟢 Received farmer profile from service:', state);
+
+      this.farmerProfile = state;
+
+      // FIX: Avoid ExpressionChangedAfterItHasBeenCheckedError
+      this.cdr.detectChanges();
+      console.log('🛠 ChangeDetectorRef.detectChanges() called — view updated');
+    });
     console.log('farmarProfile');
     console.log(this.farmerProfile);
 
-    // this.subscription = this.farmerService.getConsultationRequest().subscribe((state: any) => {
-    //   console.log('🟢 Received consultation requests from service:', state);
-
-    //   this.consultationRequests = state;
-
-    //   // FIX: Avoid ExpressionChangedAfterItHasBeenCheckedError
-    //   this.cdr.detectChanges();
-    //   console.log('🛠 ChangeDetectorRef.detectChanges() called — view updated');
-    // })
+    
   }
 
   navigateNewRequest(){

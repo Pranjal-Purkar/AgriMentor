@@ -3,6 +3,8 @@ package com.server.controller;
 import java.util.Optional;
 
 import com.server.dto.ConsultationRequestDTO;
+import com.server.dto.FarmerDTO;
+import com.server.dto.farmerDTO.FarmerProfileUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,31 +69,34 @@ public class FarmerController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse<String>(HttpStatus.NOT_FOUND, "Farmer not found"));
 		}
 	}
-	
-	@PutMapping("/update")
-	public ResponseEntity<?> updateFarmer(@RequestBody Object farmerUpdate, Authentication authentication) {
-		log.info("Received request to update farmer. famerUpdate: {}", farmerUpdate);
-		if (authentication == null || !authentication.isAuthenticated()) {
-			log.warn("Unauthorized access attempt to update farmer");
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-					.body(new ApiResponse<String>(HttpStatus.UNAUTHORIZED, "Unauthorized"));
-		}
 
-		String username = authentication.getName();
-		log.info("Attempting to update farmer for user: {}", username);
+    @PutMapping("/update")
+    public ResponseEntity<?> updateFarmer(
+            @RequestBody FarmerProfileUpdateRequest request,
+            Authentication authentication) {
 
-		// Delegate update to service. Service should handle lookup by username/email and apply updates.
-		Optional<?> updated = farmerService.update(username, farmerUpdate);
-		
-		if (updated.isPresent()) {
-			log.info("Farmer updated successfully for user: {}", username);
-			return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK, "Farmer updated successfully", updated.get()));
-		} else {
-			log.info("Farmer not found for update for user: {}", username);
-			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-					.body(new ApiResponse<String>(HttpStatus.NOT_FOUND, "Farmer not found"));
-		}
-	}
+        log.info("Received update request: {}", request);
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponse<>(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+        }
+
+        String username = authentication.getName();
+        log.info("Updating farmer for: {}", username);
+
+        Optional<?> updated = farmerService.update(username, request);
+
+        if (updated.isPresent()) {
+            return ResponseEntity.ok(
+                    new ApiResponse<>(HttpStatus.OK, "Farmer updated successfully")
+            );
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>(HttpStatus.NOT_FOUND, "Farmer not found"));
+        }
+    }
+
 
     @PostMapping("/consultation/request")
     public ResponseEntity<?> createConsultationRequest(@RequestBody ConsultationRequestDTO request, Authentication authentication) {

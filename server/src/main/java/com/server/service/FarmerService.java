@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.server.dto.ConsultationRequestDTO;
+import com.server.dto.farmerDTO.FarmerProfileUpdateRequest;
 import com.server.entity.Consultation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,71 +58,50 @@ public class FarmerService {
 			farmerDTO.setEmail(farmer.getEmail());
 			farmerDTO.setPhone(farmer.getPhone());
 			farmerDTO.setRole(farmer.getRole());
+            farmerDTO.setSoilType(farmer.getSoilType());
 			farmerDTO.setAddress(farmer.getAddress());
 			farmerDTO.setFarmAreaHectares(farmer.getFarmAreaHectares());
 			log.info("Converted Farmer to FarmerDTO: {}", farmerDTO);
 			return Optional.of(farmerDTO);
 	}
-	
+
 	@Transactional
-	public Optional<?> update(String username, Object farmerUpdate) {
+	public Optional<?> update(String username, FarmerProfileUpdateRequest request) {
 	    log.info("Updating farmer for username: {}", username);
 
 	    try {
 	        // Convert incoming payload into DTO
-	        ObjectMapper mapper = new ObjectMapper();
-	        FarmerDTO updateDto = mapper.convertValue(farmerUpdate, FarmerDTO.class);
+//	        ObjectMapper mapper = new ObjectMapper();
+//            log.info("Object Mapper:: ",mapper);
+//	        FarmerDTO updateDto = mapper.convertValue(farmerUpdate, FarmerDTO.class);
+//            log.info("converted Object: {}",updateDto);
+
 
 	        // Find existing farmer by email/username
 	        Farmer farmer = farmerRepository.findByEmail(username)
 	                .orElseThrow(() -> new RuntimeException("Farmer not found with username: " + username));
+            farmer.setFirstName(request.getFirstName());
+            farmer.setLastName(request.getLastName());
+            farmer.setPhone(request.getPhone());
+            farmer.setSoilType(request.getSoilType());
+            farmer.setFarmAreaHectares(request.getFarmAreaHectares());
+            Address address = farmer.getAddress();
+            if(address == null) {
+                log.info("Farmer address is null");
+                address = new Address();
+            }
 
-	        // -----------------------------
-	        // UPDATE BASIC USER FIELDS
-	        // -----------------------------
-	        if (updateDto.getFirstName() != null)
-	            farmer.setFirstName(updateDto.getFirstName());
-
-	        if (updateDto.getLastName() != null)
-	            farmer.setLastName(updateDto.getLastName());
-
-	        if (updateDto.getPhone() != null)
-	            farmer.setPhone(updateDto.getPhone());
-
-	        if (updateDto.getEmail() != null)
-	            farmer.setEmail(updateDto.getEmail()); // optional
-
-	        if (updateDto.getFarmAreaHectares() != null)
-	            farmer.setFarmAreaHectares(updateDto.getFarmAreaHectares());
+                address.setCity(request.getAddress().getCity());
+                address.setStreet(request.getAddress().getStreet());
+                address.setState(request.getAddress().getState());
+                address.setPinCode(request.getAddress().getPinCode());
+                address.setCountry(request.getAddress().getCountry());
+                address.setLatitude(request.getAddress().getLatitude());
+                address.setLongitude(request.getAddress().getLongitude());
+                farmer.setAddress(address);
 
 
-	        // -----------------------------
-	        // UPDATE ADDRESS FIELDS SAFELY
-	        // -----------------------------
-	        if (updateDto.getAddress() != null) {
 
-	            Address incoming = updateDto.getAddress();
-	            Address existing = farmer.getAddress();
-
-	            // If farmer has no address yet → create new
-	            if (existing == null) {
-	                existing = new Address();
-	                farmer.setAddress(existing);
-	            }
-
-	            // Merge incoming fields into existing Address
-	            if (incoming.getStreet() != null) existing.setStreet(incoming.getStreet());
-	            if (incoming.getCity() != null) existing.setCity(incoming.getCity());
-	            if (incoming.getState() != null) existing.setState(incoming.getState());
-	            if (incoming.getPinCode() != null) existing.setPinCode(incoming.getPinCode());
-	            if (incoming.getCountry() != null) existing.setCountry(incoming.getCountry());
-	            if (incoming.getLatitude() != null) existing.setLatitude(incoming.getLatitude());
-	            if (incoming.getLongitude() != null) existing.setLongitude(incoming.getLongitude());
-	        }
-
-	        // -----------------------------
-	        // SAVE UPDATED FARMER
-	        // -----------------------------
 	        Farmer saved = farmerRepository.save(farmer);
 	        log.info("Farmer updated successfully: {}", saved);
 

@@ -49,6 +49,10 @@ export class ApiService {
     return this.http.get(this.baseUrl + "farmers/consultation/request/all");
   }
 
+  updateFarmerProfile(farmerProfile:any){
+    return this.http.put(this.baseUrl + "farmers/update",farmerProfile);
+  }
+
   /*
    * Consultant API endpoints
    */

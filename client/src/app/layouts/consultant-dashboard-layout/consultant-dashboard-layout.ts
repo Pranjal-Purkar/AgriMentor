@@ -3,19 +3,20 @@ import { Router, RouterOutlet } from '@angular/router';
 import { FarmerNavbar } from '../../components/farmerComponents/farmer-navbar/farmer-navbar';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { App, RouteAnimations } from '../../app';
-import { FarmerService } from '../../services/farmerService/farmer-service';
 import { Subscription } from 'rxjs';
+import { ConsultantService } from '../../services/consultantService/consultant-service';
+import { ConsultantNavbar } from "../../components/consultantComponents/consultant-navbar/consultant-navbar";
 
 @Component({
   selector: 'app-consultant-dashboard-layout',
-  imports: [RouterOutlet, FarmerNavbar,CommonModule],
+  imports: [RouterOutlet, FarmerNavbar, CommonModule, ConsultantNavbar],
   templateUrl: './consultant-dashboard-layout.html',
   styleUrl: './consultant-dashboard-layout.css',
   animations: [RouteAnimations]
 })
 export class ConsultantDashboardLayout {
   private app = inject(App);
-  farmerProfile: any = null;
+  consultantProfile: any = null;
     private subscription!: Subscription;
   
 
@@ -30,7 +31,7 @@ export class ConsultantDashboardLayout {
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private router: Router,
-    private farmerService: FarmerService,
+    private consultantService: ConsultantService,
     private cdr: ChangeDetectorRef
 
   ) {
@@ -98,17 +99,17 @@ export class ConsultantDashboardLayout {
   
 
   getFarmerProfile(){
-    this.subscription = this.farmerService.getFarmerProfile().subscribe((state: any) => {
-      console.log('🟢 Received farmer profile from service:', state);
+    this.subscription = this.consultantService.getConsultantProfile().subscribe((state: any) => {
+      console.log('🟢 Received consultant profile from service:', state);
 
-      this.farmerProfile = state;
+      this.consultantProfile = state;
 
       // FIX: Avoid ExpressionChangedAfterItHasBeenCheckedError
       this.cdr.detectChanges();
       console.log('🛠 ChangeDetectorRef.detectChanges() called — view updated');
     });
-    console.log('farmarProfile');
-    console.log(this.farmerProfile);
+    console.log('consultantProfile');
+    console.log(this.consultantProfile);
     
   }
 }

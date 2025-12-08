@@ -52,6 +52,11 @@ public class User implements UserDetails {
    @Column(nullable = false)
    private Role role;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_picture_id")
+    @JsonManagedReference
+    private UserProfilePicture profilePicture;
+
    @Column(nullable = false)
    private Boolean isActive = true;     // ⬅️ Removed @Value
 

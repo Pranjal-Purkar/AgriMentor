@@ -38,7 +38,7 @@ public class Consultation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "crop_id")
-    @JsonBackReference(value = "consultation-crop")
+    @JsonManagedReference(value = "consultation-crop")
     private Crop crop;
 
     @OneToMany(mappedBy = "consultation", cascade = CascadeType.ALL)
@@ -49,7 +49,7 @@ public class Consultation {
     @JsonManagedReference
     private List<ConsultationReport> consultationReports = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "farm_address_id")
     @JsonManagedReference
     private Address farmAddress;

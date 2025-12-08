@@ -14,7 +14,7 @@ import { FarmerService } from '../../services/farmerService/farmer-service';
   animations: [RouteAnimations]
 })
 export class FarmerDashboardLayout implements OnInit, OnDestroy {
-  private app = inject(App);
+  private app = Inject(App);
   farmerProfile: any = null;
     private subscription!: Subscription;
   
@@ -113,32 +113,5 @@ export class FarmerDashboardLayout implements OnInit, OnDestroy {
   }
 
 
-  // toggleMobileMenu() {
-  //   this.isMobileMenuOpen = !this.isMobileMenuOpen;
-    
-  //   // Prevent body scroll when menu is open on mobile
-  //   if (this.isMobileMenuOpen) {
-  //     document.body.style.overflow = 'hidden';
-  //   } else {
-  //     document.body.style.overflow = '';
-  //   }
-  // }
-
-  // closeMobileMenu() {
-  //   this.isMobileMenuOpen = false;
-  //   document.body.style.overflow = '';
-  // }
-
-  // Close menu when screen size changes to desktop
-  // @HostListener('window:resize', ['$event'])
-  // onResize(event: any) {
-  //   if (event.target.innerWidth >= 1024) { // lg breakpoint
-  //     this.closeMobileMenu();
-  //   }
-  // }
-
-  // Cleanup on component destroy
-  // ngOnDestroy() {
-  //   document.body.style.overflow = '';
-  // }
+  
 }

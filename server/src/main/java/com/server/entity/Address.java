@@ -42,9 +42,9 @@ public class Address {
     @ToString.Exclude
     private User user;
 
-    @OneToOne(mappedBy = "farmAddress")
+    @OneToMany(mappedBy = "farmAddress")
     @JsonBackReference
-    private Consultation consultation;
+    private List<Consultation> consultations;
 
     @OneToMany(mappedBy = "farmAddress", cascade = CascadeType.ALL)
     @JsonBackReference

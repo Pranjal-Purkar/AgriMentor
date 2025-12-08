@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FarmerService } from '../../../services/farmerService/farmer-service';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-consultation-request',
@@ -14,6 +17,8 @@ export class ConsultationRequest {
   showConsultantSearch = false;
   consultantSearchQuery = '';
   selectedConsultant: any | null = null;
+  isLoading = true;
+  private subscription!: Subscription;
 
   // Mock consultant data - replace with actual API call
   allConsultants: any[] = [
@@ -84,10 +89,13 @@ export class ConsultationRequest {
     }
   ];
 
-  constructor(private fb: FormBuilder) {}
-
-  ngOnInit(): void {
-    this.consultationForm = this.fb.group({
+  constructor(
+    private fb: FormBuilder,
+    private farmerService: FarmerService,
+    private cdr: ChangeDetectorRef,
+    private router: Router
+  ) {
+     this.consultationForm = this.fb.group({
       topic: ['', Validators.required],
       description: ['', Validators.required],
       consultantEmail: ['', [Validators.required, Validators.email]],
@@ -104,7 +112,6 @@ export class ConsultationRequest {
       latitude: [''],
       longitude: ['']
     });
-
     this.consultationForm.get('useExistingAddress')?.valueChanges.subscribe(useExisting => {
       if (useExisting) {
         this.disableAddressFields();
@@ -112,8 +119,25 @@ export class ConsultationRequest {
         this.enableAddressFields();
       }
     });
+  }
+
+  ngOnInit(): void {
+   
+    this.getConsultants();
 
     this.filteredConsultants = this.allConsultants;
+  }
+
+  getConsultants(){
+    this.isLoading = true;
+   this.subscription = this.farmerService.getVerifiedConsultants().subscribe((state: any) => {
+      console.log('🟢 Received verified consultants from service:', state);
+      this.allConsultants = state;
+      
+      console.log('Consultants loaded:', this.allConsultants);
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    });
   }
 
   toggleForm(): void {
@@ -136,12 +160,25 @@ export class ConsultationRequest {
   }
 
   searchConsultants(): void {
+    if (!this.consultantSearchQuery) {
+      this.filteredConsultants = [...this.allConsultants];
+      return;
+    }
+    
     const query = this.consultantSearchQuery.toLowerCase();
-    this.filteredConsultants = this.allConsultants.filter(consultant =>
-      consultant.name.toLowerCase().includes(query) ||
-      consultant.email.toLowerCase().includes(query) ||
-      consultant.specialization.toLowerCase().includes(query)
-    );
+    this.filteredConsultants = this.allConsultants.filter(consultant => {
+      // Handle both formats: API response (firstName, lastName) and mock data (name)
+      const fullName = consultant.firstName && consultant.lastName 
+        ? `${consultant.firstName} ${consultant.lastName}`.toLowerCase()
+        : (consultant.name || '').toLowerCase();
+        
+      return (
+        fullName.includes(query) ||
+        (consultant.email || '').toLowerCase().includes(query) ||
+        (consultant.specialization || '').toLowerCase().includes(query) ||
+        (consultant.experience || '').toLowerCase().includes(query)
+      );
+    });
   }
 
   selectConsultant(consultant: any): void {
@@ -161,7 +198,7 @@ export class ConsultationRequest {
   }
 
   disableAddressFields(): void {
-    ['street', 'city', 'state', 'pinCode', 'country'].forEach(field => {
+    ['street', 'city', 'state', 'pinCode', 'country','latitude','longitude'].forEach(field => {
       this.consultationForm.get(field)?.disable();
     });
   }
@@ -203,17 +240,18 @@ export class ConsultationRequest {
     };
 
     console.log('Request Payload:', requestPayload);
+    this.farmerService.createConsultationRequest(requestPayload);
 
-    const displayRequest = {
-      crop: formValue.cropName,
-      issue: formValue.topic,
-      urgency: 'Normal',
-      status: 'Pending',
-      date: new Date().toISOString().split('T')[0],
-      consultant: this.selectedConsultant?.name || 'Unknown'
-    };
+    // const displayRequest = {
+    //   crop: formValue.cropName,
+    //   issue: formValue.topic,
+    //   urgency: 'Normal',
+    //   status: 'Pending',
+    //   date: new Date().toISOString().split('T')[0],
+    //   consultant: this.selectedConsultant?.name || 'Unknown'
+    // };
 
-    this.requests.unshift(displayRequest);
+    // this.requests.unshift(displayRequest);
 
     this.consultationForm.reset({
       useExistingAddress: false,
@@ -250,3 +288,4 @@ getInitials(name: string) {
   }
 
 }
+

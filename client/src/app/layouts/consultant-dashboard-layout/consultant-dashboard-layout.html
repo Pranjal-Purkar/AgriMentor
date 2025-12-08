@@ -1,7 +1,7 @@
 <div class="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
   <!-- Desktop Sidebar -->
   <div class="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0">
-    <app-farmer-navbar (closeMenu)="closeMobileMenu()"></app-farmer-navbar>
+    <app-consultant-navbar (closeMenu)="closeMobileMenu()"></app-consultant-navbar>
   </div>
 
   <!-- Mobile menu button -->
@@ -25,7 +25,7 @@
           ></path>
         </svg>
       </button>
-      <div class="text-lg font-semibold text-gray-800">Welcome Back {{farmerProfile?.firstName | titlecase }} {{farmerProfile?.lastName | titlecase }}  </div>
+      <div class="text-lg font-semibold text-gray-800">Welcome Back {{consultantProfile?.firstName | titlecase }} {{consultantProfile?.lastName | titlecase }}  </div>
       <div class="w-8"></div> <!-- Spacer for alignment -->
     </div>
   </div>
@@ -43,7 +43,7 @@
     class="fixed inset-y-0 left-0 z-40 w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:hidden"
     [@fadeInOut]
   >
-    <app-farmer-navbar (closeMenu)="closeMobileMenu()"></app-farmer-navbar>
+    <app-consultant-navbar (closeMenu)="closeMobileMenu()"></app-consultant-navbar>
   </div>
 
   <!-- Main Content -->
@@ -52,7 +52,7 @@
     <header class="bg-white shadow-sm z-10">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div class="flex justify-between items-center">
-          <h1 class="text-xl font-semibold text-gray-900">Welcome Back! {{farmerProfile?.firstName | titlecase }} {{farmerProfile?.lastName | titlecase }}</h1>
+          <h1 class="text-xl font-semibold text-gray-900">Welcome Back! {{consultantProfile?.firstName | titlecase }} {{consultantProfile?.lastName | titlecase }}</h1>
           <!-- Add any header content here -->
         </div>
       </div>

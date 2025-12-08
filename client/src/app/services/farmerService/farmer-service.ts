@@ -15,10 +15,13 @@ export class FarmerService {
   private consultationRequestSubject = new BehaviorSubject<any | null>(null);
   consultationRequest$ = this.consultationRequestSubject.asObservable();
 
+  private verifiedConsultantDataSubject = new BehaviorSubject<any | null>(null);
+  verifiedConsultantData$ = this.verifiedConsultantDataSubject.asObservable();
+
+  
 
   constructor(
-    private api: ApiService, 
-    private router: Router,
+    private api: ApiService,
   ) {} 
 
   getFarmerProfile() {
@@ -30,6 +33,27 @@ export class FarmerService {
     return this.farmerData$;
   }
 
+  getVerifiedConsultants() {
+    if(!this.verifiedConsultantDataSubject.getValue()) {   
+      this.getVerifiedConsultantsData();
+    }
+    console.log("getVerifiedConsultants");
+      console.log(this.verifiedConsultantDataSubject.getValue());
+    return this.verifiedConsultantData$;
+  }
+
+   getConsultationRequest() {
+    if(!this.consultationRequestSubject.getValue()) {   
+      this.getConsultationRequestData();
+    }
+    this.getConsultationRequestData();
+    console.log("getConsultationRequest");
+      console.log(this.consultationRequestSubject.getValue());
+    return this.consultationRequest$;
+  }
+  
+
+  // api calls
   getFarmerProfileData() {
     this.api.getFarmer().subscribe({
       next: (res: any) => {
@@ -54,17 +78,37 @@ export class FarmerService {
     });
   }
 
-  
+createConsultationRequest(requestData: any){
+    this.api.createConsultationRequest(requestData).subscribe({
+      next: (res: any) => {
+        console.log('Consultation request created:', res);
+        toast.success(res.message)
+      },
+      error: (err: any) => {
+        console.log('Error creating consultation request:', err);
+        toast.error('Failed to create consultation request');
+      }
+    });
+}
 
 
-  getConsultationRequest() {
-    if(!this.consultationRequestSubject.getValue()) {   
-      this.getConsultationRequestData();
-    }
-    console.log("getConsultationRequest");
-      console.log(this.consultationRequestSubject.getValue());
-    return this.consultationRequest$;
+
+ 
+
+
+  getVerifiedConsultantsData() {
+    this.api.getVerifiedConsultants().subscribe({
+      next: (res: any) => {
+        this.verifiedConsultantDataSubject.next(res.data);
+        console.log('VERIFIED CONSULTANTS: ', res.data);
+      },
+      error: (err: any) => {
+        console.log('FARMER::ERROR: ', err);
+      },
+    });
   }
+
+ 
 
 
   getConsultationRequestData() {
@@ -79,3 +123,4 @@ export class FarmerService {
     });
   }
 }
+

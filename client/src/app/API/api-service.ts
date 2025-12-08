@@ -38,6 +38,10 @@ export class ApiService {
     return this.http.get(`${this.baseUrl}auth/isUserAlreadyExist?username=${username}&role=${role}`);
   }
 
+  getVerifiedConsultants(): Observable<any> {
+    return this.http.get(this.baseUrl + "consultants/verified");
+  }
+
   /**
    * Farmer API endpoints
    */
@@ -53,6 +57,13 @@ export class ApiService {
     return this.http.put(this.baseUrl + "farmers/update",farmerProfile);
   }
 
+  createConsultationRequest(requestData: any): Observable<any> {
+    return this.http.post(this.baseUrl + "farmers/consultation/request", requestData);
+  }
+
+  
+
+
   /*
    * Consultant API endpoints
    */
@@ -60,13 +71,44 @@ export class ApiService {
     return this.http.get(this.baseUrl + "admin/all/consultants");
   }
 
+  getConsultantProfile(): Observable<any> {
+    return this.http.get(this.baseUrl + "consultants/profile");
+  }
+
+  updateConsultantProfile(consultantProfile:any){
+    return this.http.put(this.baseUrl + "consultants/profile/update",consultantProfile);
+  }
+
+  
+
   /*
    * Admin API endpoints
   */
   verifyConsultant(username:string):Observable<any> {
     return this.http.post(`${this.baseUrl}admin/verify/consultant/${username}`,null);
   }
+  
+  /*
+  * consultation API endpoints
+  */
+ getConsultationRequestsByConsultant(): Observable<any> {
+    return this.http.get(this.baseUrl + "consultants/consultation/request/all");
+  }
 
+  acceptConsultationRequest(consultationId: number): Observable<any> {
+    return this.http.put(`${this.baseUrl}consultants/consultation/request/${consultationId}/accept`,null);
+  }
+
+  rejectConsultationRequest(consultationId: number): Observable<any> {
+    return this.http.put(`${this.baseUrl}consultants/consultation/request/${consultationId}/reject`,null);
+  }
+
+  /*
+  * farm visit API endpoints
+  */
+  scheduleFarmVisit(farmVisitData: any): Observable<any> {
+    return this.http.post(this.baseUrl + "farmers/farm/visit/schedule", farmVisitData);
+  }
   
   //decode latitude and longitude
   getAddress(lat: number, lng: number): Observable<any> {

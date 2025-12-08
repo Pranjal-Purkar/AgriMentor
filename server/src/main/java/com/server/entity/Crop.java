@@ -1,5 +1,6 @@
 package com.server.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -32,7 +33,7 @@ public class Crop {
 
     private LocalDateTime createdAt;
     @OneToMany(mappedBy = "crop", cascade = CascadeType.ALL)
-    @JsonManagedReference(value = "consultation-crop")
+    @JsonBackReference(value = "consultation-crop")
     private List<Consultation> consultations = new ArrayList<>();
 
     @PrePersist

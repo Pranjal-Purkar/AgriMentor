@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from '../../API/api-service';
 import { Router } from '@angular/router';
-import { FarmerService } from '../farmerService/farmer-service';
 import { toast } from 'ngx-sonner';
 import { map, Observable } from 'rxjs';
 
@@ -75,12 +74,12 @@ export class AuthService {
         sessionStorage.setItem('role', tokens.role);
         //switch route based on role 
         if(tokens.role === 'CONSULTANT') {
-          this.router.navigate(['farmer/dashboard']);
+          this.router.navigate(['consultant/dashboard']);
         } else if(tokens.role === 'FARMER'){
           // this.farmerService.getFarmerProfile();
           this.router.navigate(['farmer/dashboard']);
         }else {
-          this.router.navigate(['farmer/dashboard'])
+          this.router.navigate(['admin/dashboard'])
         }
       },
       error: (err) => {

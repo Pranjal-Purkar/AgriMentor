@@ -6,13 +6,11 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.beans.factory.annotation.Value;
 import com.server.enumeration.VerificationStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,8 +27,12 @@ public class Consultant extends User {
 	@OneToOne(mappedBy = "consultant", cascade = CascadeType.ALL)
     @JsonBackReference
     private VerificationDocument verificationDocument;
+    @Column(columnDefinition = "TEXT")
+    private String bio;
 
-	private String expertiseArea;
+
+
+    private String expertiseArea;
 	private int experienceYears;
 	private String qualifications;
     private String specialization;

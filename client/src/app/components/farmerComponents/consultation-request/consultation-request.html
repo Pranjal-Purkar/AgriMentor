@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 p-4 md:p-8">
+<div class="h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 p-4 md:p-8 overflow-scroll">
   <div class="max-w-7xl mx-auto">
     
     <!-- HEADER -->
@@ -106,7 +106,7 @@
                   {{ selectedConsultant?.initials }}
                 </div>
                 <div>
-                  <p class="font-semibold text-gray-900">{{ selectedConsultant.name }}</p>
+                  <p class="font-semibold text-gray-900">{{ selectedConsultant.firstName }} {{ selectedConsultant.lastName }}</p>
                   <p class="text-xs text-gray-600">{{ selectedConsultant.specialization }}</p>
                 </div>
               </div>
@@ -141,7 +141,7 @@
 
         <!-- Consultant Search Modal -->
         <div *ngIf="showConsultantSearch" 
-             class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+             class="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center z-50 p-4"
              data-aos="zoom-in" data-aos-duration="350">
           <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden"
                data-aos="fade-up" data-aos-duration="500">
@@ -184,11 +184,11 @@
                   <div class="flex items-start justify-between">
                     <div class="flex items-start gap-4 flex-1">
                       <div class="w-14 h-14 rounded-full bg-gradient-to-br from-green-600 to-emerald-700 text-white flex items-center justify-center font-bold text-xl shadow-lg flex-shrink-0">
-                        {{ getInitials(consultant.name) }}
+                        {{ getInitials(consultant.firstName + ' ' + consultant.lastName) }}
                       </div>
                       <div class="flex-1 min-w-0">
                         <h4 class="font-bold text-gray-900 text-lg group-hover:text-green-700 transition-colors">
-                          {{ consultant.name }}
+                          {{ consultant.firstName }} {{ consultant.lastName }}
                         </h4>
                         <p class="text-sm text-gray-600 mt-1">{{ consultant.email }}</p>
                         <div class="flex items-center gap-4 mt-2">

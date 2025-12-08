@@ -12,6 +12,12 @@ import { Consultation } from './components/farmerComponents/consultation/consult
 import { ConsultationRequest } from './components/farmerComponents/consultation-request/consultation-request';
 import { FarmerProfile } from './components/farmerComponents/farmer-profile/farmer-profile';
 import { CosultationDetails } from './components/farmerComponents/cosultation-details/cosultation-details';
+import { ConsultantDashboardLayout } from './layouts/consultant-dashboard-layout/consultant-dashboard-layout';
+import { ConsultantHome } from './components/consultantComponents/consultant-home/consultant-home';
+import { ConsultantProfile } from './components/consultantComponents/consultant-profile/consultant-profile';
+import { ConsultantConsulationDetails } from './components/consultantComponents/consultant-consulation-details/consultant-consulation-details';
+import { ConsultantConsulationRequest } from './components/consultantComponents/consultant-consulation-request/consultant-consulation-request';
+import { FarmVisitiongSchedule } from './components/consultantComponents/farm-visitiong-schedule/farm-visitiong-schedule';
 
 export const routes: Routes = [
     {
@@ -79,6 +85,47 @@ export const routes: Routes = [
                 path:'consultation-request/:id',
                 component:CosultationDetails,
                 data: { animation: 'CosultationDetails' },
+
+            }
+        ]
+        
+    },
+    {
+        path:'consultant',
+        component:ConsultantDashboardLayout,
+        children:[
+            {
+                path: 'dashboard',
+                component: ConsultantHome,
+                 data: { animation: 'Home' } 
+            },
+            // {
+            //     path:'consultation',
+            //     component:Consultation,
+            //     data: { animation: 'Consultation' }
+                
+            // },
+            {
+                path:'consultation-request',
+                component:ConsultantConsulationRequest,
+                data: { animation: 'ConsultantConsulationRequest' }
+            },
+            {
+                path:'profile',
+                component:ConsultantProfile,
+                data: { animation: 'ConsultantProfile' },
+
+            },
+            {
+                path:'consultation-request/:id',
+                component:ConsultantConsulationDetails,
+                data: { animation: 'ConsultantConsulationDetails' },
+
+            },
+            {
+                path:'farm-schedule/:id',
+                component:FarmVisitiongSchedule,
+                data: { animation: 'FarmVisitiongSchedule' },
 
             }
         ]

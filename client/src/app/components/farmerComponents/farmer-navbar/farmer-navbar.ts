@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-farmer-navbar',
-  imports: [RouterModule,CommonModule,NgTemplateOutlet],
+  imports: [RouterModule,CommonModule],
   templateUrl: './farmer-navbar.html',
   styleUrl: './farmer-navbar.css',
 })

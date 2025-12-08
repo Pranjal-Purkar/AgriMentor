@@ -1,7 +1,13 @@
 package com.server.controller;
 
+import com.server.dto.ConsultantDTO;
 import com.server.dto.FarmVisitRequest;
+import com.server.dto.consultantDTO.ConsultantResponse;
+import com.server.dto.consultantDTO.ConsultantUpdateRequest;
+import com.server.entity.VerificationDocument;
+import com.server.repository.VerificationDocumentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -12,7 +18,9 @@ import com.server.service.ConsultantService;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/consultants")
@@ -20,21 +28,74 @@ import java.util.Optional;
 public class ConsultantController {
 	@Autowired
 	private ConsultantService consultantService;
-	
-	@GetMapping("/all")
-	public ResponseEntity<?> getAllConsultants() {
-		log.info("Fetching all consultants");
-		try {
-			log.info("Consultants fetched successfully");
-			return ResponseEntity.ok().body(
-					new ApiResponse<>(HttpStatus.OK, "Consultants retrieved successfully", consultantService.getAllConsultants())
-					);
-		} catch (Exception e) {
-			log.error("Error fetching consultants", e);
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse<String>(HttpStatus.NOT_FOUND, e.getLocalizedMessage()));
-			
-		}
-	}
+
+    @Autowired
+    private VerificationDocumentRepository verificationDocumentRepository;
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllConsultants() {
+        log.info("Received request to fetch all consultants");
+        try {
+            List<ConsultantResponse> consultants = consultantService.getAllConsultants();
+
+            if (consultants.isEmpty()) {
+                log.info("No consultants available");
+                return ResponseEntity.ok(new ApiResponse<>(
+                        HttpStatus.OK,
+                        "No consultants available",
+                        consultants
+                ));
+            }
+
+            log.info("Consultants fetched successfully. Total: {}", consultants.size());
+            return ResponseEntity.ok(new ApiResponse<>(
+                    HttpStatus.OK,
+                    "Consultants retrieved successfully",
+                    consultants
+            ));
+        } catch (Exception e) {
+            log.error("Error fetching consultants", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<String>(
+                            HttpStatus.INTERNAL_SERVER_ERROR,
+                            "Error fetching consultants: " + e.getMessage()
+                    ));
+        }
+    }
+
+    //get verified consultants
+
+    //Get only verified consultants
+    @GetMapping("/verified")
+    public ResponseEntity<?> getVerifiedConsultants() {
+        log.info("Received request to fetch verified consultants");
+        try {
+            List<ConsultantResponse> verifiedConsultants = consultantService.getVerifiedConsultants();
+
+            if (verifiedConsultants.isEmpty()) {
+                log.info("No verified consultants available");
+                return ResponseEntity.ok(new ApiResponse<>(
+                        HttpStatus.OK,
+                        "No verified consultants available",
+                        verifiedConsultants
+                ));
+            }
+
+            log.info("Verified consultants fetched successfully. Total: {}", verifiedConsultants.size());
+            return ResponseEntity.ok(new ApiResponse<>(
+                    HttpStatus.OK,
+                    "Verified consultants retrieved successfully",
+                    verifiedConsultants
+            ));
+        } catch (Exception e) {
+            log.error("Error fetching verified consultants", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<String>(
+                            HttpStatus.INTERNAL_SERVER_ERROR,
+                            "Error fetching verified consultants: " + e.getMessage()
+                    ));
+        }
+    }
 
     //get consultant by username
     @GetMapping("/{username}")
@@ -79,6 +140,38 @@ public class ConsultantController {
                     .body(new ApiResponse<String>(HttpStatus.NOT_FOUND, "Consultant profile not found"));
         }
     }
+
+    //update consultant profile
+
+    //Update Consultant Information
+    //Update Consultant Information
+    @PutMapping("/profile/update")
+    public ResponseEntity<?> updateConsultantProfile(@RequestBody ConsultantUpdateRequest updateRequest, Authentication authentication) {
+        log.info("Received request to update consultant profile");
+        if (authentication == null || !authentication.isAuthenticated()) {
+            log.warn("Unauthorized access attempt to update consultant profile");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponse<String>(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+        }
+        String username = authentication.getName();
+        log.info("Attempting to update consultant profile for user: {}", username);
+        try {
+            boolean updated = consultantService.updateConsultantProfile(username, updateRequest);
+            if (updated) {
+                log.info("Consultant profile updated successfully for user: {}", username);
+                return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK, "Consultant profile updated successfully"));
+            } else {
+                log.info("Failed to update consultant profile for user: {}", username);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ApiResponse<String>(HttpStatus.BAD_REQUEST, "Failed to update consultant profile"));
+            }
+        } catch (Exception e) {
+            log.error("Error updating consultant profile for user: {}", username, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<String>(HttpStatus.INTERNAL_SERVER_ERROR, e.getLocalizedMessage()));
+        }
+    }
+
 
     //getAllConsultants requests
     @GetMapping("/consultation/request/all")
@@ -169,4 +262,49 @@ public class ConsultantController {
                     .body(new ApiResponse<String>(HttpStatus.BAD_REQUEST, "Failed to schedule consultation visit"));
         }
     }
+
+    /**
+     * Download verification document by ID
+     */
+    @GetMapping("/documents/{documentId}/download")
+    public ResponseEntity<?> downloadDocument(@PathVariable UUID documentId) {
+        log.info("Downloading document with ID: {}", documentId);
+        try {
+            VerificationDocument document = verificationDocumentRepository.findById(documentId)
+                    .orElseThrow(() -> new RuntimeException("Document not found with ID: " + documentId));
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + document.getDocumentType() + ".pdf\"")
+                    .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
+                    .body(document.getFileContent());
+        } catch (Exception e) {
+            log.error("Error downloading document with ID: {}", documentId, e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Document not found: " + e.getMessage());
+        }
     }
+
+    /**
+     * View/Preview document (inline in browser)
+     */
+    @GetMapping("/documents/{documentId}/preview")
+    public ResponseEntity<?> previewDocument(@PathVariable UUID documentId) {
+        log.info("Previewing document with ID: {}", documentId);
+        try {
+            VerificationDocument document = verificationDocumentRepository.findById(documentId)
+                    .orElseThrow(() -> new RuntimeException("Document not found"));
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + document.getDocumentType() + ".pdf\"")
+                    .body(document.getFileContent());
+        } catch (Exception e) {
+            log.error("Error previewing document", e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Document not found");
+        }
+    }
+
+
+
+}

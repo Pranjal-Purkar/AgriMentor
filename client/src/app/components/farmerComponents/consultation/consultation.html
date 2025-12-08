@@ -1,120 +1,250 @@
-<!-- Consultations Section (Left - Takes 2 columns) -->
-      <div class="lg:col-span-2 w-full px-10  overflow-scroll">
-        <div
-          class="bg-white/40 backdrop-blur-lg rounded-2xl shadow-lg border border-white/50 p-6 hover:shadow-xl transition-all duration-300"
-          data-aos="fade-right"
-          data-aos-duration="600"
-        >
-          <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 bg-re">
-            <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
-              <span
-                class="w-1 h-6 bg-gradient-to-b from-green-500 to-emerald-600 rounded-full"
-              ></span>
-              My Consultations
-            </h3>
-            <button
-              class="group flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 sm:px-6 py-2.5 rounded-xl hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 font-medium"
-              (click)="navigateNewRequest()"
-            >
-              <svg
-                class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 4v16m8-8H4"
-                ></path>
-              </svg>
-              Request Consultation
-            </button>
+<!-- Consultations Section -->
+<div class="lg:col-span-2 w-full px-10">
+
+  <!-- Card with Enhanced Styling -->
+  <div
+    class="bg-gradient-to-br from-white via-white to-green-50/30 rounded-3xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-3xl"
+    data-aos="fade-right"
+    data-aos-duration="600"
+  >
+    <!-- Header with Gradient Background -->
+    <div class="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 p-6">
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
           </div>
+          <div>
+            <h3 class="text-2xl font-bold text-white">My Consultations</h3>
+            <p class="text-green-50 text-sm mt-0.5">Track and manage your requests</p>
+          </div>
+        </div>
 
-          <!-- <consultation list -->
-          <div class="space-y-3 overflow-scroll">
-            @for (c of consultationRequests; track c.consultant.firstName; let i = $index) {
-
-            <div
-              class="group bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl p-4 hover:bg-white/80 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
-              data-aos="fade-up"
-              data-aos-duration="400"
-              (click)="navigateToConsultationDetails(1, c)"
+        <button
+          class="group relative overflow-hidden bg-white text-green-700 px-6 py-3 rounded-xl hover:bg-green-50 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 font-semibold"
+          (click)="navigateNewRequest()"
+        >
+          <span class="relative z-10 flex items-center gap-2">
+            <svg
+              class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
-                <div class="flex items-start gap-3 flex-1">
-                  <!-- Avatar -->
-                  <div
-                    class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center text-white font-semibold shadow-lg"
-                  >
-                    {{ c.consultant.firstName.charAt(0) }}{{ c.consultant.lastName.charAt(0) }}
-                  </div>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            New Request
+          </span>
+          <div class="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-600 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+        </button>
+      </div>
+    </div>
 
-                  <!-- Details -->
-                  <div class="flex-1 min-w-0">
-                    <p
-                      class="font-semibold text-gray-800 group-hover:text-green-700 transition-colors"
-                    >
-                      Dr. {{ c.consultant.firstName | titlecase }} {{ c.consultant.lastName }}
-                    </p>
+    <!-- Content Area -->
+    <div class="p-6">
+      <!-- Enhanced TABS with Icons -->
+      <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-green-300 scrollbar-track-gray-100">
+        <button
+          *ngFor="let tab of tabs"
+          (click)="activeTab = tab.key"
+          class="relative px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 
+                flex items-center gap-2.5 whitespace-nowrap group overflow-hidden"
+          [ngClass]="{
+            'bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg scale-105': activeTab === tab.key,
+            'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200 hover:border-green-300': activeTab !== tab.key
+          }"
+        >
+          <!-- Background Animation -->
+          <div *ngIf="activeTab !== tab.key" 
+               class="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-600 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+          
+          <!-- Icon -->
+          <svg class="w-5 h-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  [attr.d]="tab.key === 'pending' ? 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' :
+                           tab.key === 'approved' ? 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' :
+                           tab.key === 'completed' ? 'M5 13l4 4L19 7' : 'M6 18L18 6M6 6l12 12'"/>
+          </svg>
+          
+          <span class="relative z-10">{{ tab.label }}</span>
+          
+          <!-- Count Badge -->
+          <span class="relative z-10 px-2.5 py-0.5 rounded-full text-xs font-bold min-w-[24px] text-center"
+                [ngClass]="{
+                  'bg-white/30 text-white': activeTab === tab.key,
+                  'bg-green-100 text-green-700': activeTab !== tab.key
+                }">
+            {{ filteredConsultations().length }}
+          </span>
+        </button>
+      </div>
 
-                    <p class="text-sm text-gray-600 mt-1 flex items-center gap-1">
-                      <svg
-                        class="w-4 h-4 text-green-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path stroke-width="2" d="M7 7h.01"></path>
-                      </svg>
-                      {{ c.topic }}
-                    </p>
+      <!-- Consultation List with Enhanced Cards -->
+      <div class="mt-6 space-y-4 max-h-[550px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-green-300 scrollbar-track-gray-100">
 
-                    <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
-                      <svg
-                        class="w-3.5 h-3.5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path stroke-width="2" d="M8 7V3m8 4V3m-9 8h10"></path>
-                      </svg>
-                      {{ c.date }}
-                    </p>
-                  </div>
+        <!-- Empty State -->
+        <div *ngIf="filteredConsultations().length === 0" 
+             class="text-center py-16"
+             data-aos="fade-up">
+          <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full mx-auto flex items-center justify-center mb-4">
+            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+            </svg>
+          </div>
+          <p class="text-gray-500 text-lg font-semibold mb-2">No {{ activeTab }} consultations</p>
+          <p class="text-gray-400 text-sm">Your {{ activeTab }} requests will appear here</p>
+        </div>
+
+        <!-- Consultation Cards -->
+        @for (c of filteredConsultations(); track c.date) {
+
+        <div
+          class="group relative bg-white border-2 border-gray-200 rounded-2xl p-5 hover:border-green-400 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer overflow-hidden"
+          data-aos="fade-up"
+          data-aos-duration="400"
+          (click)="navigateToConsultationDetails(1, c)"
+        >
+          <!-- Hover Gradient Overlay -->
+          <div class="absolute inset-0 bg-gradient-to-br from-green-50/0 to-emerald-50/0 group-hover:from-green-50/50 group-hover:to-emerald-50/30 transition-all duration-300 rounded-2xl"></div>
+          
+          <!-- Content -->
+          <div class="relative z-10 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+            
+            <!-- Left Section -->
+            <div class="flex items-start gap-4 flex-1">
+              
+              <!-- Enhanced Avatar with Ring -->
+              <div class="relative flex-shrink-0">
+                <div class="w-14 h-14 bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 rounded-2xl 
+                          flex items-center justify-center text-white font-bold text-lg shadow-lg 
+                          group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                  {{ c.consultant.firstName.charAt(0) }}{{ c.consultant.lastName.charAt(0) }}
+                </div>
+                <!-- Status Indicator Ring -->
+                <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-white shadow-sm"
+                     [ngClass]="{
+                       'bg-amber-400': c.consultationRequestStatus === 'PENDING',
+                       'bg-green-500': c.consultationRequestStatus === 'APPROVED',
+                       'bg-blue-500': c.consultationRequestStatus === 'COMPLETED',
+                       'bg-red-500': c.consultationRequestStatus === 'REJECTED'
+                     }">
+                </div>
+              </div>
+
+              <!-- Details Section -->
+              <div class="flex-1 min-w-0">
+                <div class="flex items-start justify-between gap-2 mb-2">
+                  <h4 class="font-bold text-lg text-gray-900 group-hover:text-green-700 transition-colors">
+                    Dr. {{ c.consultant.firstName | titlecase }} {{ c.consultant.lastName }}
+                  </h4>
                 </div>
 
-                <!-- Status Badge -->
-                <div class="flex-shrink-0">
-                  @if(c.consultationRequestStatus === 'PENDING') {
-                  <span
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-amber-100 text-amber-700 rounded-full shadow-sm"
-                  >
-                    <span class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
-                    {{ c.consultationRequestStatus }}
+                <!-- Topic with Icon -->
+                <div class="flex items-center gap-2 mb-2">
+                  <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                            d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                    </svg>
+                  </div>
+                  <p class="text-sm font-medium text-gray-700 line-clamp-1">{{ c.topic }}</p>
+                </div>
+
+                <!-- Meta Information -->
+                <div class="flex flex-wrap items-center gap-4 mt-3">
+                  <!-- Date -->
+                  <div class="flex items-center gap-1.5 text-xs text-gray-500">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <span class="font-medium">{{ c.date }}</span>
+                  </div>
+
+                  <!-- Specialty Badge -->
+                  <span class="px-2.5 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-lg">
+                    {{ c.consultant.specialization || 'Agriculture Expert' }}
                   </span>
-                  } @else if(c.consultationRequestStatus === 'APPROVED') {
-                  <span
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-green-100 text-green-700 rounded-full shadow-sm"
-                  >
-                    <span class="w-2 h-2 bg-green-500 rounded-full"></span>
-                    {{ c.consultationRequestStatus }}
-                  </span>
-                  } @else {
-                  <span
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-blue-100 text-blue-700 rounded-full shadow-sm"
-                  >
-                    <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
-                    {{ c.consultationRequestStatus }}
-                  </span>
-                  }
                 </div>
               </div>
             </div>
 
-            }
+            <!-- Right Section - Status & Action -->
+            <div class="flex flex-col items-end gap-3 sm:min-w-[140px]">
+              <!-- Enhanced Status Badge -->
+              <span
+                class="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl shadow-sm border-2 transition-all duration-300"
+                [ngClass]="{
+                  'bg-amber-50 text-amber-700 border-amber-200 group-hover:bg-amber-100': c.consultationRequestStatus === 'PENDING',
+                  'bg-green-50 text-green-700 border-green-200 group-hover:bg-green-100': c.consultationRequestStatus === 'APPROVED',
+                  'bg-blue-50 text-blue-700 border-blue-200 group-hover:bg-blue-100': c.consultationRequestStatus === 'COMPLETED',
+                  'bg-red-50 text-red-700 border-red-200 group-hover:bg-red-100': c.consultationRequestStatus === 'REJECTED'
+                }"
+              >
+                <span
+                  class="w-2 h-2 rounded-full"
+                  [ngClass]="{
+                    'bg-amber-500 animate-pulse': c.consultationRequestStatus === 'PENDING',
+                    'bg-green-500': c.consultationRequestStatus === 'APPROVED',
+                    'bg-blue-500': c.consultationRequestStatus === 'COMPLETED',
+                    'bg-red-500': c.consultationRequestStatus === 'REJECTED'
+                  }"
+                ></span>
+                {{ c.consultationRequestStatus }}
+              </span>
+
+              <!-- View Details Arrow -->
+              <div class="flex items-center gap-1 text-green-600 text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <span>View Details</span>
+                <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" 
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Progress Bar (for pending/approved) -->
+          <div *ngIf="c.consultationRequestStatus === 'PENDING' || c.consultationRequestStatus === 'APPROVED'" 
+               class="relative mt-4 pt-4 border-t border-gray-100">
+            <div class="flex items-center justify-between text-xs text-gray-500 mb-2">
+              <span class="font-medium">Status Progress</span>
+              <span>{{ c.consultationRequestStatus === 'PENDING' ? '25%' : '50%' }}</span>
+            </div>
+            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all duration-500"
+                   [style.width]="c.consultationRequestStatus === 'PENDING' ? '25%' : '50%'">
+              </div>
+            </div>
           </div>
         </div>
+
+        }
+
       </div>
+
+      <!-- Footer Stats (Optional) -->
+      <div class="mt-6 pt-4 border-t border-gray-200">
+        <div class="flex items-center justify-between text-sm">
+          <span class="text-gray-600">
+            Showing <span class="font-semibold text-gray-900">{{ filteredConsultations().length }}</span> 
+            {{ activeTab }} consultation(s)
+          </span>
+          <button class="text-green-600 hover:text-green-700 font-semibold flex items-center gap-1 group"
+                  (click)="navigateNewRequest()">
+            <span>Request New</span>
+            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Custom Scrollbar Styles -->

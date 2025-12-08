@@ -55,6 +55,8 @@ export class ConsultantRegister implements OnInit {
         experienceYears: ['', [Validators.required, Validators.min(1)]],
         qualifications: ['', Validators.required],
         experienceArea: ['', Validators.required],
+        specialization: ['', Validators.required],
+        bio: ['', Validators.required],
         verificationDocument: [null, Validators.required],
         password: ['', [Validators.required, Validators.minLength(6)]],
         confirmPassword: ['', Validators.required],
@@ -99,6 +101,8 @@ export class ConsultantRegister implements OnInit {
         'experienceYears',
         'qualifications',
         'experienceArea',
+        'specialization',
+        'bio',
         'verificationDocument',
         'password',
         'confirmPassword',
@@ -267,7 +271,8 @@ export class ConsultantRegister implements OnInit {
         consultantData.append("expertiseArea", this.f['experienceArea'].value);
         consultantData.append("experienceYears", this.f['experienceYears'].value);
         consultantData.append("qualifications", this.f['qualifications'].value);
-
+        consultantData.append("specialization", this.f['specialization'].value);
+        consultantData.append("bio", this.f['bio'].value);
         // File
         if (this.f['verificationDocument'].value) {
           consultantData.append(

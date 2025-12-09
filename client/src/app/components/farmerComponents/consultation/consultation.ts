@@ -11,13 +11,12 @@ import { Subscription } from 'rxjs';
   styleUrl: './consultation.css',
 })
 export class Consultation implements OnInit {
-  
   // ---------- TABS ----------
   tabs = [
     { key: 'approved', label: 'Approved' },
     { key: 'pending', label: 'Pending' },
     { key: 'completed', label: 'Completed' },
-    { key: 'rejected', label: 'Rejected' }
+    { key: 'rejected', label: 'Rejected' },
   ];
 
   activeTab: string = 'pending'; // Default because backend usually returns pending first
@@ -30,7 +29,7 @@ export class Consultation implements OnInit {
   constructor(
     private router: Router,
     private farmerService: FarmerService,
-    private cdr: ChangeDetectorRef,
+    private cdr: ChangeDetectorRef
   ) {}
 
   // ---------- LIFECYCLE ----------
@@ -44,7 +43,7 @@ export class Consultation implements OnInit {
 
     this.subscription = this.farmerService.getConsultationRequest().subscribe({
       next: (response: any) => {
-        console.log("🔵 Backend Raw Response:", response);
+        console.log('🔵 Backend Raw Response:', response);
 
         // Ensure response.data exists
         const apiData = response || [];
@@ -56,41 +55,41 @@ export class Consultation implements OnInit {
           consultationRequestStatus: item.consultationRequestStatus,
           createdAt: item.createdAt,
           consultant: {
-            firstName: item.consultant?.firstName || "N/A",
-            lastName: item.consultant?.lastName || "",
-          }
+            firstName: item.consultant?.firstName || 'N/A',
+            lastName: item.consultant?.lastName || '',
+          },
         }));
 
-        console.log("🟢 Mapped Consultation Requests:", this.consultationRequests);
+        console.log('🟢 Mapped Consultation Requests:', this.consultationRequests);
 
         this.isLoading = false;
         this.cdr.detectChanges();
       },
 
       error: (err) => {
-        console.error("🔴 Error fetching consultations:", err);
+        console.error('🔴 Error fetching consultations:', err);
         this.isLoading = false;
-      }
+      },
     });
 
-    console.log("Fetching consultation requests...");
+    console.log('Fetching consultation requests...');
   }
 
   // ---------- FILTER BY ACTIVE TAB ----------
   filteredConsultations() {
     return this.consultationRequests.filter(
-      c => c.consultationRequestStatus.toLowerCase() === this.activeTab
+      (c) => c.consultationRequestStatus.toLowerCase() === this.activeTab
     );
   }
 
   // ---------- NAVIGATION ----------
   navigateNewRequest() {
-    console.log("New consultation request clicked");
+    console.log('New consultation request clicked');
     this.router.navigate(['/farmer/consultation-request']);
   }
 
   navigateToConsultationDetails(id: number, consultation: any) {
-    console.log("Consultation Details:", id, consultation);
+    console.log('Consultation Details:', id, consultation);
     this.router.navigate(['/farmer/consultation-request', id]);
   }
 }

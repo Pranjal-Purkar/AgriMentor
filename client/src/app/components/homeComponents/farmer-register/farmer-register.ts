@@ -10,10 +10,11 @@ import {
 } from '@angular/forms';
 import { AuthService } from '../../../services/auth/auth-service';
 import { toast } from 'ngx-sonner';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-farmer-register',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './farmer-register.html',
   styleUrl: './farmer-register.css',
 })
@@ -24,6 +25,7 @@ export class FarmerRegister {
   currentStep: number = 1;
   otpCode: string[] = ['', '', '', '', '', ''];
   otpError: string = '';
+  image = 'images/farmer.svg';
 
   constructor(private fb: FormBuilder, private authService: AuthService) {
     this.farmerForm = this.fb.group(
@@ -117,7 +119,6 @@ export class FarmerRegister {
         return;
       }
 
-
       this.authService.isUserAlreadyExist(this.f['email'].value, 'FARMER').subscribe({
         next: (exists) => {
           if (exists) {
@@ -210,7 +211,6 @@ export class FarmerRegister {
       return false;
     }
   }
-
 
   verifyAndSubmit() {
     if (this.verifyOtp()) {

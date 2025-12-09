@@ -1,6 +1,6 @@
-import { TitleCasePipe } from '@angular/common';
+import { CommonModule, TitleCasePipe } from '@angular/common'; // Added CommonModule
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router'; // Added RouterLink
 import { constants } from 'buffer';
 import { Subscription } from 'rxjs';
 import { FarmerService } from '../../../services/farmerService/farmer-service';
@@ -8,183 +8,81 @@ import { get } from 'http';
 
 @Component({
   selector: 'app-farmer-home',
-  imports: [TitleCasePipe],
+  imports: [CommonModule, RouterLink], // Added CommonModule and RouterLink
   templateUrl: './farmer-home.html',
   styleUrl: './farmer-home.css',
 })
 export class FarmerHome {
+  today = new Date(); // Added today's date
   farmerProfile: any = null;
-  editMode: boolean = false;
-  // consultationRequests: any = null;
+  consultationRequests: any[] = [];
+  summaryCards = [
+    { title: 'Active Crops', value: '3', sub: 'Rice, Wheat, Corn', color: 'border-green-400' },
+    { title: 'Total Consultations', value: '0', sub: 'Loading...', color: 'border-blue-400' },
+    { title: 'Farm Size', value: '15 acres', sub: 'Soil: Loamy', color: 'border-yellow-400' }, // Placeholder for now unless profile has this
+    { title: 'Success Rate', value: '92%', sub: 'Based on feedback', color: 'border-green-500' },
+  ];
+
   private subscription!: Subscription;
 
-  summaryCards = [
-    {
-      title: 'Active Crops',
-      value: '3',
-      sub: 'Rice, Wheat, Corn',
-      color: 'border-green-400',
-    },
-    {
-      title: 'Total Consultations',
-      value: '3',
-      sub: '1 pending, 1 in progress',
-      color: 'border-blue-400',
-    },
-    {
-      title: 'Farm Size',
-      value: '15 acres',
-      sub: 'Soil: Loamy',
-      color: 'border-yellow-400',
-    },
-    {
-      title: 'Success Rate',
-      value: '92%',
-      sub: '',
-      color: 'border-green-500',
-    },
-  ];
-
-  user = {
-    name: 'Rajesh Kumar',
-    farmSize: '15 acres',
-    soil: 'Loamy',
-    successRate: 92,
-  };
-
-  // consultations
-  consultationRequests = [
-    {
-      consultant: {
-        firstName: 'Priya',
-      lastName: 'Sharma',
-      },
-      topic: 'Rice',
-      consultationRequestStatus: 'APPROVED',
-      date: '2025-10-20',
-      status: 'completed',
-      rating: 5,
-    },
-    {
-      consultant: {
-        firstName: 'Rajesh',
-      lastName: 'Kumar',
-      },
-      topic: 'Wheat',
-      consultationRequestStatus: 'PENDING',
-      date: '2025-10-20',
-      status: 'in progress',
-      rating: 0,
-    },
-    {
-      consultant: {
-        firstName: 'Rajesh',
-      lastName: 'Kumar',
-      },
-      topic: 'Corn',
-      consultationRequestStatus: 'PENDING',
-      date: '2025-10-20',
-      status: 'in progress',
-      rating: 0,
-    },
-    {
-      consultant: {
-        firstName: 'Rajesh',
-      lastName: 'Kumar',
-      },
-      topic: 'Rice',
-      consultationRequestStatus: 'PENDING',
-      date: '2025-10-20',
-      status: 'in progress',
-      rating: 0,
-    },
-    {
-      consultant: {
-        firstName: 'Rajesh',
-      lastName: 'Kumar',
-      },
-      topic: 'Rice',
-      consultationRequestStatus: 'PENDING',
-      date: '2025-10-20',
-      status: 'in progress',
-      rating: 0,
-    },
-    ];
-  crops = [
-    { name: 'Rice', status: 'Active' },
-    { name: 'Wheat', status: 'Active' },
-    { name: 'Corn', status: 'Active' },
-  ];
-
-
-  
   constructor(
     private farmerService: FarmerService,
     private router: Router,
     private cdr: ChangeDetectorRef
-  ) {
-    console.log('🚜 FarmerDashboardLayout Constructor Initialized');
-  }
-
-  enableEditMode(): void {
-    this.editMode = true;
-  }
-
-  cancelEdit(): void {
-    this.editMode = false;
-    // Reset form to original values if needed
-    if (this.farmerProfile) {
-      // You might want to reset the form here
-    }
-  }
+  ) {}
 
   ngOnInit() {
-    console.log('📌 ngOnInit() called — subscribing to farmer profile');
-    this.getFarmerProfile()
-    this.getConsultationRequest()
-    
-
+    this.getFarmerProfile();
+    this.getConsultationRequest();
   }
 
-  getConsultationRequest(){
-    
+  getConsultationRequest() {
     this.subscription = this.farmerService.getConsultationRequest().subscribe((state: any) => {
-      console.log('🟢 Received consultation requests from service:', state);
+      console.log('🟢 Received consultation requests:', state);
+      if (state) {
+        this.consultationRequests = state;
 
-      this.consultationRequests = state;
+        // Update summary card for consultations
+        const totalIndex = this.summaryCards.findIndex((c) => c.title === 'Total Consultations');
+        if (totalIndex !== -1) {
+          const pending = this.consultationRequests.filter(
+            (c) => c.consultationRequestStatus === 'PENDING'
+          ).length;
+          const approved = this.consultationRequests.filter(
+            (c) => c.consultationRequestStatus === 'APPROVED'
+          ).length;
 
-      // FIX: Avoid ExpressionChangedAfterItHasBeenCheckedError
-      this.cdr.detectChanges();
-      console.log('🛠 ChangeDetectorRef.detectChanges() called — view updated');
-      console.log(this.consultationRequests);
-      
-    })
-  }
+          this.summaryCards[totalIndex].value = this.consultationRequests.length.toString();
+          this.summaryCards[totalIndex].sub = `${pending} Pending, ${approved} Approved`;
+        }
 
-  getFarmerProfile(){
-    this.subscription = this.farmerService.getFarmerProfile().subscribe((state: any) => {
-      console.log('🟢 Received farmer profile from service:', state);
-
-      this.farmerProfile = state;
-
-      // FIX: Avoid ExpressionChangedAfterItHasBeenCheckedError
-      this.cdr.detectChanges();
-      console.log('🛠 ChangeDetectorRef.detectChanges() called — view updated');
+        this.cdr.detectChanges();
+      }
     });
-    console.log('farmarProfile');
-    console.log(this.farmerProfile);
-
-    
   }
 
-  navigateNewRequest(){
-    console.log('new Request button clicked');
+  getFarmerProfile() {
+    this.subscription = this.farmerService.getFarmerProfile().subscribe((state: any) => {
+      console.log('🟢 Received farmer profile:', state);
+      if (state) {
+        this.farmerProfile = state;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  navigateNewRequest() {
     this.router.navigate(['farmer/consultation-request']);
   }
+
   ngOnDestroy() {
     if (this.subscription) {
       this.subscription.unsubscribe();
-      console.log('🧹 Subscription cleaned up in ngOnDestroy()');
     }
+  }
+
+  // Helpers for template
+  getInitials(firstName: string, lastName: string): string {
+    return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`;
   }
 }

@@ -1,4 +1,4 @@
-import { TitleCasePipe } from '@angular/common';
+import { TitleCasePipe, CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { FarmerService } from '../../../services/farmerService/farmer-service';
@@ -6,11 +6,12 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-consultant-home',
-  imports: [TitleCasePipe],
+  imports: [TitleCasePipe, CommonModule],
   templateUrl: './consultant-home.html',
   styleUrl: './consultant-home.css',
 })
 export class ConsultantHome {
+  today = new Date();
   consultantProfile: any = null;
   editMode: boolean = false;
   // consultationRequests: any = null;
@@ -55,7 +56,7 @@ export class ConsultantHome {
     {
       consultant: {
         firstName: 'Priya',
-      lastName: 'Sharma',
+        lastName: 'Sharma',
       },
       topic: 'Rice',
       consultationRequestStatus: 'APPROVED',
@@ -66,7 +67,7 @@ export class ConsultantHome {
     {
       consultant: {
         firstName: 'Rajesh',
-      lastName: 'Kumar',
+        lastName: 'Kumar',
       },
       topic: 'Wheat',
       consultationRequestStatus: 'PENDING',
@@ -77,7 +78,7 @@ export class ConsultantHome {
     {
       consultant: {
         firstName: 'Rajesh',
-      lastName: 'Kumar',
+        lastName: 'Kumar',
       },
       topic: 'Corn',
       consultationRequestStatus: 'PENDING',
@@ -88,7 +89,7 @@ export class ConsultantHome {
     {
       consultant: {
         firstName: 'Rajesh',
-      lastName: 'Kumar',
+        lastName: 'Kumar',
       },
       topic: 'Rice',
       consultationRequestStatus: 'PENDING',
@@ -99,7 +100,7 @@ export class ConsultantHome {
     {
       consultant: {
         firstName: 'Rajesh',
-      lastName: 'Kumar',
+        lastName: 'Kumar',
       },
       topic: 'Rice',
       consultationRequestStatus: 'PENDING',
@@ -107,15 +108,13 @@ export class ConsultantHome {
       status: 'in progress',
       rating: 0,
     },
-    ];
+  ];
   crops = [
     { name: 'Rice', status: 'Active' },
     { name: 'Wheat', status: 'Active' },
     { name: 'Corn', status: 'Active' },
   ];
 
-
-  
   constructor(
     private farmerService: FarmerService,
     private router: Router,
@@ -138,14 +137,11 @@ export class ConsultantHome {
 
   ngOnInit() {
     console.log('📌 ngOnInit() called — subscribing to farmer profile');
-    this.getFarmerProfile()
-    this.getConsultationRequest()
-    
-
+    this.getFarmerProfile();
+    this.getConsultationRequest();
   }
 
-  getConsultationRequest(){
-    
+  getConsultationRequest() {
     this.subscription = this.farmerService.getConsultationRequest().subscribe((state: any) => {
       console.log('🟢 Received consultation requests from service:', state);
 
@@ -155,11 +151,10 @@ export class ConsultantHome {
       this.cdr.detectChanges();
       console.log('🛠 ChangeDetectorRef.detectChanges() called — view updated');
       console.log(this.consultationRequests);
-      
-    })
+    });
   }
 
-  getFarmerProfile(){
+  getFarmerProfile() {
     this.subscription = this.farmerService.getFarmerProfile().subscribe((state: any) => {
       console.log('🟢 Received farmer profile from service:', state);
 
@@ -171,11 +166,9 @@ export class ConsultantHome {
     });
     console.log('farmarProfile');
     console.log(this.consultantProfile);
-
-    
   }
 
-  navigateNewRequest(){
+  navigateNewRequest() {
     console.log('new Request button clicked');
     this.router.navigate(['farmer/consultation-request']);
   }

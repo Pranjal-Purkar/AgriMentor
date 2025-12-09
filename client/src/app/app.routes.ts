@@ -20,115 +20,112 @@ import { ConsultantConsulationRequest } from './components/consultantComponents/
 import { FarmVisitiongSchedule } from './components/consultantComponents/farm-visitiong-schedule/farm-visitiong-schedule';
 
 export const routes: Routes = [
-    {
+  {
+    path: '',
+    component: HomeLayout,
+    children: [
+      {
         path: '',
-        component: HomeLayout,
-        children:[
-            {
-                path: '',
-                component: Home,
-                 data: { animation: 'Home' } 
-            },
-            {
-                path:'login',
-                component:Login,
-                 data: { animation: 'Login' } 
-            },
-            {
-                path:'register/farmer',
-                component:FarmerRegister,
-                data:{
-                    animation:'FarmerRegister'
-                }
-            },
-            {
-                path:'register/consultant',
-                component:ConsultantRegister,
-                data:{
-                    animation:'ConsultantRegister'
-                }
-            },
-            {
-                path: 'forgot/password',
-                component: ForgotPassword,
-                data: { animation: 'ForgotPassword' }
-            }
-        ]
-    },
-    {
-        path:'farmer',
-        component:FarmerDashboardLayout,
-        children:[
-            {
-                path: 'dashboard',
-                component: FarmerHome,
-                 data: { animation: 'Home' } 
-            },
-            {
-                path:'consultation',
-                component:Consultation,
-                data: { animation: 'Consultation' }
-                
-            },
-            {
-                path:'consultation-request',
-                component:ConsultationRequest,
-                data: { animation: 'ConsultantRegister' }
-            },
-            {
-                path:'profile',
-                component:FarmerProfile,
-                data: { animation: 'FarmerProfile' },
+        component: Home,
+        data: { animation: 'Home' },
+      },
+      {
+        path: 'login',
+        component: Login,
+        data: { animation: 'Login' },
+      },
+      {
+        path: 'register/farmer',
+        component: FarmerRegister,
+        data: {
+          animation: 'FarmerRegister',
+        },
+      },
+      {
+        path: 'register/consultant',
+        component: ConsultantRegister,
+        data: {
+          animation: 'ConsultantRegister',
+        },
+      },
+      {
+        path: 'forgot/password',
+        component: ForgotPassword,
+        data: { animation: 'ForgotPassword' },
+      },
+    ],
+  },
+  {
+    path: 'farmer',
+    component: FarmerDashboardLayout,
+    children: [
+      {
+        path: 'dashboard',
+        component: FarmerHome,
+        data: { animation: 'Home' },
+      },
+      {
+        path: 'consultation',
+        component: Consultation,
+        data: { animation: 'Consultation' },
+      },
+      {
+        path: 'consultation-request',
+        component: ConsultationRequest,
+        data: { animation: 'ConsultantRegister' },
+      },
+      {
+        path: 'profile',
+        component: FarmerProfile,
+        data: { animation: 'FarmerProfile' },
+      },
+      {
+        path: 'consultation-request/:id',
+        component: CosultationDetails,
+        data: { animation: 'CosultationDetails' },
+      },
+      {
+        path: 'consultation/:id',
+        component: ConsultantConsulationDetails,
+        data: { animation: 'Cosultation' },
+      },
+    ],
+  },
+  {
+    path: 'consultant',
+    component: ConsultantDashboardLayout,
+    children: [
+      {
+        path: 'dashboard',
+        component: ConsultantHome,
+        data: { animation: 'Home' },
+      },
+      // {
+      //     path:'consultation',
+      //     component:Consultation,
+      //     data: { animation: 'Consultation' }
 
-            },
-            {
-                path:'consultation-request/:id',
-                component:CosultationDetails,
-                data: { animation: 'CosultationDetails' },
-
-            }
-        ]
-        
-    },
-    {
-        path:'consultant',
-        component:ConsultantDashboardLayout,
-        children:[
-            {
-                path: 'dashboard',
-                component: ConsultantHome,
-                 data: { animation: 'Home' } 
-            },
-            // {
-            //     path:'consultation',
-            //     component:Consultation,
-            //     data: { animation: 'Consultation' }
-                
-            // },
-            {
-                path:'consultation-request',
-                component:ConsultantConsulationRequest,
-                data: { animation: 'ConsultantConsulationRequest' }
-            },
-            {
-                path:'profile',
-                component:ConsultantProfile,
-                data: { animation: 'ConsultantProfile' },
-
-            },
-            {
-                path:'consultation-request/:id',
-                component:ConsultantConsulationDetails,
-                data: { animation: 'ConsultantConsulationDetails' },
-
-            },
-            {
-                path:'farm-schedule/:id',
-                component:FarmVisitiongSchedule,
-                data: { animation: 'FarmVisitiongSchedule' },
-
-            }
-        ]
-        
-    }
+      // },
+      {
+        path: 'consultation-request',
+        component: ConsultantConsulationRequest,
+        data: { animation: 'ConsultantConsulationRequest' },
+      },
+      {
+        path: 'profile',
+        component: ConsultantProfile,
+        data: { animation: 'ConsultantProfile' },
+      },
+      {
+        path: 'consultation-request/:id',
+        component: ConsultantConsulationDetails,
+        data: { animation: 'ConsultantConsulationDetails' },
+      },
+      {
+        path: 'farm-schedule/:id',
+        component: FarmVisitiongSchedule,
+        data: { animation: 'FarmVisitiongSchedule' },
+      },
+    ],
+  },
 ];

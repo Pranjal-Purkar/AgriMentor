@@ -26,6 +26,7 @@ export class ConsultantRegister implements OnInit {
   currentStep: number = 1;
   otpCode: string[] = ['', '', '', '', '', ''];
   otpError: string = '';
+  image = 'images/consultant.svg';
   locationCoordinates: any = {
     Latitude: 0,
     Longitude: 0,
@@ -256,53 +257,46 @@ export class ConsultantRegister implements OnInit {
   }
 
   onSubmit() {
-  if (this.currentStep === 3) {
-    if (this.verifyOtp()) {
-      if (this.consultantForm.valid) {
+    if (this.currentStep === 3) {
+      if (this.verifyOtp()) {
+        if (this.consultantForm.valid) {
+          const consultantData = new FormData();
 
-        const consultantData = new FormData();
+          consultantData.append('firstName', this.f['firstName'].value);
+          consultantData.append('lastName', this.f['lastName'].value);
+          consultantData.append('email', this.f['email'].value);
+          consultantData.append('password', this.f['password'].value);
+          consultantData.append('phone', this.f['phone'].value);
+          consultantData.append('role', 'CONSULTANT');
+          consultantData.append('expertiseArea', this.f['experienceArea'].value);
+          consultantData.append('experienceYears', this.f['experienceYears'].value);
+          consultantData.append('qualifications', this.f['qualifications'].value);
+          consultantData.append('specialization', this.f['specialization'].value);
+          consultantData.append('bio', this.f['bio'].value);
+          // File
+          if (this.f['verificationDocument'].value) {
+            consultantData.append('verificationDocument', this.f['verificationDocument'].value);
+          }
 
-        consultantData.append("firstName", this.f['firstName'].value);
-        consultantData.append("lastName", this.f['lastName'].value);
-        consultantData.append("email", this.f['email'].value);
-        consultantData.append("password", this.f['password'].value);
-        consultantData.append("phone", this.f['phone'].value);
-        consultantData.append("role", "CONSULTANT");
-        consultantData.append("expertiseArea", this.f['experienceArea'].value);
-        consultantData.append("experienceYears", this.f['experienceYears'].value);
-        consultantData.append("qualifications", this.f['qualifications'].value);
-        consultantData.append("specialization", this.f['specialization'].value);
-        consultantData.append("bio", this.f['bio'].value);
-        // File
-        if (this.f['verificationDocument'].value) {
-          consultantData.append(
-            "verificationDocument",
-            this.f['verificationDocument'].value
-          );
+          // Address → Use Spring nested binding (address.propertyName)
+          consultantData.append('address.street', this.f['street'].value);
+          consultantData.append('address.city', this.f['city'].value);
+          consultantData.append('address.state', this.f['state'].value);
+          consultantData.append('address.pinCode', this.f['postalCode'].value);
+          consultantData.append('address.country', this.f['country'].value);
+          consultantData.append('address.latitude', String(this.locationCoordinates.Latitude));
+          consultantData.append('address.longitude', String(this.locationCoordinates.Longitude));
+
+          // Debug: show actual FormData
+          console.log('🔍 REAL FORMDATA CONTENT:');
+          for (let p of consultantData.entries()) {
+            console.log(p[0] + ': ', p[1]);
+          }
+
+          // Call API
+          this.authService.registerConsultant(consultantData);
         }
-
-        // Address → Use Spring nested binding (address.propertyName)
-        consultantData.append("address.street", this.f['street'].value);
-        consultantData.append("address.city", this.f['city'].value);
-        consultantData.append("address.state", this.f['state'].value);
-        consultantData.append("address.pinCode", this.f['postalCode'].value);
-        consultantData.append("address.country", this.f['country'].value);
-        consultantData.append("address.latitude", String(this.locationCoordinates.Latitude));
-        consultantData.append("address.longitude", String(this.locationCoordinates.Longitude));
-
-        // Debug: show actual FormData
-        console.log("🔍 REAL FORMDATA CONTENT:");
-        for (let p of consultantData.entries()) {
-          console.log(p[0] + ": ", p[1]);
-        }
-
-        // Call API
-        this.authService.registerConsultant(consultantData);
       }
     }
   }
-}
-
-
- 
 }

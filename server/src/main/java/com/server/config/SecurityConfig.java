@@ -40,11 +40,12 @@ public class SecurityConfig implements WebMvcConfigurer{
                 .requestMatchers("/api/v1/auth/**").permitAll()
                     .requestMatchers("/api/v1/consultants/all").permitAll()
                     .requestMatchers("/api/v1/consultants/{username}").permitAll()
-                    .requestMatchers("farmers/consultation/request").authenticated()
+                    .requestMatchers("/api/v1/farmers/consultation/request").authenticated()
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/user/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/api/v1/farmers/**").hasAnyRole("FARMER", "ADMIN")
                 .requestMatchers("/api/v1/consultants/**").hasAnyRole("CONSULTANT", "ADMIN")
+                .requestMatchers("/api/v1/farmvisits/**").hasAnyRole("CONSULTANT", "ADMIN","FARMER")
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilterChain, UsernamePasswordAuthenticationFilter.class);

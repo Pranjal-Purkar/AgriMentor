@@ -21,6 +21,11 @@ import { ConsultantConsulationRequest } from './components/consultantComponents/
 import { FarmVisitiongSchedule } from './components/consultantComponents/farm-visitiong-schedule/farm-visitiong-schedule';
 import { AdminDashboardLayout } from './layouts/admin-dashboard-layout/admin-dashboard-layout';
 import { AdminHome } from './components/adminComponent/admin-home/admin-home';
+import { AdminUsers } from './components/adminComponent/admin-users/admin-users';
+import { AdminConsultations } from './components/adminComponent/admin-consultations/admin-consultations';
+import { AdminApprovals } from './components/adminComponent/admin-approvals/admin-approvals';
+import { AdminReports } from './components/adminComponent/admin-reports/admin-reports';
+import { AdminSettings } from './components/adminComponent/admin-settings/admin-settings';
 
 export const routes: Routes = [
   {
@@ -136,15 +141,44 @@ export const routes: Routes = [
     ],
   },
   {
-    path:'admin',
-    component:AdminDashboardLayout,
-    children:[
+    path: 'admin',
+    component: AdminDashboardLayout,
+    children: [
       {
-        path:'dashboard',
-        component:AdminHome,
-        data:{animation:'Home'}
-      }
-    ]
-    
-  }
+        path: 'home',
+        component: AdminHome,
+        data: { animation: 'AdminHome' },
+      },
+      {
+        path: 'users',
+        component: AdminUsers,
+        data: { animation: 'AdminUsers' },
+      },
+      {
+        path: 'consultations',
+        component: AdminConsultations,
+        data: { animation: 'AdminConsultations' },
+      },
+      {
+        path: 'approvals',
+        component: AdminApprovals,
+        data: { animation: 'AdminApprovals' },
+      },
+      {
+        path: 'reports',
+        component: AdminReports,
+        data: { animation: 'AdminReports' },
+      },
+      {
+        path: 'settings',
+        component: AdminSettings,
+        data: { animation: 'AdminSettings' },
+      },
+      {
+        path: '',
+        redirectTo: 'home',
+        pathMatch: 'full',
+      },
+    ],
+  },
 ];

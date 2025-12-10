@@ -1,22 +1,74 @@
-<div class="min-h-screen bg-blue-50/50 p-6 md:p-8 animation-fade-in-up">
-  <div class="max-w-7xl mx-auto">
-    <!-- Main Card -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-      <!-- Tabs Header -->
-      <div class="border-b border-gray-100 bg-white p-2">
-        <div class="flex gap-2 overflow-x-auto p-2 no-scrollbar">
+<!-- Background with gradient -->
+<div
+  class="min-h-screen  p-4 md:p-8 relative overflow-hidden"
+>
+  <!-- Animated background elements -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div
+      class="absolute -top-40 -right-40 w-80 h-80 bg-emerald-200/30 rounded-full blur-3xl animate-pulse"
+    ></div>
+    <div
+      class="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-200/30 rounded-full blur-3xl animate-pulse"
+      style="animation-delay: 2s"
+    ></div>
+    <div
+      class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-200/20 rounded-full blur-3xl animate-pulse"
+      style="animation-delay: 4s"
+    ></div>
+  </div>
+
+  <div class="w-full max-w-7xl mx-auto relative z-10">
+    <!-- Header Section -->
+    
+
+    <!-- Main Glass Card -->
+    <div
+      class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/50 overflow-hidden animate-slide-up"
+    >
+      <!-- Search Bar with Glass Effect -->
+      <div
+        class="p-6 border-b border-emerald-100/50 bg-gradient-to-r from-emerald-50/50 to-teal-50/50 backdrop-blur-sm sticky top-0 z-20"
+      >
+        <div class="relative max-w-2xl mx-auto">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <svg
+              class="w-5 h-5 text-emerald-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
+          <input
+            type="text"
+            placeholder="Search by farmer name, topic, crop, or city..."
+            (input)="onSearch($event)"
+            class="w-full pl-12 pr-4 py-3.5 bg-white/90 backdrop-blur-sm border-2 border-emerald-200/50 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all duration-300 text-sm placeholder-gray-400 shadow-sm hover:shadow-md"
+          />
+        </div>
+      </div>
+
+      <!-- Tabs Header with Enhanced Design -->
+      <div class="border-b border-emerald-100/50 bg-white/60 backdrop-blur-sm p-4">
+        <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
           <button
             *ngFor="let tab of tabs"
-            (click)="activeTab = tab.key"
-            class="px-5 py-2.5 rounded-xl font-medium text-sm transition-all duration-300 flex items-center gap-2 whitespace-nowrap border"
+            (click)="onTabChange(tab.key)"
+            class="px-6 py-3 rounded-2xl font-semibold text-sm transition-all duration-300 flex items-center gap-2.5 whitespace-nowrap transform hover:scale-105 active:scale-95"
             [ngClass]="{
-              'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200':
+              'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-200/50':
                 activeTab === tab.key,
-              'bg-white text-gray-600 border-transparent hover:bg-gray-50 hover:border-gray-200':
+              'bg-white/80 text-gray-600 hover:bg-white hover:shadow-md border border-gray-200/50':
                 activeTab !== tab.key
             }"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -26,81 +78,103 @@
             </svg>
             {{ tab.label }}
             <span
-              class="px-2 py-0.5 rounded-full text-xs font-bold"
+              class="px-2.5 py-1 rounded-full text-xs font-bold min-w-[24px] text-center"
               [ngClass]="{
-                'bg-white/20 text-white': activeTab === tab.key,
-                'bg-gray-100 text-gray-600': activeTab !== tab.key
+                'bg-white/30 text-white': activeTab === tab.key,
+                'bg-emerald-100 text-emerald-700': activeTab !== tab.key
               }"
             >
-              {{ filteredConsultations().length }}
+              {{ getCountByStatus(tab.key) }}
             </span>
           </button>
         </div>
       </div>
 
       <!-- Consultation List -->
-      <div class="p-6">
-        <!-- Loading State -->
-        <div *ngIf="isLoading" class="flex justify-center items-center py-20">
-          <div
-            class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"
-          ></div>
-        </div>
-
-        <!-- Empty State -->
-        <div *ngIf="!isLoading && filteredConsultations().length === 0" class="text-center py-20">
-          <div
-            class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4"
-          >
-            <svg
-              class="w-10 h-10 text-blue-300"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-              />
-            </svg>
+      <div class="p-6 md:p-8">
+        <!-- Loading State with Modern Spinner -->
+        <div *ngIf="isLoading" class="flex flex-col justify-center items-center py-24">
+          <div class="relative">
+            <div class="w-16 h-16 border-4 border-emerald-200 rounded-full"></div>
+            <div
+              class="w-16 h-16 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin absolute top-0 left-0"
+            ></div>
           </div>
-          <h3 class="text-lg font-bold text-gray-900 mb-1">No {{ activeTab }} Requests</h3>
-          <p class="text-gray-500 text-sm">Check back later for new updates</p>
+          <p class="mt-4 text-gray-500 font-medium">Loading consultations...</p>
         </div>
 
-        <!-- List Items -->
-        <div class="space-y-4">
+        <!-- Empty State with Enhanced Design -->
+        <div *ngIf="!isLoading && filteredConsultations().length === 0" class="text-center py-24">
+          <div class="relative inline-block mb-6">
+            <div
+              class="w-24 h-24 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-3xl flex items-center justify-center mx-auto transform rotate-6 animate-bounce"
+            >
+              <svg
+                class="w-12 h-12 text-emerald-500 transform -rotate-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                />
+              </svg>
+            </div>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-2">No {{ activeTab }} Requests</h3>
+          <p class="text-gray-500">Check back later for new consultation requests</p>
+        </div>
+
+        <!-- List Items with Glass Cards -->
+        <div
+          class="space-y-5 max-h-[calc(100vh-400px)] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-emerald-300 scrollbar-track-transparent"
+        >
           <div
             *ngFor="let consultation of filteredConsultations()"
-            class="group bg-white border border-gray-100 rounded-xl p-5 hover:border-blue-300 hover:shadow-md transition-all duration-300"
+            class="group relative bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-6 hover:border-emerald-300 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
           >
-            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <!-- Gradient accent on hover -->
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            ></div>
+
+            <div
+              class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6"
+            >
               <!-- Left: Info -->
-              <div class="flex items-start gap-4 flex-1">
-                <!-- Avatar -->
-                <div
-                  class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-sm flex-shrink-0"
-                >
-                  {{ getInitials(consultation.farmer.firstName, consultation.farmer.lastName) }}
+              <div
+                class="flex items-start gap-5 flex-1 cursor-pointer"
+                (click)="navigateToConsultationDetails(consultation.id)"
+              >
+                <!-- Avatar with Gradient -->
+                <div class="relative flex-shrink-0">
+                  <div
+                    class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 flex items-center justify-center text-white font-bold text-lg shadow-lg transform group-hover:scale-110 transition-transform duration-300"
+                  >
+                    {{ getInitials(consultation.farmer.firstName, consultation.farmer.lastName) }}
+                  </div>
+                  <div
+                    class="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-400 rounded-full border-2 border-white"
+                  ></div>
                 </div>
 
                 <div class="flex-1 min-w-0 space-y-3">
                   <div>
-                    <h4 class="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                    <h4
+                      class="font-bold text-lg text-gray-900 group-hover:text-emerald-600 transition-colors duration-300"
+                    >
                       {{ consultation.farmer.firstName }} {{ consultation.farmer.lastName }}
                     </h4>
                     <div
-                      class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm text-gray-500"
+                      class="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2 text-sm text-gray-500"
                     >
-                      <span class="flex items-center gap-1.5">
-                        <svg
-                          class="w-4 h-4 text-gray-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
+                      <span
+                        class="flex items-center gap-2 hover:text-emerald-600 transition-colors"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
@@ -110,13 +184,10 @@
                         </svg>
                         {{ consultation.farmer.email }}
                       </span>
-                      <span class="flex items-center gap-1.5">
-                        <svg
-                          class="w-4 h-4 text-gray-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
+                      <span
+                        class="flex items-center gap-2 hover:text-emerald-600 transition-colors"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
@@ -129,18 +200,25 @@
                     </div>
                   </div>
 
-                  <div class="bg-gray-50 rounded-lg p-3 border border-gray-100">
-                    <p class="font-semibold text-gray-900 text-sm mb-0.5">
+                  <div
+                    class="bg-gradient-to-br from-emerald-50/80 to-teal-50/80 backdrop-blur-sm rounded-xl p-4 border border-emerald-100/50"
+                  >
+                    <p class="font-semibold text-gray-900 mb-1">
                       {{ consultation.topic }}
                     </p>
-                    <p class="text-sm text-gray-600 line-clamp-1">{{ consultation.description }}</p>
+                    <p class="text-sm text-gray-600 line-clamp-2">{{ consultation.description }}</p>
                   </div>
 
                   <div class="flex flex-wrap items-center gap-2">
                     <span
-                      class="px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-100 rounded-lg text-xs font-semibold flex items-center gap-1"
+                      class="px-3 py-1.5 bg-gradient-to-r from-emerald-50 to-teal-50 text-emerald-700 border border-emerald-200/50 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm"
                     >
-                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg
+                        class="w-3.5 h-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
                         <path
                           stroke-linecap="round"
                           stroke-linejoin="round"
@@ -151,9 +229,14 @@
                       {{ consultation.crop.name }}
                     </span>
                     <span
-                      class="px-2.5 py-1 bg-gray-100 text-gray-600 border border-gray-200 rounded-lg text-xs font-semibold flex items-center gap-1"
+                      class="px-3 py-1.5 bg-gray-100/80 text-gray-600 border border-gray-200/50 rounded-xl text-xs font-semibold flex items-center gap-1.5"
                     >
-                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg
+                        class="w-3.5 h-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
                         <path
                           stroke-linecap="round"
                           stroke-linejoin="round"
@@ -168,9 +251,9 @@
               </div>
 
               <!-- Right: Actions -->
-              <div class="flex flex-col sm:flex-row lg:flex-col gap-3 lg:min-w-[180px]">
+              <div class="flex flex-col sm:flex-row lg:flex-col gap-3 lg:min-w-[200px]">
                 <span
-                  class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase text-center border"
+                  class="px-4 py-3 rounded-xl text-xs font-bold uppercase text-center border-2 shadow-sm"
                   [ngClass]="getStatusBadgeClass(consultation.consultationRequestStatus)"
                 >
                   {{ consultation.consultationRequestStatus }}
@@ -178,9 +261,17 @@
 
                 <button
                   (click)="openDetailsModal(consultation)"
-                  class="w-full bg-white text-gray-700 border border-gray-200 px-4 py-2 rounded-lg hover:bg-gray-50 hover:text-blue-600 transition-all font-semibold text-sm flex items-center justify-center gap-2"
+                  class="w-full bg-white/90 backdrop-blur-sm text-gray-700 border-2 border-gray-200/50 px-4 py-3 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 transition-all duration-300 font-semibold text-sm flex items-center justify-center gap-2 shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95"
                 >
                   View Details
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
                 </button>
 
                 <div
@@ -189,7 +280,7 @@
                 >
                   <button
                     (click)="openActionConfirm(consultation, 'approve')"
-                    class="flex-1 bg-green-50 text-green-700 border border-green-200 px-3 py-2 rounded-lg hover:bg-green-100 hover:border-green-300 transition-all font-semibold text-sm flex items-center justify-center gap-2"
+                    class="flex-1 bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border-2 border-green-200/50 px-3 py-3 rounded-xl hover:from-green-100 hover:to-emerald-100 hover:border-green-300 transition-all duration-300 font-semibold text-sm flex items-center justify-center gap-2 shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95"
                     title="Approve"
                   >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -203,7 +294,7 @@
                   </button>
                   <button
                     (click)="openActionConfirm(consultation, 'reject')"
-                    class="flex-1 bg-red-50 text-red-700 border border-red-200 px-3 py-2 rounded-lg hover:bg-red-100 hover:border-red-300 transition-all font-semibold text-sm flex items-center justify-center gap-2"
+                    class="flex-1 bg-gradient-to-r from-red-50 to-rose-50 text-red-700 border-2 border-red-200/50 px-3 py-3 rounded-xl hover:from-red-100 hover:to-rose-100 hover:border-red-300 transition-all duration-300 font-semibold text-sm flex items-center justify-center gap-2 shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95"
                     title="Reject"
                   >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -225,21 +316,26 @@
   </div>
 </div>
 
-<!-- Details Modal -->
+<!-- Details Modal with Glassmorphism -->
 <div
   *ngIf="showDetailsModal && selectedConsultation"
-  class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animation-fade-in"
+  class="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fade-in"
+  (click)="closeDetailsModal()"
 >
   <div
-    class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+    class="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col transform animate-slide-up"
+    (click)="$event.stopPropagation()"
   >
-    <!-- Modal Header -->
+    <!-- Modal Header with Gradient -->
     <div
-      class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 flex items-center justify-between flex-shrink-0"
+      class="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 px-8 py-6 flex items-center justify-between relative overflow-hidden"
     >
-      <div class="flex items-center gap-3">
-        <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <!-- Decorative elements -->
+      <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+
+      <div class="flex items-center gap-4 relative z-10">
+        <div class="p-3 bg-white/20 rounded-2xl backdrop-blur-sm shadow-lg">
+          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -249,13 +345,13 @@
           </svg>
         </div>
         <div>
-          <h3 class="text-xl font-bold text-white">Consultation Details</h3>
-          <p class="text-blue-100 text-xs">Request ID: #{{ selectedConsultation.id }}</p>
+          <h3 class="text-2xl font-bold text-white drop-shadow-sm">Consultation Details</h3>
+          <p class="text-emerald-50 text-sm">Request ID: #{{ selectedConsultation.id }}</p>
         </div>
       </div>
       <button
         (click)="closeDetailsModal()"
-        class="text-white/80 hover:text-white hover:bg-white/10 p-2 rounded-lg transition-colors"
+        class="text-white/90 hover:text-white hover:bg-white/20 p-2.5 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 relative z-10"
       >
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -269,18 +365,22 @@
     </div>
 
     <!-- Modal Content -->
-    <div class="p-6 overflow-y-auto flex-1 space-y-6 bg-gray-50/50">
+    <div
+      class="p-8 overflow-y-auto flex-1 space-y-6 bg-gradient-to-br from-gray-50 to-emerald-50/30"
+    >
       <!-- Top Section: Farmer & Status -->
       <div class="grid md:grid-cols-3 gap-6">
         <!-- Farmer Info Card -->
         <div
-          class="md:col-span-2 bg-white p-5 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden"
+          class="md:col-span-2 bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-emerald-100/50 shadow-lg relative overflow-hidden group"
         >
-          <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-full -mr-10 -mt-10"></div>
+          <div
+            class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-100/50 to-teal-100/50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-500"
+          ></div>
 
-          <div class="flex items-start gap-4 relative z-10">
+          <div class="flex items-start gap-5 relative z-10">
             <div
-              class="w-16 h-16 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-600 font-bold text-xl border-4 border-white shadow-sm"
+              class="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-400 flex items-center justify-center text-white font-bold text-2xl border-4 border-white shadow-xl transform group-hover:scale-105 transition-transform duration-300"
             >
               {{
                 getInitials(
@@ -289,15 +389,17 @@
                 )
               }}
             </div>
-            <div>
-              <h4 class="text-lg font-bold text-gray-900">
+            <div class="flex-1">
+              <h4 class="text-xl font-bold text-gray-900 mb-3">
                 {{ selectedConsultation.farmer.firstName }}
                 {{ selectedConsultation.farmer.lastName }}
               </h4>
-              <div class="space-y-1 mt-2">
-                <p class="text-sm text-gray-600 flex items-center gap-2">
+              <div class="space-y-2">
+                <p
+                  class="text-sm text-gray-600 flex items-center gap-2.5 hover:text-emerald-600 transition-colors"
+                >
                   <svg
-                    class="w-4 h-4 text-blue-500"
+                    class="w-5 h-5 text-emerald-500"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -311,9 +413,11 @@
                   </svg>
                   {{ selectedConsultation.farmer.email }}
                 </p>
-                <p class="text-sm text-gray-600 flex items-center gap-2">
+                <p
+                  class="text-sm text-gray-600 flex items-center gap-2.5 hover:text-emerald-600 transition-colors"
+                >
                   <svg
-                    class="w-4 h-4 text-blue-500"
+                    class="w-5 h-5 text-emerald-500"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -334,17 +438,18 @@
 
         <!-- Status Card -->
         <div
-          class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-center items-center text-center"
+          class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-emerald-100/50 shadow-lg flex flex-col justify-center items-center text-center"
         >
-          <p class="text-sm text-gray-500 font-medium mb-2">Current Status</p>
+          <p class="text-sm text-gray-500 font-semibold mb-3 uppercase tracking-wide">Status</p>
           <span
-            class="px-4 py-2 rounded-full text-sm font-bold border mb-3"
+            class="px-5 py-2.5 rounded-2xl text-sm font-bold border-2 mb-4 shadow-sm"
             [ngClass]="getStatusBadgeClass(selectedConsultation.consultationRequestStatus)"
           >
             {{ selectedConsultation.consultationRequestStatus }}
           </span>
-          <p class="text-xs text-gray-400">
-            Requested on: {{ selectedConsultation.createdAt | date : 'mediumDate' }}
+          <p class="text-xs text-gray-500">Requested on</p>
+          <p class="text-sm font-semibold text-gray-700 mt-1">
+            {{ selectedConsultation.createdAt | date : 'mediumDate' }}
           </p>
         </div>
       </div>
@@ -352,22 +457,26 @@
       <!-- Detail Sections -->
       <div class="grid md:grid-cols-2 gap-6">
         <!-- Consultation Topic -->
-        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+        <div
+          class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-emerald-100/50 shadow-lg"
+        >
           <h5
-            class="text-sm font-bold text-gray-900 uppercase tracking-wide mb-3 flex items-center gap-2"
+            class="text-sm font-bold text-gray-900 uppercase tracking-wide mb-4 flex items-center gap-2"
           >
-            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+            <span
+              class="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500"
+            ></span>
             Overview
           </h5>
           <div class="space-y-4">
             <div>
-              <p class="text-xs text-gray-500 mb-1">Subject</p>
-              <p class="font-medium text-gray-900">{{ selectedConsultation.topic }}</p>
+              <p class="text-xs text-gray-500 mb-2 uppercase tracking-wide">Subject</p>
+              <p class="font-semibold text-gray-900 text-lg">{{ selectedConsultation.topic }}</p>
             </div>
             <div>
-              <p class="text-xs text-gray-500 mb-1">Description</p>
+              <p class="text-xs text-gray-500 mb-2 uppercase tracking-wide">Description</p>
               <p
-                class="text-sm text-gray-700 leading-relaxed bg-gray-50 p-3 rounded-lg border border-gray-100"
+                class="text-sm text-gray-700 leading-relaxed bg-gradient-to-br from-emerald-50/50 to-teal-50/50 p-4 rounded-xl border border-emerald-100/50"
               >
                 {{ selectedConsultation.description }}
               </p>
@@ -376,37 +485,42 @@
         </div>
 
         <!-- Crop & Farm Info -->
-        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+        <div
+          class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-emerald-100/50 shadow-lg"
+        >
           <h5
-            class="text-sm font-bold text-gray-900 uppercase tracking-wide mb-3 flex items-center gap-2"
+            class="text-sm font-bold text-gray-900 uppercase tracking-wide mb-4 flex items-center gap-2"
           >
-            <span class="w-2 h-2 rounded-full bg-green-500"></span>
+            <span
+              class="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-green-500 to-emerald-500"
+            ></span>
             Crop & Location
           </h5>
 
           <div class="space-y-4">
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <p class="text-xs text-gray-500 mb-1">Crop</p>
-                <p class="font-medium text-gray-900">
-                  {{ selectedConsultation.crop.name }} ({{ selectedConsultation.crop.type }})
+                <p class="text-xs text-gray-500 mb-2 uppercase tracking-wide">Crop</p>
+                <p class="font-semibold text-gray-900">
+                  {{ selectedConsultation.crop.name }}
                 </p>
+                <p class="text-xs text-gray-500 mt-1">({{ selectedConsultation.crop.type }})</p>
               </div>
               <div>
-                <p class="text-xs text-gray-500 mb-1">Category</p>
-                <p class="font-medium text-gray-900">{{ selectedConsultation.crop.category }}</p>
+                <p class="text-xs text-gray-500 mb-2 uppercase tracking-wide">Category</p>
+                <p class="font-semibold text-gray-900">{{ selectedConsultation.crop.category }}</p>
               </div>
             </div>
 
-            <div class="pt-3 border-t border-gray-100">
-              <p class="text-xs text-gray-500 mb-1">Farm Address</p>
-              <p class="text-sm text-gray-700">
+            <div class="pt-4 border-t border-emerald-100/50">
+              <p class="text-xs text-gray-500 mb-2 uppercase tracking-wide">Farm Address</p>
+              <p class="text-sm text-gray-700 leading-relaxed">
                 {{ selectedConsultation.farmAddress.street }},
                 {{ selectedConsultation.farmAddress.city }},
                 {{ selectedConsultation.farmAddress.state }} -
                 {{ selectedConsultation.farmAddress.pinCode }}
               </p>
-              <p class="text-xs text-gray-500 mt-1">
+              <p class="text-xs text-gray-500 mt-2">
                 {{ selectedConsultation.farmAddress.country }}
               </p>
             </div>
@@ -416,10 +530,12 @@
     </div>
 
     <!-- Modal Footer -->
-    <div class="p-4 border-t border-gray-100 bg-white flex justify-end gap-3 flex-shrink-0">
+    <div
+      class="p-6 border-t border-emerald-100/50 bg-white/80 backdrop-blur-sm flex justify-end gap-3"
+    >
       <button
         (click)="closeDetailsModal()"
-        class="px-5 py-2.5 rounded-xl text-gray-700 font-semibold hover:bg-gray-100 transition-colors"
+        class="px-6 py-3 rounded-xl text-gray-700 font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 active:scale-95"
       >
         Close
       </button>
@@ -427,13 +543,13 @@
       <ng-container *ngIf="selectedConsultation.consultationRequestStatus === 'PENDING'">
         <button
           (click)="closeDetailsModal(); openActionConfirm(selectedConsultation, 'reject')"
-          class="px-5 py-2.5 rounded-xl text-red-600 font-semibold hover:bg-red-50 border border-transparent hover:border-red-200 transition-all"
+          class="px-6 py-3 rounded-xl text-red-600 font-semibold hover:bg-red-50 border-2 border-transparent hover:border-red-200 transition-all duration-300 transform hover:scale-105 active:scale-95"
         >
           Reject
         </button>
         <button
           (click)="closeDetailsModal(); openActionConfirm(selectedConsultation, 'approve')"
-          class="px-5 py-2.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all"
+          class="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold hover:from-emerald-600 hover:to-teal-600 shadow-lg shadow-emerald-200/50 transition-all duration-300 transform hover:scale-105 active:scale-95"
         >
           Approve Request
         </button>
@@ -442,32 +558,25 @@
   </div>
 </div>
 
-<!-- Action Confirmation Modal -->
+<!-- Action Confirmation Modal with Modern Design -->
 <div
   *ngIf="showActionConfirmModal && selectedConsultation"
-  class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animation-fade-in"
+  class="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center z-[60] p-4 animate-fade-in"
 >
   <div
-    class="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 text-center transform transition-all scale-100"
+    class="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl max-w-md w-full p-8 text-center transform transition-all scale-100 animate-slide-up"
   >
     <div
-      class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+      class="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 transform transition-all duration-300 hover:scale-110"
       [ngClass]="
-        actionType === 'approve' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
+        actionType === 'approve'
+          ? 'bg-gradient-to-br from-green-100 to-emerald-100 text-green-600'
+          : 'bg-gradient-to-br from-red-100 to-rose-100 text-red-600'
       "
     >
       <svg
         *ngIf="actionType === 'approve'"
-        class="w-8 h-8"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-      </svg>
-      <svg
-        *ngIf="actionType === 'reject'"
-        class="w-8 h-8"
+        class="w-10 h-10"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -475,38 +584,54 @@
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
-          stroke-width="2"
+          stroke-width="2.5"
+          d="M5 13l4 4L19 7"
+        />
+      </svg>
+      <svg
+        *ngIf="actionType === 'reject'"
+        class="w-10 h-10"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2.5"
           d="M6 18L18 6M6 6l12 12"
         />
       </svg>
     </div>
 
-    <h3 class="text-xl font-bold text-gray-900 mb-2">
+    <h3 class="text-2xl font-bold text-gray-900 mb-3">
       {{ actionType === 'approve' ? 'Approve Request?' : 'Reject Request?' }}
     </h3>
-    <p class="text-gray-500 text-sm mb-6">
+    <p class="text-gray-600 mb-8 leading-relaxed">
       Are you sure you want to {{ actionType }} this consultation request from
-      <span class="font-semibold text-gray-900">{{ selectedConsultation.farmer.firstName }}</span
+      <span class="font-bold text-gray-900"
+        >{{ selectedConsultation.farmer.firstName }}
+        {{ selectedConsultation.farmer.lastName }}</span
       >?
     </p>
 
     <div class="flex gap-3">
       <button
         (click)="closeActionConfirm()"
-        class="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+        class="flex-1 px-5 py-3 border-2 border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 active:scale-95"
       >
         Cancel
       </button>
       <button
         (click)="confirmAction()"
-        class="flex-1 px-4 py-2.5 rounded-xl font-semibold text-white shadow-md transition-all"
+        class="flex-1 px-5 py-3 rounded-xl font-semibold text-white shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95"
         [ngClass]="
           actionType === 'approve'
-            ? 'bg-green-600 hover:bg-green-700'
-            : 'bg-red-600 hover:bg-red-700'
+            ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 shadow-green-200'
+            : 'bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 shadow-red-200'
         "
       >
-        {{ actionType === 'approve' ? 'Confirm' : 'Reject' }}
+        {{ actionType === 'approve' ? 'Confirm Approval' : 'Confirm Rejection' }}
       </button>
     </div>
   </div>

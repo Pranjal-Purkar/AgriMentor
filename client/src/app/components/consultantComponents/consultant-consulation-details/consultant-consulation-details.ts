@@ -53,10 +53,17 @@ export class ConsultantConsulationDetails implements OnInit {
 
   fetchConsultationDetails(id: number) {
     this.isLoading = true;
-    this.consultationService.getConsultationRequests().subscribe((data) => {
-      if (data) {
+
+    // Subscribe to the BehaviorSubject observable
+    this.consultationService.listConsultationData$.subscribe({
+      next: (data) => {
+        if (!data) {
+          // Data not yet loaded, trigger initial fetch
+          this.consultationService.getConsultationRequests();
+          return;
+        }
+
         // Find the specific consultation from the list
-        // Note: In a real app with pagination, we might want a specific API call getById(id)
         this.consultation = data.find((c: any) => c.id === id);
 
         if (this.consultation) {
@@ -66,7 +73,12 @@ export class ConsultantConsulationDetails implements OnInit {
 
         this.isLoading = false;
         this.cdr.detectChanges();
-      }
+      },
+      error: (err) => {
+        console.error('🔴 Error fetching consultation details:', err);
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
     });
   }
 

@@ -39,17 +39,28 @@ interface ConsultationRequest {
   styleUrl: './consultant-consulation-request.css',
 })
 export class ConsultantConsulationRequest implements OnInit, OnDestroy {
-  
   tabs = [
-    { key: 'pending', label: 'New Requests', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', color: 'amber' },
-    { key: 'approved', label: 'Approved', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', color: 'green' },
+    {
+      key: 'pending',
+      label: 'New Requests',
+      icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+      color: 'amber',
+    },
+    {
+      key: 'approved',
+      label: 'Approved',
+      icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+      color: 'green',
+    },
     { key: 'completed', label: 'Completed', icon: 'M5 13l4 4L19 7', color: 'blue' },
-    { key: 'rejected', label: 'Rejected', icon: 'M6 18L18 6M6 6l12 12', color: 'red' }
+    { key: 'rejected', label: 'Rejected', icon: 'M6 18L18 6M6 6l12 12', color: 'red' },
   ];
 
   activeTab = 'pending';
   isLoading = false;
   consultationRequests: ConsultationRequest[] = [];
+  filteredRequests: ConsultationRequest[] = []; // For search results
+  searchTerm = ''; // Search input
   selectedConsultation: ConsultationRequest | null = null;
   showDetailsModal = false;
   showScheduleModal = false;
@@ -75,7 +86,7 @@ export class ConsultantConsulationRequest implements OnInit, OnDestroy {
 
   loadConsultations(): void {
     this.isLoading = true;
-    
+
     // Subscribe to the BehaviorSubject observable
     this.subscription = this.consultationService.listConsultationData$.subscribe({
       next: (apiData: any) => {
@@ -85,7 +96,7 @@ export class ConsultantConsulationRequest implements OnInit, OnDestroy {
           return;
         }
 
-        console.log("🔵 Backend Raw Response:", apiData);
+        console.log('🔵 Backend Raw Response:', apiData);
 
         // MAP ONLY REQUIRED FIELDS
         this.consultationRequests = apiData.map((item: any) => ({
@@ -95,43 +106,91 @@ export class ConsultantConsulationRequest implements OnInit, OnDestroy {
           consultationRequestStatus: item.consultationRequestStatus,
           createdAt: item.createdAt,
           farmer: {
-            firstName: item.farmer?.firstName || "N/A",
-            lastName: item.farmer?.lastName || "",
-            email: item.farmer?.email || "",
-            phone: item.farmer?.phone || ""
+            firstName: item.farmer?.firstName || 'N/A',
+            lastName: item.farmer?.lastName || '',
+            email: item.farmer?.email || '',
+            phone: item.farmer?.phone || '',
           },
           crop: {
-            name: item.crop?.name || "N/A",
-            category: item.crop?.category || "",
-            type: item.crop?.type || "",
-            description: item.crop?.description || ""
+            name: item.crop?.name || 'N/A',
+            category: item.crop?.category || '',
+            type: item.crop?.type || '',
+            description: item.crop?.description || '',
           },
           farmAddress: {
-            street: item.farmAddress?.street || "N/A",
-            city: item.farmAddress?.city || "",
-            state: item.farmAddress?.state || "",
-            pinCode: item.farmAddress?.pinCode || "",
-            country: item.farmAddress?.country || ""
-          }
+            street: item.farmAddress?.street || 'N/A',
+            city: item.farmAddress?.city || '',
+            state: item.farmAddress?.state || '',
+            pinCode: item.farmAddress?.pinCode || '',
+            country: item.farmAddress?.country || '',
+          },
         }));
 
-        console.log("🟢 Mapped Consultation Requests:", this.consultationRequests);
+        console.log('🟢 Mapped Consultation Requests:', this.consultationRequests);
+
+        // Initialize filtered requests
+        this.applyFilters();
 
         this.isLoading = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error("🔴 Error in subscription:", err);
+        console.error('🔴 Error in subscription:', err);
         this.isLoading = false;
         this.cdr.detectChanges();
-      }
+      },
     });
   }
 
-  filteredConsultations() {
+  // Get count for a specific status (for tab badges)
+  getCountByStatus(status: string): number {
     return this.consultationRequests.filter(
-      c => c.consultationRequestStatus.toLowerCase() === this.activeTab
+      (c) => c.consultationRequestStatus.toLowerCase() === status.toLowerCase()
+    ).length;
+  }
+
+  // Filter consultations by active tab and search term
+  applyFilters(): void {
+    let filtered = this.consultationRequests.filter(
+      (c) => c.consultationRequestStatus.toLowerCase() === this.activeTab
     );
+
+    // Apply search filter if search term exists
+    if (this.searchTerm.trim()) {
+      const search = this.searchTerm.toLowerCase();
+      filtered = filtered.filter((c) => {
+        const farmerName = `${c.farmer.firstName} ${c.farmer.lastName}`.toLowerCase();
+        const topic = c.topic.toLowerCase();
+        const cropName = c.crop.name.toLowerCase();
+        const city = c.farmAddress.city.toLowerCase();
+
+        return (
+          farmerName.includes(search) ||
+          topic.includes(search) ||
+          cropName.includes(search) ||
+          city.includes(search)
+        );
+      });
+    }
+
+    this.filteredRequests = filtered;
+  }
+
+  // Handle search input
+  onSearch(event: any): void {
+    this.searchTerm = event.target.value;
+    this.applyFilters();
+  }
+
+  // Handle tab change
+  onTabChange(tabKey: string): void {
+    this.activeTab = tabKey;
+    this.applyFilters();
+  }
+
+  // Get filtered consultations for display
+  filteredConsultations(): ConsultationRequest[] {
+    return this.filteredRequests;
   }
 
   openDetailsModal(consultation: ConsultationRequest): void {
@@ -145,7 +204,7 @@ export class ConsultantConsulationRequest implements OnInit, OnDestroy {
   }
 
   openActionConfirm(consultation: ConsultationRequest, action: 'approve' | 'reject'): void {
-    console.log("🔵 Open Action Confirm:", consultation.id, action);
+    console.log('🔵 Open Action Confirm:', consultation.id, action);
     this.selectedConsultation = consultation;
     this.actionType = action;
     this.showActionConfirmModal = true;
@@ -160,11 +219,16 @@ export class ConsultantConsulationRequest implements OnInit, OnDestroy {
 
   confirmAction(): void {
     if (!this.selectedConsultation || !this.actionType) {
-      console.error("❌ Missing selectedConsultation or actionType");
+      console.error('❌ Missing selectedConsultation or actionType');
       return;
     }
 
-    console.log("🟢 Confirming action:", this.actionType, "for consultation:", this.selectedConsultation.id);
+    console.log(
+      '🟢 Confirming action:',
+      this.actionType,
+      'for consultation:',
+      this.selectedConsultation.id
+    );
 
     // Store consultation ID before any async operations
     const consultationId = this.selectedConsultation.id;
@@ -173,81 +237,88 @@ export class ConsultantConsulationRequest implements OnInit, OnDestroy {
     if (action === 'approve') {
       // Close confirmation modal first
       this.closeActionConfirm();
-      
+
       // Call the API to accept
       this.consultationService.acceptConsultationRequest(consultationId);
-      
+
       // Small delay to ensure modal transitions properly
       setTimeout(() => {
         this.openScheduleModal();
       }, 100);
-      
     } else {
       // Call the API to reject
       this.consultationService.rejectConsultationRequest(consultationId);
-      
+
       // Close modals
       this.closeActionConfirm();
       this.selectedConsultation = null;
-      
+
       // Show feedback
-      console.log("✅ Consultation rejected successfully");
+      console.log('✅ Consultation rejected successfully');
     }
     this.consultationService.getListConsultationRequestsData();
     this.loadConsultations();
   }
 
   openScheduleModal(): void {
-    console.log("🟢 Opening schedule modal for consultation:", this.selectedConsultation?.id);
+    console.log('🟢 Opening schedule modal for consultation:', this.selectedConsultation?.id);
     this.showScheduleModal = true;
     this.router.navigate(['/farm-schedule', this.selectedConsultation?.id]);
     this.cdr.detectChanges(); // Force change detection
   }
 
   closeScheduleModal(): void {
-    console.log("🔵 Closing schedule modal");
+    console.log('🔵 Closing schedule modal');
     this.showScheduleModal = false;
     this.selectedConsultation = null;
   }
 
   handleScheduledVisit(scheduledData: any): void {
-    console.log("📅 Farm visit scheduled:", scheduledData);
+    console.log('📅 Farm visit scheduled:', scheduledData);
 
     // Call the service to schedule the visit
     this.consultationService.scheduleFarmVisit(scheduledData).subscribe({
       next: (res) => {
-        console.log("✅ Farm visit scheduled successfully:", res);
-        
+        console.log('✅ Farm visit scheduled successfully:', res);
+
         // Force refresh the data
         this.consultationService.getListConsultationRequestsData();
-        
+
         // Show success message
-        alert("Farm visit scheduled successfully!");
+        alert('Farm visit scheduled successfully!');
       },
       error: (err) => {
-        console.error("❌ Error scheduling farm visit:", err);
-        alert("Failed to schedule farm visit. Please try again.");
-      }
+        console.error('❌ Error scheduling farm visit:', err);
+        alert('Failed to schedule farm visit. Please try again.');
+      },
     });
   }
 
   getTabColor(key: string): string {
-    const tab = this.tabs.find(t => t.key === key);
+    const tab = this.tabs.find((t) => t.key === key);
     return tab?.color || 'gray';
   }
 
   getStatusBadgeClass(status: string): string {
     const statusLower = status.toLowerCase();
     const colors: any = {
-      'pending': 'bg-amber-100 text-amber-700 border-amber-200',
-      'approved': 'bg-green-100 text-green-700 border-green-200',
-      'completed': 'bg-blue-100 text-blue-700 border-blue-200',
-      'rejected': 'bg-red-100 text-red-700 border-red-200'
+      pending: 'bg-amber-100 text-amber-700 border-amber-200',
+      approved: 'bg-green-100 text-green-700 border-green-200',
+      completed: 'bg-blue-100 text-blue-700 border-blue-200',
+      rejected: 'bg-red-100 text-red-700 border-red-200',
     };
     return colors[statusLower] || 'bg-gray-100 text-gray-700';
   }
 
   getInitials(firstName: string, lastName: string): string {
     return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`;
+  }
+
+  /*
+  navigate to consultation details
+  */
+  navigateToConsultationDetails(id: number): void {
+    console.log('🟢 Navigating to consultation details for consultation:', id);
+    this.router.navigate(['/consultant/consultation-details', id]);
   }
 }

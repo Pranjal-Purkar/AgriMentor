@@ -11,6 +11,10 @@ export class ConsultantService {
   private consultantDataSubject = new BehaviorSubject<any | null>(null);
     consultantData$ = this.consultantDataSubject.asObservable();
 
+  private verifiedConsultantDataSubject = new BehaviorSubject<any | null>(null);
+  verifiedConsultantData$ = this.verifiedConsultantDataSubject.asObservable();
+
+
    
   
     constructor(
@@ -34,6 +38,28 @@ getConsultantProfileData() {
       },
       error: (err: any) => {
         console.log('CONSULTANT::ERROR: ', err);
+      },
+    });
+  }
+
+  /*get verified consultants */
+  getVerifiedConsultants() {
+    if(!this.verifiedConsultantDataSubject.getValue()) {   
+      this.getVerifiedConsultantsData();
+    }
+    console.log("getVerifiedConsultants");
+      console.log(this.verifiedConsultantDataSubject.getValue());
+    return this.verifiedConsultantData$;
+  }
+
+  getVerifiedConsultantsData() {
+    this.api.getVerifiedConsultants().subscribe({
+      next: (res: any) => {
+        this.verifiedConsultantDataSubject.next(res.data);
+        console.log('VERIFIED CONSULTANTS: ', res.data);
+      },
+      error: (err: any) => {
+        console.log('FARMER::ERROR: ', err);
       },
     });
   }

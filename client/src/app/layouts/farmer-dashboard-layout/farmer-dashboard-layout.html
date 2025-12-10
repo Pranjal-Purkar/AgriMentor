@@ -9,7 +9,7 @@
   <!-- Mobile Overlay & Sidebar -->
   <div
     *ngIf="isMobileMenuOpen"
-    class="fixed inset-0 z-40 bg-gray-900/20 backdrop-blur-sm lg:hidden transition-opacity duration-300"
+    class="fixed inset-0 z-50 bg-gray-900/20 backdrop-blur-sm lg:hidden transition-opacity duration-300"
     (click)="closeMobileMenu()"
   ></div>
 
@@ -100,7 +100,7 @@
 
     <!-- Page Content -->
     <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden">
-      <div class="max-w-7xl mx-auto animation-fade-in-up">
+      <div class="w-full   animation-fade-in-up">
         <router-outlet (activate)="scrollToTop()"></router-outlet>
       </div>
     </main>

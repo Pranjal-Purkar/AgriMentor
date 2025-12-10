@@ -12,12 +12,15 @@ import { Consultation } from './components/farmerComponents/consultation/consult
 import { ConsultationRequest } from './components/farmerComponents/consultation-request/consultation-request';
 import { FarmerProfile } from './components/farmerComponents/farmer-profile/farmer-profile';
 import { CosultationDetails } from './components/farmerComponents/cosultation-details/cosultation-details';
+import { Consultant } from './components/farmerComponents/consultant/consultant';
 import { ConsultantDashboardLayout } from './layouts/consultant-dashboard-layout/consultant-dashboard-layout';
 import { ConsultantHome } from './components/consultantComponents/consultant-home/consultant-home';
 import { ConsultantProfile } from './components/consultantComponents/consultant-profile/consultant-profile';
 import { ConsultantConsulationDetails } from './components/consultantComponents/consultant-consulation-details/consultant-consulation-details';
 import { ConsultantConsulationRequest } from './components/consultantComponents/consultant-consulation-request/consultant-consulation-request';
 import { FarmVisitiongSchedule } from './components/consultantComponents/farm-visitiong-schedule/farm-visitiong-schedule';
+import { AdminDashboardLayout } from './layouts/admin-dashboard-layout/admin-dashboard-layout';
+import { AdminHome } from './components/adminComponent/admin-home/admin-home';
 
 export const routes: Routes = [
   {
@@ -70,6 +73,11 @@ export const routes: Routes = [
         data: { animation: 'Consultation' },
       },
       {
+        path: 'consultants',
+        component: Consultant,
+        data: { animation: 'Consultants' },
+      },
+      {
         path: 'consultation-request',
         component: ConsultationRequest,
         data: { animation: 'ConsultantRegister' },
@@ -89,6 +97,11 @@ export const routes: Routes = [
         component: ConsultantConsulationDetails,
         data: { animation: 'Cosultation' },
       },
+      {
+        path: 'consultant/profile/:id',
+        component: ConsultantProfile,
+        data: { animation: 'ConsultantProfile' },
+      },
     ],
   },
   {
@@ -100,12 +113,6 @@ export const routes: Routes = [
         component: ConsultantHome,
         data: { animation: 'Home' },
       },
-      // {
-      //     path:'consultation',
-      //     component:Consultation,
-      //     data: { animation: 'Consultation' }
-
-      // },
       {
         path: 'consultation-request',
         component: ConsultantConsulationRequest,
@@ -117,7 +124,7 @@ export const routes: Routes = [
         data: { animation: 'ConsultantProfile' },
       },
       {
-        path: 'consultation-request/:id',
+        path: 'consultation-details/:id',
         component: ConsultantConsulationDetails,
         data: { animation: 'ConsultantConsulationDetails' },
       },
@@ -128,4 +135,16 @@ export const routes: Routes = [
       },
     ],
   },
+  {
+    path:'admin',
+    component:AdminDashboardLayout,
+    children:[
+      {
+        path:'dashboard',
+        component:AdminHome,
+        data:{animation:'Home'}
+      }
+    ]
+    
+  }
 ];

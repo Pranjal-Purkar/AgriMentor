@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ConsultantService } from '../../../services/consultantService/consultant-service';
@@ -37,6 +38,8 @@ export class ConsultantProfile implements OnInit, OnDestroy {
   editMode = false;
   isLoading = false;
   saveSuccess = false;
+  isViewingOtherProfile = false; // Flag to indicate if viewing another consultant's profile
+  consultantId: number | null = null; // ID from route parameter
 
   profileForm: FormGroup;
   private subscription!: Subscription;
@@ -47,7 +50,8 @@ export class ConsultantProfile implements OnInit, OnDestroy {
   constructor(
     private consultantService: ConsultantService,
     private fb: FormBuilder,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private route: ActivatedRoute
   ) {
     this.profileForm = this.fb.group({
       firstName: ['', Validators.required],
@@ -73,8 +77,60 @@ export class ConsultantProfile implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    console.log('📌 ConsultantProfile ngOnInit — fetching profile');
-    this.getConsultantProfile();
+    console.log('📌 ConsultantProfile ngOnInit — checking route params');
+
+    // Check if there's an ID in the route parameter
+    this.route.paramMap.subscribe((params) => {
+      const id = params.get('id');
+
+      if (id) {
+        // Viewing another consultant's profile
+        this.consultantId = Number(id);
+        this.isViewingOtherProfile = true;
+        console.log('👁️ Viewing consultant profile with ID:', this.consultantId);
+        this.loadConsultantById(this.consultantId);
+      } else {
+        // Viewing own profile (logged-in consultant)
+        this.isViewingOtherProfile = false;
+        console.log('👤 Loading own consultant profile');
+        this.getConsultantProfile();
+      }
+    });
+  }
+
+  loadConsultantById(id: number): void {
+    this.isLoading = true;
+
+    // Subscribe to verified consultants list and find the specific consultant
+    this.consultantService.getVerifiedConsultants().subscribe({
+      next: (consultants: any) => {
+        console.log('🔍 Searching for consultant with ID:', id, 'in list:', consultants);
+
+        if (Array.isArray(consultants)) {
+          const consultant = consultants.find((c: any) => c.id === id);
+
+          if (consultant) {
+            console.log('✅ Found consultant:', consultant);
+            this.consultantProfile = consultant;
+            this.patchFormValues();
+
+            if (this.consultantProfile?.profilePhotoUrl) {
+              this.profilePreview = this.consultantProfile.profilePhotoUrl;
+            }
+          } else {
+            console.warn('❌ Consultant not found with ID:', id);
+          }
+        }
+
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('❌ Error loading consultant:', err);
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   getConsultantProfile() {
@@ -88,7 +144,7 @@ export class ConsultantProfile implements OnInit, OnDestroy {
         this.profilePreview = this.consultantProfile.profilePhotoUrl;
       }
 
-      console.log("Final consultant profile:", this.consultantProfile);
+      console.log('Final consultant profile:', this.consultantProfile);
       this.isLoading = false;
       this.cdr.detectChanges();
     });
@@ -96,7 +152,7 @@ export class ConsultantProfile implements OnInit, OnDestroy {
 
   patchFormValues() {
     if (!this.consultantProfile) {
-      console.warn("❗ Consultant profile is empty");
+      console.warn('❗ Consultant profile is empty');
       return;
     }
 
@@ -121,13 +177,10 @@ export class ConsultantProfile implements OnInit, OnDestroy {
     };
 
     // FIXED LOGIC HERE
-    const address =
-      this.consultantProfile.addressDTO ||
-      this.consultantProfile.address ||
-      null;
+    const address = this.consultantProfile.addressDTO || this.consultantProfile.address || null;
 
     if (address) {
-      console.log("📍 Using address:", address);
+      console.log('📍 Using address:', address);
       formData.address = {
         street: address.street || '',
         city: address.city || '',
@@ -138,13 +191,19 @@ export class ConsultantProfile implements OnInit, OnDestroy {
         longitude: address.longitude || '',
       };
     } else {
-      console.warn("⚠ No address found in backend response");
+      console.warn('⚠ No address found in backend response');
     }
 
     this.profileForm.patchValue(formData);
   }
 
   toggleEdit() {
+    // Don't allow editing when viewing another consultant's profile
+    if (this.isViewingOtherProfile) {
+      console.warn("⚠️ Cannot edit another consultant's profile");
+      return;
+    }
+
     this.editMode = !this.editMode;
     this.saveSuccess = false;
 
@@ -210,7 +269,7 @@ export class ConsultantProfile implements OnInit, OnDestroy {
       },
     };
 
-    console.log("💾 Sending updated data:", updateRequest);
+    console.log('💾 Sending updated data:', updateRequest);
 
     this.consultantService.updateConsultantProfile(updateRequest);
     this.getConsultantProfile();

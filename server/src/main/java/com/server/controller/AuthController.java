@@ -118,7 +118,7 @@ public class AuthController{
         
         try {
         	 otpService.sendOtp(email);
-        	 otpService.generateOtp(6);
+        	 OtpService.generateOtp(6);
              return ResponseEntity.ok().body(new ApiResponse<>(HttpStatus.OK,"OTP send succesfully"));
 		} catch (Exception e) {
 			log.error("Login failed for user: {}", e.getMessage());

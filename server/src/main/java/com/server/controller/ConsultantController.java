@@ -26,8 +26,8 @@ import java.util.UUID;
 @RequestMapping("/api/v1/consultants")
 @Slf4j
 public class ConsultantController {
-	@Autowired
-	private ConsultantService consultantService;
+    @Autowired
+    private ConsultantService consultantService;
 
     @Autowired
     private VerificationDocumentRepository verificationDocumentRepository;
@@ -43,29 +43,26 @@ public class ConsultantController {
                 return ResponseEntity.ok(new ApiResponse<>(
                         HttpStatus.OK,
                         "No consultants available",
-                        consultants
-                ));
+                        consultants));
             }
 
             log.info("Consultants fetched successfully. Total: {}", consultants.size());
             return ResponseEntity.ok(new ApiResponse<>(
                     HttpStatus.OK,
                     "Consultants retrieved successfully",
-                    consultants
-            ));
+                    consultants));
         } catch (Exception e) {
             log.error("Error fetching consultants", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse<String>(
                             HttpStatus.INTERNAL_SERVER_ERROR,
-                            "Error fetching consultants: " + e.getMessage()
-                    ));
+                            "Error fetching consultants: " + e.getMessage()));
         }
     }
 
-    //get verified consultants
+    // get verified consultants
 
-    //Get only verified consultants
+    // Get only verified consultants
     @GetMapping("/verified")
     public ResponseEntity<?> getVerifiedConsultants() {
         log.info("Received request to fetch verified consultants");
@@ -77,27 +74,24 @@ public class ConsultantController {
                 return ResponseEntity.ok(new ApiResponse<>(
                         HttpStatus.OK,
                         "No verified consultants available",
-                        verifiedConsultants
-                ));
+                        verifiedConsultants));
             }
 
             log.info("Verified consultants fetched successfully. Total: {}", verifiedConsultants.size());
             return ResponseEntity.ok(new ApiResponse<>(
                     HttpStatus.OK,
                     "Verified consultants retrieved successfully",
-                    verifiedConsultants
-            ));
+                    verifiedConsultants));
         } catch (Exception e) {
             log.error("Error fetching verified consultants", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse<String>(
                             HttpStatus.INTERNAL_SERVER_ERROR,
-                            "Error fetching verified consultants: " + e.getMessage()
-                    ));
+                            "Error fetching verified consultants: " + e.getMessage()));
         }
     }
 
-    //get consultant by username
+    // get consultant by username
     @GetMapping("/{username}")
     public ResponseEntity<?> getConsultantByUsername(@PathVariable String username) {
         log.info("Received request to get consultant by username: {}", username);
@@ -106,7 +100,8 @@ public class ConsultantController {
             log.info("Consultant fetched: {}", consultantDTO);
             if (consultantDTO.isPresent()) {
                 log.info("Consultant retrieved successfully for username: {}", username);
-                return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK, "Consultant retrieved successfully", consultantDTO.get()));
+                return ResponseEntity
+                        .ok(new ApiResponse<>(HttpStatus.OK, "Consultant retrieved successfully", consultantDTO.get()));
             } else {
                 log.info("Consultant not found for username: {}", username);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -114,11 +109,12 @@ public class ConsultantController {
             }
         } catch (Exception e) {
             log.error("Error fetching consultant for username: {}", username, e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse<String>(HttpStatus.NOT_FOUND, e.getLocalizedMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<String>(HttpStatus.NOT_FOUND, e.getLocalizedMessage()));
         }
     }
 
-    //get consulatant Profile
+    // get consulatant Profile
     @GetMapping("/profile")
     public ResponseEntity<?> getConsultantByUsername(Authentication authentication) {
         log.info("Received request to get consultant profile");
@@ -133,7 +129,8 @@ public class ConsultantController {
         log.info("Consultant profile fetched: {}", consultantDTO);
         if (consultantDTO.isPresent()) {
             log.info("Consultant profile retrieved successfully for user: {}", username);
-            return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK, "Consultant profile retrieved successfully", consultantDTO.get()));
+            return ResponseEntity.ok(
+                    new ApiResponse<>(HttpStatus.OK, "Consultant profile retrieved successfully", consultantDTO.get()));
         } else {
             log.info("Consultant profile not found for user: {}", username);
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -141,12 +138,13 @@ public class ConsultantController {
         }
     }
 
-    //update consultant profile
+    // update consultant profile
 
-    //Update Consultant Information
-    //Update Consultant Information
+    // Update Consultant Information
+    // Update Consultant Information
     @PutMapping("/profile/update")
-    public ResponseEntity<?> updateConsultantProfile(@RequestBody ConsultantUpdateRequest updateRequest, Authentication authentication) {
+    public ResponseEntity<?> updateConsultantProfile(@RequestBody ConsultantUpdateRequest updateRequest,
+            Authentication authentication) {
         log.info("Received request to update consultant profile");
         if (authentication == null || !authentication.isAuthenticated()) {
             log.warn("Unauthorized access attempt to update consultant profile");
@@ -172,8 +170,7 @@ public class ConsultantController {
         }
     }
 
-
-    //getAllConsultants requests
+    // getAllConsultants requests
     @GetMapping("/consultation/request/all")
     public ResponseEntity<?> getAllConsultationRequests(Authentication authentication) {
         log.info("Received request to get all consultation requests");
@@ -188,7 +185,8 @@ public class ConsultantController {
         log.info("Consultation requests fetched: {}", requests);
         if (requests.isPresent()) {
             log.info("Consultation requests retrieved successfully for user: {}", username);
-            return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK, "Consultation requests retrieved successfully", requests.get()));
+            return ResponseEntity.ok(
+                    new ApiResponse<>(HttpStatus.OK, "Consultation requests retrieved successfully", requests.get()));
         } else {
             log.info("No consultation requests found for user: {}", username);
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -196,10 +194,10 @@ public class ConsultantController {
         }
     }
 
-
-    //Accept Consultation Request
+    // Accept Consultation Request
     @PutMapping("/consultation/request/{consultationId}/accept")
-    public ResponseEntity<?> acceptConsultationRequest(@PathVariable Long consultationId, Authentication authentication) {
+    public ResponseEntity<?> acceptConsultationRequest(@PathVariable Long consultationId,
+            Authentication authentication) {
         log.info("Received request to accept consultation request with id: {}", consultationId);
         if (authentication == null || !authentication.isAuthenticated()) {
             log.warn("Unauthorized access attempt to accept consultation request");
@@ -219,9 +217,10 @@ public class ConsultantController {
         }
     }
 
-    //Reject Consultation Request
+    // Reject Consultation Request
     @PutMapping("/consultation/request/{consultationId}/reject")
-    public ResponseEntity<?> rejectConsultationRequest(@PathVariable Long consultationId, Authentication authentication) {
+    public ResponseEntity<?> rejectConsultationRequest(@PathVariable Long consultationId,
+            Authentication authentication) {
         log.info("Received request to reject consultation request with id: {}", consultationId);
         if (authentication == null || !authentication.isAuthenticated()) {
             log.warn("Unauthorized access attempt to reject consultation request");
@@ -241,9 +240,10 @@ public class ConsultantController {
         }
     }
 
-    //Schedule Consultation Visit
+    // Schedule Consultation Visit
     @PutMapping("/consultation/request/{consultationId}/schedule-visit")
-    public ResponseEntity<?> scheduleConsultationVisit(@PathVariable Long consultationId, @RequestBody FarmVisitRequest request, Authentication authentication) {
+    public ResponseEntity<?> scheduleConsultationVisit(@PathVariable Long consultationId,
+            @RequestBody FarmVisitRequest request, Authentication authentication) {
         log.info("Received request to schedule consultation visit for request id: {}", consultationId);
         if (authentication == null || !authentication.isAuthenticated()) {
             log.info("Unauthorized access attempt to schedule consultation visit");
@@ -254,7 +254,8 @@ public class ConsultantController {
         log.info("Attempting to schedule consultation visit for request id: {} by user: {}", consultationId, username);
         boolean scheduled = consultantService.scheduleConsultatinVisit(username, consultationId, request);
         if (scheduled) {
-            log.info("Consultation visit scheduled successfully for request id: {} by user: {}", consultationId, username);
+            log.info("Consultation visit scheduled successfully for request id: {} by user: {}", consultationId,
+                    username);
             return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK, "Consultation visit scheduled successfully"));
         } else {
             log.info("Failed to schedule consultation visit for request id: {} by user: {}", consultationId, username);
@@ -297,14 +298,13 @@ public class ConsultantController {
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + document.getDocumentType() + ".pdf\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "inline; filename=\"" + document.getDocumentType() + ".pdf\"")
                     .body(document.getFileContent());
         } catch (Exception e) {
             log.error("Error previewing document", e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Document not found");
         }
     }
-
-
 
 }

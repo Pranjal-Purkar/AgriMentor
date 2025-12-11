@@ -57,8 +57,13 @@
             >
           </div>
           <h3 class="text-gray-500 text-sm font-medium mb-1">Total Users</h3>
-          <p class="text-3xl font-bold text-gray-900">2,847</p>
-          <p class="text-xs text-gray-500 mt-2">1,523 Farmers • 1,324 Consultants</p>
+          <p class="text-3xl font-bold text-gray-900">
+            {{ dashboardStats?.totalUsers || 0 | number }}
+          </p>
+          <p class="text-xs text-gray-500 mt-2">
+            {{ dashboardStats?.totalFarmers || 0 | number }} Farmers •
+            {{ dashboardStats?.totalConsultants || 0 | number }} Consultants
+          </p>
         </div>
       </div>
 
@@ -87,8 +92,13 @@
             >
           </div>
           <h3 class="text-gray-500 text-sm font-medium mb-1">Active Consultations</h3>
-          <p class="text-3xl font-bold text-gray-900">342</p>
-          <p class="text-xs text-gray-500 mt-2">187 Approved • 155 In Progress</p>
+          <p class="text-3xl font-bold text-gray-900">
+            {{ dashboardStats?.activeConsultations || 0 | number }}
+          </p>
+          <p class="text-xs text-gray-500 mt-2">
+            {{ dashboardStats?.approvedConsultations || 0 | number }} Approved •
+            {{ dashboardStats?.inProgressConsultations || 0 | number }} In Progress
+          </p>
         </div>
       </div>
 
@@ -117,7 +127,9 @@
             >
           </div>
           <h3 class="text-gray-500 text-sm font-medium mb-1">Pending Requests</h3>
-          <p class="text-3xl font-bold text-gray-900">89</p>
+          <p class="text-3xl font-bold text-gray-900">
+            {{ dashboardStats?.pendingRequests || 0 | number }}
+          </p>
           <p class="text-xs text-gray-500 mt-2">Requires immediate attention</p>
         </div>
       </div>
@@ -147,7 +159,9 @@
             >
           </div>
           <h3 class="text-gray-500 text-sm font-medium mb-1">Platform Activity</h3>
-          <p class="text-3xl font-bold text-gray-900">94.2%</p>
+          <p class="text-3xl font-bold text-gray-900">
+            {{ dashboardStats?.platformActivityRate || 0 | number : '1.1-1' }}%
+          </p>
           <p class="text-xs text-gray-500 mt-2">Engagement rate this month</p>
         </div>
       </div>

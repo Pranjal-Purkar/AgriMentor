@@ -1,6 +1,12 @@
-<div class="min-h-screen  p-6 md:p-8 animation-fade-in-up">
+<div class="min-h-screen p-6 md:p-8 animation-fade-in-up">
   <div class="max-w-7xl mx-auto space-y-8">
-    
+    <!-- Loading State -->
+    @if (isLoading) {
+    <div class="flex items-center justify-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <span class="ml-3 text-gray-600">Loading dashboard...</span>
+    </div>
+    }
 
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -29,6 +35,24 @@
                 stroke-linejoin="round"
                 stroke-width="2"
                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+            } @case('Approved') {
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+            } @case('Completed') {
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
               ></path>
             </svg>
             } @case('Average rating') {
@@ -69,16 +93,40 @@
         <div class="flex items-center justify-between">
           <h3 class="text-lg font-bold text-gray-900">Recent Requests</h3>
           <button
+            (click)="viewAllConsultations()"
+            
             class="text-sm font-semibold text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors"
           >
             View All
           </button>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="rounded-2xl shadow-sm border border-gray-100 h-[46%] overflow-scroll ">
+          @if (consultationRequests.length === 0 && !isLoading) {
+          <div class="p-8 text-center text-gray-500">
+            <svg
+              class="w-16 h-16 mx-auto mb-4 text-gray-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+              ></path>
+            </svg>
+            <p class="text-lg font-medium">No consultation requests yet</p>
+            <p class="text-sm mt-1">New requests will appear here</p>
+          </div>
+          } @else {
           <div class="divide-y divide-gray-100">
-            @for (request of consultationRequests; track request) {
-            <div class="p-5 hover:bg-gray-50 transition-colors cursor-pointer group">
+            @for (request of consultationRequests; track request.id) {
+            <div
+              (click)="viewConsultationDetails(request)"
+              class="p-5 hover:bg-gray-50 transition-colors cursor-pointer group"
+            >
               <div class="flex items-center justify-between gap-4">
                 <div class="flex items-center gap-4">
                   <!-- Avatar -->
@@ -100,7 +148,11 @@
                         {{ request.consultant.lastName }}</span
                       >
                       <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
-                      <span class="text-xs text-gray-400">{{ request.date | date : 'MMM d' }}</span>
+                      <span class="text-xs text-gray-400">{{
+                        request.createdAt
+                          ? (request.createdAt | date : 'MMM d, yyyy')
+                          : (request.date | date : 'MMM d, yyyy')
+                      }}</span>
                     </div>
                   </div>
                 </div>
@@ -136,6 +188,7 @@
             </div>
             }
           </div>
+          }
         </div>
       </div>
 

@@ -8,6 +8,7 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
+import { FarmVisit } from '../../../services/farmVisit/farm-visit';
 
 // Custom validator to ensure date is in the future
 function futureDateValidator(control: AbstractControl): ValidationErrors | null {
@@ -41,7 +42,7 @@ export class FarmVisitiongSchedule {
   farmVisitForm: FormGroup;
   minDate: string; // Minimum date for the date input
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private farmVisitService: FarmVisit) {
     // Set minimum date to tomorrow
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -64,7 +65,12 @@ export class FarmVisitiongSchedule {
   }
 
   submitSchedule() {
+    console.log('🟢 submitSchedule called');
+    console.log('🟢 Form valid:', this.farmVisitForm.valid);
+    console.log('🟢 Form value:', this.farmVisitForm.value);
+
     if (this.farmVisitForm.invalid) {
+      console.log('❌ Form is invalid, marking all as touched');
       this.farmVisitForm.markAllAsTouched();
       return;
     }
@@ -72,15 +78,24 @@ export class FarmVisitiongSchedule {
     const { date, time, notes } = this.farmVisitForm.value;
 
     const scheduledData = {
-      consultationId: this.consultationId,
-      scheduledDate: `${date}T${time}`,
-      visitNotes: notes,
-      visitStatus: 'SCHEDULED',
+      scheduledDate: `${date}T${time}:00`,
+      visitNotes: notes || '',
+      visitStatus: 'SCHEDULED' as const,
     };
 
-    console.log('📌 Scheduling Farm Visit:', scheduledData);
+    console.log('📌 Scheduling Farm Visit with data:', scheduledData);
 
-    this.scheduled.emit(scheduledData);
-    this.close.emit();
+    // Call the farm visit service
+    this.farmVisitService.scheduleFarmVisit(this.consultationId, scheduledData).subscribe({
+      next: (response) => {
+        console.log('✅ Farm visit scheduled successfully:', response.data);
+        this.scheduled.emit(response.data);
+        this.close.emit();
+        this.farmVisitForm.reset();
+      },
+      error: (error) => {
+        console.error('❌ Error scheduling farm visit:', error);
+      },
+    });
   }
 }

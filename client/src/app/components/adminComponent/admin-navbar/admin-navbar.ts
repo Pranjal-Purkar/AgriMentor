@@ -1,6 +1,8 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { AdminService } from '../../../services/adminService/admin.service';
+import { AdminDashboardStats } from '../../../interfaces/admin.interfaces';
 
 @Component({
   selector: 'app-admin-navbar',
@@ -8,8 +10,10 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './admin-navbar.html',
   styleUrl: './admin-navbar.css',
 })
-export class AdminNavbar {
+export class AdminNavbar implements OnInit {
   @Output() closeMenu = new EventEmitter<void>();
+
+  dashboardStats: AdminDashboardStats | null = null;
 
   menuItems = [
     {
@@ -22,19 +26,19 @@ export class AdminNavbar {
       title: 'Users Management',
       route: '/admin/users',
       icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z',
-      badge: '2.8k',
+      badgeType: 'users',
     },
     {
       title: 'Consultations',
       route: '/admin/consultations',
       icon: 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z',
-      badge: '342',
+      badgeType: 'consultations',
     },
     {
       title: 'Pending Approvals',
       route: '/admin/approvals',
       icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
-      badge: '89',
+      badgeType: 'pending',
     },
     {
       title: 'Reports & Analytics',
@@ -48,17 +52,67 @@ export class AdminNavbar {
     },
   ];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private adminService: AdminService) {}
+
+  ngOnInit(): void {
+    this.loadDashboardStats();
+  }
+
+  loadDashboardStats(): void {
+    console.log('🟣 [AdminNavbar] Loading dashboard stats for badges...');
+    this.adminService.getDashboardStatistics().subscribe({
+      next: (response) => {
+        console.log('🟣 [AdminNavbar] Received response:', response);
+        this.dashboardStats = response.data;
+        console.log('🟣 [AdminNavbar] Dashboard stats:', this.dashboardStats);
+        console.log(
+          '🟣 [AdminNavbar] Badge values - Users:',
+          this.getBadge('users'),
+          'Consultations:',
+          this.getBadge('consultations'),
+          'Pending:',
+          this.getBadge('pending')
+        );
+      },
+      error: (error) => {
+        console.error('🔴 [AdminNavbar] Error loading dashboard stats:', error);
+        console.error('🔴 [AdminNavbar] Error status:', error.status);
+      },
+    });
+  }
+
+  getBadge(type: string): string {
+    if (!this.dashboardStats) return '';
+
+    switch (type) {
+      case 'users':
+        return this.formatNumber(this.dashboardStats.totalUsers);
+      case 'consultations':
+        return this.formatNumber(this.dashboardStats.activeConsultations);
+      case 'pending':
+        return this.formatNumber(this.dashboardStats.pendingRequests);
+      default:
+        return '';
+    }
+  }
+
+  getMenuBadge(menu: any): string {
+    return menu.badgeType ? this.getBadge(menu.badgeType) : '';
+  }
+
+  formatNumber(num: number): string {
+    if (num >= 1000) {
+      return (num / 1000).toFixed(1) + 'k';
+    }
+    return num.toString();
+  }
 
   onLinkClick(): void {
     this.closeMenu.emit();
   }
 
   onLogout(): void {
-    // Add logout logic here
-    console.log('Logging out...');
-    // Example: Clear session, navigate to login
-    // this.authService.logout();
+    sessionStorage.clear();
     this.router.navigate(['/login']);
   }
 }

@@ -69,11 +69,11 @@
           <span class="font-semibold text-sm relative z-10">{{ menu.title }}</span>
 
           <!-- Badge (if menu has badge) -->
-          @if(menu.badge) {
+          @if(getMenuBadge(menu)) {
           <span
             class="ml-auto px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-bold rounded-full relative z-10"
           >
-            {{ menu.badge }}
+            {{ getMenuBadge(menu) }}
           </span>
           }
 

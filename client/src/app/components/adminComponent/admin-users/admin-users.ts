@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AdminService } from '../../../services/adminService/admin.service';
+import { AdminUser, UserStatistics } from '../../../interfaces/admin.interfaces';
+import { toast } from 'ngx-sonner';
 
 @Component({
   selector: 'app-admin-users',
@@ -8,79 +11,82 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './admin-users.html',
   styleUrl: './admin-users.css',
 })
-export class AdminUsers {
-  // Mock data - replace with actual API calls
-  totalUsers = 2847;
-  farmers = 1523;
-  consultants = 1324;
-  activeUsers = 2156;
+export class AdminUsers implements OnInit {
+  // Statistics
+  userStats: UserStatistics | null = null;
 
-  users = [
-    {
-      id: 1,
-      name: 'Rajesh Kumar',
-      email: 'rajesh@example.com',
-      role: 'Farmer',
-      status: 'Active',
-      joined: '2024-01-15',
-      location: 'Maharashtra',
-    },
-    {
-      id: 2,
-      name: 'Dr. Priya Sharma',
-      email: 'priya@example.com',
-      role: 'Consultant',
-      status: 'Active',
-      joined: '2024-02-20',
-      location: 'Punjab',
-    },
-    {
-      id: 3,
-      name: 'Amit Patel',
-      email: 'amit@example.com',
-      role: 'Farmer',
-      status: 'Active',
-      joined: '2024-03-10',
-      location: 'Gujarat',
-    },
-    {
-      id: 4,
-      name: 'Dr. Suresh Reddy',
-      email: 'suresh@example.com',
-      role: 'Consultant',
-      status: 'Pending',
-      joined: '2024-11-25',
-      location: 'Telangana',
-    },
-    {
-      id: 5,
-      name: 'Lakshmi Devi',
-      email: 'lakshmi@example.com',
-      role: 'Farmer',
-      status: 'Active',
-      joined: '2024-04-05',
-      location: 'Karnataka',
-    },
-  ];
+  // Users list
+  users: AdminUser[] = [];
+  filteredUsers: AdminUser[] = [];
 
+  // UI state
   searchTerm = '';
   selectedFilter = 'all';
+  isLoading = true;
 
-  getInitials(name: string): string {
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase();
+  constructor(private adminService: AdminService) {}
+
+  ngOnInit(): void {
+    this.loadUserStatistics();
+    this.loadAllUsers();
+  }
+
+  loadUserStatistics(): void {
+    this.adminService.getUserStatistics().subscribe({
+      next: (response) => {
+        this.userStats = response.data;
+      },
+      error: (error) => {
+        console.error('Error loading user statistics:', error);
+        toast.error('Failed to load user statistics');
+      },
+    });
+  }
+
+  loadAllUsers(): void {
+    this.isLoading = true;
+    this.adminService.getAllUsers().subscribe({
+      next: (response) => {
+        this.users = response.data;
+        this.filteredUsers = this.users;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading users:', error);
+        toast.error('Failed to load users');
+        this.isLoading = false;
+      },
+    });
+  }
+
+  toggleUserStatus(user: AdminUser): void {
+    this.adminService.toggleUserStatus(user.email).subscribe({
+      next: (response) => {
+        toast.success(response.message || 'User status updated');
+        this.loadAllUsers(); // Reload users
+      },
+      error: (error) => {
+        console.error('Error toggling user status:', error);
+        toast.error('Failed to update user status');
+      },
+    });
+  }
+
+  getInitials(firstName: string, lastName: string): string {
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   }
 
   getRoleColor(role: string): string {
-    return role === 'Farmer' ? 'emerald' : 'indigo';
+    return role === 'FARMER' ? 'emerald' : 'indigo';
   }
 
-  getStatusClass(status: string): string {
-    return status === 'Active'
+  getStatusClass(isActive: boolean): string {
+    return isActive
       ? 'bg-green-100 text-green-700 border-green-200'
-      : 'bg-amber-100 text-amber-700 border-amber-200';
+      : 'bg-red-100 text-red-700 border-red-200';
+  }
+
+  getStatusText(isActive: boolean): string {
+    return isActive ? 'Active' : 'Inactive';
   }
 }

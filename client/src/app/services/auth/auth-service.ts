@@ -8,26 +8,23 @@ import { map, Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthService {
-
   constructor(
-    private api: ApiService, 
-    private router: Router,
-    // private farmerService:FarmerService
-  ) {}
-  
-  
+    private api: ApiService,
+    private router: Router
+  ) // private farmerService:FarmerService
+  {}
 
   isUserAlreadyExist(username: string, role: string): Observable<boolean> {
-  return this.api.isUserAlreadyExistst(username, role).pipe(
-    map((res: any) => {
-      return res.data; // true or false
-    })
-  );
-}
+    return this.api.isUserAlreadyExistst(username, role).pipe(
+      map((res: any) => {
+        return res.data; // true or false
+      })
+    );
+  }
 
   registerUser(userData: any) {
-    console.log("Insede ResgisterUser...");
-    
+    console.log('Insede ResgisterUser...');
+
     this.api.registerUser(userData).subscribe({
       next: (res) => {
         console.log('AUTH::DATA: ' + res);
@@ -43,7 +40,7 @@ export class AuthService {
 
   //REgister consultant
   registerConsultant(consultantData: any) {
-    console.log("Insede ResgisterConsultant...");
+    console.log('Insede ResgisterConsultant...');
 
     this.api.registerConsultant(consultantData).subscribe({
       next: (res) => {
@@ -63,7 +60,6 @@ export class AuthService {
   login(userData: any) {
     this.api.login(userData).subscribe({
       next: (res) => {
-         
         console.log('AUTH:LOGIN::DATA: ' + res);
         toast.success('Login successful');
         console.log(res);
@@ -72,24 +68,22 @@ export class AuthService {
         // // sessionStorage.setItem('refresh', tokens.refresh);
         sessionStorage.setItem('userId', tokens.id);
         sessionStorage.setItem('role', tokens.role);
-        //switch route based on role 
-        if(tokens.role === 'CONSULTANT') {
+        //switch route based on role
+        if (tokens.role === 'CONSULTANT') {
           this.router.navigate(['consultant/dashboard']);
-        } else if(tokens.role === 'FARMER'){
+        } else if (tokens.role === 'FARMER') {
           // this.farmerService.getFarmerProfile();
           this.router.navigate(['farmer/dashboard']);
-        }else {
-          this.router.navigate(['admin/dashboard'])
+        } else {
+          this.router.navigate(['admin/home']);
         }
       },
       error: (err) => {
         console.log('AUTH:LOGIN::ERROR: ');
         console.log(err);
-        
+
         toast.error('Login failed: ' + (err.error?.message || err.message || 'Unknown error'));
       },
     });
   }
-
-  
 }

@@ -30,7 +30,7 @@
         </div>
       </div>
       <h3 class="text-gray-500 text-sm font-medium mb-1">Total Users</h3>
-      <p class="text-3xl font-bold text-gray-900">{{ totalUsers | number }}</p>
+      <p class="text-3xl font-bold text-gray-900">{{ userStats?.totalUsers || 0 | number }}</p>
     </div>
 
     <div
@@ -51,7 +51,7 @@
         </div>
       </div>
       <h3 class="text-gray-500 text-sm font-medium mb-1">Farmers</h3>
-      <p class="text-3xl font-bold text-gray-900">{{ farmers | number }}</p>
+      <p class="text-3xl font-bold text-gray-900">{{ userStats?.totalFarmers || 0 | number }}</p>
     </div>
 
     <div
@@ -72,7 +72,9 @@
         </div>
       </div>
       <h3 class="text-gray-500 text-sm font-medium mb-1">Consultants</h3>
-      <p class="text-3xl font-bold text-gray-900">{{ consultants | number }}</p>
+      <p class="text-3xl font-bold text-gray-900">
+        {{ userStats?.totalConsultants || 0 | number }}
+      </p>
     </div>
 
     <div
@@ -93,7 +95,7 @@
         </div>
       </div>
       <h3 class="text-gray-500 text-sm font-medium mb-1">Active Users</h3>
-      <p class="text-3xl font-bold text-gray-900">{{ activeUsers | number }}</p>
+      <p class="text-3xl font-bold text-gray-900">{{ userStats?.activeUsers || 0 | number }}</p>
     </div>
   </div>
 
@@ -167,10 +169,12 @@
                 <div
                   class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold"
                 >
-                  {{ getInitials(user.name) }}
+                  {{ getInitials(user.firstName, user.lastName) }}
                 </div>
                 <div>
-                  <p class="font-semibold text-gray-900">{{ user.name }}</p>
+                  <p class="font-semibold text-gray-900">
+                    {{ user.firstName }} {{ user.lastName }}
+                  </p>
                   <p class="text-sm text-gray-500">{{ user.email }}</p>
                 </div>
               </div>
@@ -179,7 +183,7 @@
               <span
                 class="px-3 py-1 rounded-full text-xs font-semibold"
                 [ngClass]="
-                  user.role === 'Farmer'
+                  user.role === 'FARMER'
                     ? 'bg-emerald-100 text-emerald-700'
                     : 'bg-indigo-100 text-indigo-700'
                 "
@@ -190,13 +194,15 @@
             <td class="px-6 py-4">
               <span
                 class="px-3 py-1 rounded-full text-xs font-semibold border"
-                [ngClass]="getStatusClass(user.status)"
+                [ngClass]="getStatusClass(user.isActive)"
               >
-                {{ user.status }}
+                {{ getStatusText(user.isActive) }}
               </span>
             </td>
-            <td class="px-6 py-4 text-gray-600">{{ user.location }}</td>
-            <td class="px-6 py-4 text-gray-600">{{ user.joined }}</td>
+            <td class="px-6 py-4 text-gray-600">
+              {{ user.address?.city || 'N/A' }}, {{ user.address?.state || 'N/A' }}
+            </td>
+            <td class="px-6 py-4 text-gray-600">{{ user.createdAt | date : 'mediumDate' }}</td>
             <td class="px-6 py-4">
               <div class="flex gap-2">
                 <button class="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors">

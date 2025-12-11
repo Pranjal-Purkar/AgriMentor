@@ -34,7 +34,7 @@ interface ConsultationRequest {
 
 @Component({
   selector: 'app-consultant-consulation-request',
-  imports: [CommonModule, TitleCasePipe, DatePipe, FarmVisitiongSchedule],
+  imports: [CommonModule, DatePipe, FarmVisitiongSchedule],
   templateUrl: './consultant-consulation-request.html',
   styleUrl: './consultant-consulation-request.css',
 })
@@ -273,25 +273,20 @@ export class ConsultantConsulationRequest implements OnInit, OnDestroy {
     this.selectedConsultation = null;
   }
 
-  handleScheduledVisit(scheduledData: any): void {
-    console.log('📅 Farm visit scheduled:', scheduledData);
+  handleScheduledVisit(data: any) {
+    debugger;
+    console.log('📅 Farm visit scheduled:', data);
 
     // Call the service to schedule the visit
-    this.consultationService.scheduleFarmVisit(scheduledData).subscribe({
-      next: (res) => {
-        console.log('✅ Farm visit scheduled successfully:', res);
-
-        // Force refresh the data
-        this.consultationService.getListConsultationRequestsData();
-
-        // Show success message
-        alert('Farm visit scheduled successfully!');
-      },
-      error: (err) => {
-        console.error('❌ Error scheduling farm visit:', err);
-        alert('Failed to schedule farm visit. Please try again.');
-      },
-    });
+    // const consultationId = data.consultationId;
+    const scheduledData = {
+      scheduledDate: `${data.date}T${data.time}`,
+      visitNotes: data.note,
+      visitStatus: 'SCHEDULED',
+    };
+    debugger;
+    // this.consultationService.scheduleFarmVisit(scheduledData, consultationId);
+    console.log('workde');
   }
 
   getTabColor(key: string): string {

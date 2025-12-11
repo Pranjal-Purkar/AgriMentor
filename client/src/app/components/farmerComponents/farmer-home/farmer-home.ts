@@ -40,7 +40,9 @@ export class FarmerHome {
     this.subscription = this.farmerService.getConsultationRequest().subscribe((state: any) => {
       console.log('🟢 Received consultation requests:', state);
       if (state) {
-        this.consultationRequests = state;
+        // Sort consultations by date - newest first
+        this.consultationRequests = this.sortByNewest(state);
+        console.log('✅ Sorted consultation requests (newest first):', this.consultationRequests);
 
         // Update summary card for consultations
         const totalIndex = this.summaryCards.findIndex((c) => c.title === 'Total Consultations');
@@ -59,6 +61,37 @@ export class FarmerHome {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  /**
+   * Sort consultations by date - newest first
+   */
+  sortByNewest(consultations: any[]): any[] {
+    return consultations.sort((a, b) => {
+      // Try to parse dates from different possible fields
+      const dateA = this.parseDate(a.createdAt || a.date || a.requestDate);
+      const dateB = this.parseDate(b.createdAt || b.date || b.requestDate);
+
+      // Sort descending (newest first)
+      return dateB.getTime() - dateA.getTime();
+    });
+  }
+
+  /**
+   * Parse date from various formats
+   */
+  parseDate(dateValue: any): Date {
+    if (!dateValue) {
+      return new Date(0); // Return epoch if no date
+    }
+
+    if (dateValue instanceof Date) {
+      return dateValue;
+    }
+
+    // Try to parse string date
+    const parsed = new Date(dateValue);
+    return isNaN(parsed.getTime()) ? new Date(0) : parsed;
   }
 
   getFarmerProfile() {

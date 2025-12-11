@@ -21,12 +21,12 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class FarmerService {
-	
+
 	@Autowired
 	private FarmerRepository farmerRepository;
-    @Autowired
-    private ConsultationService consultationService;
-	
+	@Autowired
+	private ConsultationService consultationService;
+
 	public Optional<?> findById(Long id) {
 		log.info("Fetching farmer with id: {}", id);
 		Farmer farmer = farmerRepository.findById(id).orElseThrow(() -> {
@@ -36,15 +36,25 @@ public class FarmerService {
 		FarmerDTO farmerDTO = new FarmerDTO();
 		farmerDTO.setId(farmer.getId());
 		farmerDTO.setFirstName(farmer.getFirstName());
-			farmerDTO.setLastName(farmer.getLastName());
-			farmerDTO.setEmail(farmer.getEmail());
-			farmerDTO.setPhone(farmer.getPhone());
-			farmerDTO.setRole(farmer.getRole());
-			farmerDTO.setAddress(farmer.getAddress());
-			farmerDTO.setFarmAreaHectares(farmer.getFarmAreaHectares());
-			log.info("Converted Farmer to FarmerDTO: {}", farmerDTO);
-			return Optional.of(farmerDTO);
+		farmerDTO.setLastName(farmer.getLastName());
+		farmerDTO.setEmail(farmer.getEmail());
+		farmerDTO.setPhone(farmer.getPhone());
+		farmerDTO.setRole(farmer.getRole());
+		farmerDTO.setAddress(farmer.getAddress());
+		farmerDTO.setFarmAreaHectares(farmer.getFarmAreaHectares());
+		log.info("Converted Farmer to FarmerDTO: {}", farmerDTO);
+		return Optional.of(farmerDTO);
 	}
+
+	/**
+	 * Find farmer entity by ID (returns entity, not DTO)
+	 * Used for internal service operations and authorization checks
+	 */
+	public Optional<Farmer> findFarmerEntityById(Long id) {
+		log.info("Fetching farmer entity with id: {}", id);
+		return farmerRepository.findById(id);
+	}
+
 	public Optional<?> findByEmail(String email) {
 		log.info("Fetching farmer with email: {}", email);
 		Farmer farmer = farmerRepository.findByEmail(email).orElseThrow(() -> {
@@ -54,114 +64,112 @@ public class FarmerService {
 		FarmerDTO farmerDTO = new FarmerDTO();
 		farmerDTO.setId(farmer.getId());
 		farmerDTO.setFirstName(farmer.getFirstName());
-			farmerDTO.setLastName(farmer.getLastName());
-			farmerDTO.setEmail(farmer.getEmail());
-			farmerDTO.setPhone(farmer.getPhone());
-			farmerDTO.setRole(farmer.getRole());
-            farmerDTO.setSoilType(farmer.getSoilType());
-			farmerDTO.setAddress(farmer.getAddress());
-			farmerDTO.setFarmAreaHectares(farmer.getFarmAreaHectares());
-			log.info("Converted Farmer to FarmerDTO: {}", farmerDTO);
-			return Optional.of(farmerDTO);
+		farmerDTO.setLastName(farmer.getLastName());
+		farmerDTO.setEmail(farmer.getEmail());
+		farmerDTO.setPhone(farmer.getPhone());
+		farmerDTO.setRole(farmer.getRole());
+		farmerDTO.setSoilType(farmer.getSoilType());
+		farmerDTO.setAddress(farmer.getAddress());
+		farmerDTO.setFarmAreaHectares(farmer.getFarmAreaHectares());
+		log.info("Converted Farmer to FarmerDTO: {}", farmerDTO);
+		return Optional.of(farmerDTO);
 	}
 
 	@Transactional
 	public Optional<?> update(String username, FarmerProfileUpdateRequest request) {
-	    log.info("Updating farmer for username: {}", username);
+		log.info("Updating farmer for username: {}", username);
 
-	    try {
-	        // Convert incoming payload into DTO
-//	        ObjectMapper mapper = new ObjectMapper();
-//            log.info("Object Mapper:: ",mapper);
-//	        FarmerDTO updateDto = mapper.convertValue(farmerUpdate, FarmerDTO.class);
-//            log.info("converted Object: {}",updateDto);
+		try {
+			// Convert incoming payload into DTO
+			// ObjectMapper mapper = new ObjectMapper();
+			// log.info("Object Mapper:: ",mapper);
+			// FarmerDTO updateDto = mapper.convertValue(farmerUpdate, FarmerDTO.class);
+			// log.info("converted Object: {}",updateDto);
 
+			// Find existing farmer by email/username
+			Farmer farmer = farmerRepository.findByEmail(username)
+					.orElseThrow(() -> new RuntimeException("Farmer not found with username: " + username));
+			farmer.setFirstName(request.getFirstName());
+			farmer.setLastName(request.getLastName());
+			farmer.setPhone(request.getPhone());
+			farmer.setSoilType(request.getSoilType());
+			farmer.setFarmAreaHectares(request.getFarmAreaHectares());
+			Address address = farmer.getAddress();
+			if (address == null) {
+				log.info("Farmer address is null");
+				address = new Address();
+			}
 
-	        // Find existing farmer by email/username
-	        Farmer farmer = farmerRepository.findByEmail(username)
-	                .orElseThrow(() -> new RuntimeException("Farmer not found with username: " + username));
-            farmer.setFirstName(request.getFirstName());
-            farmer.setLastName(request.getLastName());
-            farmer.setPhone(request.getPhone());
-            farmer.setSoilType(request.getSoilType());
-            farmer.setFarmAreaHectares(request.getFarmAreaHectares());
-            Address address = farmer.getAddress();
-            if(address == null) {
-                log.info("Farmer address is null");
-                address = new Address();
-            }
+			address.setCity(request.getAddress().getCity());
+			address.setStreet(request.getAddress().getStreet());
+			address.setState(request.getAddress().getState());
+			address.setPinCode(request.getAddress().getPinCode());
+			address.setCountry(request.getAddress().getCountry());
+			address.setLatitude(request.getAddress().getLatitude());
+			address.setLongitude(request.getAddress().getLongitude());
+			farmer.setAddress(address);
 
-                address.setCity(request.getAddress().getCity());
-                address.setStreet(request.getAddress().getStreet());
-                address.setState(request.getAddress().getState());
-                address.setPinCode(request.getAddress().getPinCode());
-                address.setCountry(request.getAddress().getCountry());
-                address.setLatitude(request.getAddress().getLatitude());
-                address.setLongitude(request.getAddress().getLongitude());
-                farmer.setAddress(address);
+			Farmer saved = farmerRepository.save(farmer);
+			log.info("Farmer updated successfully: {}", saved);
 
+			// -----------------------------
+			// PREPARE RESPONSE DTO
+			// -----------------------------
+			FarmerDTO result = new FarmerDTO();
+			result.setId(saved.getId());
+			result.setFirstName(saved.getFirstName());
+			result.setLastName(saved.getLastName());
+			result.setEmail(saved.getEmail());
+			result.setPhone(saved.getPhone());
+			result.setRole(saved.getRole());
+			result.setAddress(saved.getAddress());
+			result.setFarmAreaHectares(saved.getFarmAreaHectares());
 
+			return Optional.of(result);
 
-	        Farmer saved = farmerRepository.save(farmer);
-	        log.info("Farmer updated successfully: {}", saved);
-
-	        // -----------------------------
-	        // PREPARE RESPONSE DTO
-	        // -----------------------------
-	        FarmerDTO result = new FarmerDTO();
-	        result.setId(saved.getId());
-	        result.setFirstName(saved.getFirstName());
-	        result.setLastName(saved.getLastName());
-	        result.setEmail(saved.getEmail());
-	        result.setPhone(saved.getPhone());
-	        result.setRole(saved.getRole());
-	        result.setAddress(saved.getAddress());
-	        result.setFarmAreaHectares(saved.getFarmAreaHectares());
-
-	        return Optional.of(result);
-
-	    } catch (Exception e) {
-	        log.error("Failed to update farmer for username {}: {}", username, e.getMessage(), e);
-	        throw new RuntimeException("Failed to update farmer: " + e.getMessage(), e);
-	    }
+		} catch (Exception e) {
+			log.error("Failed to update farmer for username {}: {}", username, e.getMessage(), e);
+			throw new RuntimeException("Failed to update farmer: " + e.getMessage(), e);
+		}
 	}
 
+	public Optional<?> createConsultationRequest(String username, ConsultationRequestDTO request) {
+		log.info("Creating consultation request for username: {}", username);
+		try {
+			// Find farmer by email/username
+			Farmer farmer = farmerRepository.findByEmail(username)
+					.orElseThrow(() -> new RuntimeException("Farmer not found with username: " + username));
 
-    public Optional<?> createConsultationRequest(String username, ConsultationRequestDTO request) {
-        log.info("Creating consultation request for username: {}", username);
-        try {
-            // Find farmer by email/username
-            Farmer farmer = farmerRepository.findByEmail(username)
-                    .orElseThrow(() -> new RuntimeException("Farmer not found with username: " + username));
+			// Delegate creation to ConsultationService
+			Object createdRequest = consultationService.createConsultationRequest(farmer, request);
+			log.info("Consultation request created: {}", createdRequest);
+			log.info("Consultation request created successfully for username: {}", username);
+			return Optional.of(createdRequest);
 
-            // Delegate creation to ConsultationService
-            Object createdRequest = consultationService.createConsultationRequest(farmer, request);
-            log.info("Consultation request created: {}", createdRequest);
-            log.info("Consultation request created successfully for username: {}", username);
-            return Optional.of(createdRequest);
+		} catch (Exception e) {
+			log.error("Failed to create consultation request for username {}: {}", username, e.getMessage(), e);
+			throw new RuntimeException("Failed to create consultation request: " + e.getMessage(), e);
+		}
+	}
 
-        } catch (Exception e) {
-            log.error("Failed to create consultation request for username {}: {}", username, e.getMessage(), e);
-            throw new RuntimeException("Failed to create consultation request: " + e.getMessage(), e);
-        }
-    }
+	public Optional<List<Consultation>> getAllConsultationRequests(String username) {
+		log.info("Fetching all consultation requests for username: {}", username);
+		try {
+			// Find farmer by email/username
+			Farmer farmer = farmerRepository.findByEmail(username)
+					.orElseThrow(() -> new RuntimeException("Farmer not found with username: " + username));
 
-    public Optional<List<Consultation>> getAllConsultationRequests(String username) {
-        log.info("Fetching all consultation requests for username: {}", username);
-        try {
-            // Find farmer by email/username
-            Farmer farmer = farmerRepository.findByEmail(username)
-                    .orElseThrow(() -> new RuntimeException("Farmer not found with username: " + username));
+			// // Fetch consultations for the farmer
+			// List<Consultation> consultations =
+			// consultationService.getConsultationsByFarmer(farmer);
+			// log.info("Found {} consultation requests for username: {}",
+			// consultations.size(), username);
+			// return Optional.of(consultations);
+			return Optional.of(farmer.getConsultations());
 
-//            // Fetch consultations for the farmer
-//            List<Consultation> consultations = consultationService.getConsultationsByFarmer(farmer);
-//            log.info("Found {} consultation requests for username: {}", consultations.size(), username);
-//            return Optional.of(consultations);
-            return Optional.of(farmer.getConsultations());
-
-        } catch (Exception e) {
-            log.error("Failed to fetch consultation requests for username {}: {}", username, e.getMessage(), e);
-            throw new RuntimeException("Failed to fetch consultation requests: " + e.getMessage(), e);
-        }
-    }
+		} catch (Exception e) {
+			log.error("Failed to fetch consultation requests for username {}: {}", username, e.getMessage(), e);
+			throw new RuntimeException("Failed to fetch consultation requests: " + e.getMessage(), e);
+		}
+	}
 }

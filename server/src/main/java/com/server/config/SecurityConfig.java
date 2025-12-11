@@ -26,66 +26,65 @@ import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @Slf4j
-public class SecurityConfig implements WebMvcConfigurer{
-	@Autowired
-	private JwtFilterChain jwtFilterChain;
-	
-	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+public class SecurityConfig implements WebMvcConfigurer {
+    @Autowired
+    private JwtFilterChain jwtFilterChain;
+
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/auth/**").permitAll()
-                    .requestMatchers("/api/v1/consultants/all").permitAll()
-                    .requestMatchers("/api/v1/consultants/{username}").permitAll()
-                    .requestMatchers("/api/v1/farmers/consultation/request").authenticated()
-                .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/v1/user/**").hasAnyRole("USER", "ADMIN")
-                .requestMatchers("/api/v1/farmers/**").hasAnyRole("FARMER", "ADMIN")
-                .requestMatchers("/api/v1/consultants/**").hasAnyRole("CONSULTANT", "ADMIN")
-                .requestMatchers("/api/v1/farmvisits/**").hasAnyRole("CONSULTANT", "ADMIN","FARMER")
-                .anyRequest().authenticated()
-            )
-            .addFilterBefore(jwtFilterChain, UsernamePasswordAuthenticationFilter.class);
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/consultants/all").permitAll()
+                        .requestMatchers("/api/v1/consultants/{username}").permitAll()
+                        .requestMatchers("/api/v1/farmers/consultation/request").authenticated()
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/user/**").hasAnyRole("USER", "ADMIN", "FARMER", "CONSULTANT")
+                        .requestMatchers("/api/v1/farmers/**").hasAnyRole("FARMER", "ADMIN")
+                        .requestMatchers("/api/v1/consultants/**").hasAnyRole("CONSULTANT", "ADMIN")
+                        .requestMatchers("/api/v1/farmvisits/**").hasAnyRole("CONSULTANT", "ADMIN", "FARMER")
+                        .anyRequest().authenticated())
+                .addFilterBefore(jwtFilterChain, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-	@Override
+    @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedOrigins("http://localhost:4200")
-            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-            .allowedHeaders("*")
-            .allowCredentials(true)
-            .maxAge(3600);
+                .allowedOrigins("http://localhost:4200")
+                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true)
+                .maxAge(3600);
     }
-	
-	@Bean
-	CorsConfigurationSource corsConfigurationSource() {
-	    CorsConfiguration config = new CorsConfiguration();
-	    config.setAllowedOrigins(List.of("http://localhost:4200"));
-	    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-	    config.setAllowedHeaders(List.of("*"));
-	    config.setAllowCredentials(true);
-	    config.setMaxAge(3600L);
-	    
-	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-	    source.registerCorsConfiguration("/**", config);
-	    return source;
-	}
-	
-	@Bean
-	PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-	
-	
-	@Bean
-	AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-		return authenticationConfiguration.getAuthenticationManager();
-		
-	}
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:4200"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+
+    }
 }

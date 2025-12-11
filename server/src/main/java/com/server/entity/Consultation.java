@@ -1,4 +1,5 @@
 package com.server.entity;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +15,10 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 
 public class Consultation {
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -54,8 +55,23 @@ public class Consultation {
     @JsonManagedReference
     private Address farmAddress;
 
-
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime closedAt;
+
+    @Override
+    public String toString() {
+        return "Consultation{" +
+                "id=" + id +
+                ", topic='" + topic + '\'' +
+                ", description='" + description + '\'' +
+                ", consultationRequestStatus=" + consultationRequestStatus +
+                ", farmerId=" + (farmer != null ? farmer.getId() : null) +
+                ", consultantId=" + (consultant != null ? consultant.getId() : null) +
+                ", cropId=" + (crop != null ? crop.getId() : null) +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", closedAt=" + closedAt +
+                '}';
+    }
 }

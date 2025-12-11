@@ -26,6 +26,7 @@ import { AdminConsultations } from './components/adminComponent/admin-consultati
 import { AdminApprovals } from './components/adminComponent/admin-approvals/admin-approvals';
 import { AdminReports } from './components/adminComponent/admin-reports/admin-reports';
 import { AdminSettings } from './components/adminComponent/admin-settings/admin-settings';
+import { ReportyReportDetail } from './components/reporty-report-detail/reporty-report-detail';
 
 export const routes: Routes = [
   {
@@ -107,6 +108,11 @@ export const routes: Routes = [
         component: ConsultantProfile,
         data: { animation: 'ConsultantProfile' },
       },
+      {
+        path: 'report/:reportId',
+        component: ReportyReportDetail,
+        data: { animation: 'ReportDetail' },
+      },
     ],
   },
   {
@@ -137,6 +143,11 @@ export const routes: Routes = [
         path: 'farm-schedule/:id',
         component: FarmVisitiongSchedule,
         data: { animation: 'FarmVisitiongSchedule' },
+      },
+      {
+        path: 'report/:reportId',
+        component: ReportyReportDetail,
+        data: { animation: 'ReportDetail' },
       },
     ],
   },

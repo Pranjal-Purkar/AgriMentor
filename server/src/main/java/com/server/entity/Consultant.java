@@ -21,32 +21,44 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 
 public class Consultant extends User {
-	@OneToOne(mappedBy = "consultant", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "consultant", cascade = CascadeType.ALL)
     @JsonBackReference
     private VerificationDocument verificationDocument;
     @Column(columnDefinition = "TEXT")
     private String bio;
 
-
-
     private String expertiseArea;
-	private int experienceYears;
-	private String qualifications;
+    private int experienceYears;
+    private String qualifications;
     private String specialization;
-	@Enumerated(EnumType.STRING)
-	private VerificationStatus verificationStatus;
+    @Enumerated(EnumType.STRING)
+    private VerificationStatus verificationStatus;
 
     @OneToMany(mappedBy = "consultant", cascade = CascadeType.ALL)
     @JsonBackReference(value = "consultation-consultant")
     private List<Consultation> consultations = new ArrayList<>();
 
-
     private LocalDateTime verifiedAt;
-	@Value("false")
-	private Boolean isActive;
+    @Value("false")
+    private Boolean isActive;
 
+    @Override
+    public String toString() {
+        return "Consultant{" +
+                "id=" + getId() +
+                ", email='" + getEmail() + '\'' +
+                ", bio='" + bio + '\'' +
+                ", expertiseArea='" + expertiseArea + '\'' +
+                ", experienceYears=" + experienceYears +
+                ", qualifications='" + qualifications + '\'' +
+                ", specialization='" + specialization + '\'' +
+                ", verificationStatus=" + verificationStatus +
+                ", verifiedAt=" + verifiedAt +
+                ", isActive=" + isActive +
+                '}';
+    }
 
 }

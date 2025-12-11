@@ -53,6 +53,7 @@
               </h1>
               <p class="text-gray-500 font-medium">
                 {{ consultation.farmer.address || 'Farmer from ' + consultation.farmAddress.city }}
+                <!-- {{ consultation.farmer.address.street + ', ' + consultation.farmer.address.city + ', ' + consultation.farmer.address.state }} -->
               </p>
 
               <div class="flex flex-wrap items-center gap-3 mt-3">
@@ -195,7 +196,7 @@
                   <h4 class="font-bold text-gray-800">Scheduled Visits</h4>
                   <button
                     (click)="openAddVisit()"
-                    class="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors"
+                    class="text-sm font-semibold text-white bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
                   >
                     + Schedule Visit
                   </button>
@@ -203,43 +204,189 @@
 
                 <div
                   *ngIf="visits.length === 0"
-                  class="text-center py-10 bg-gray-50 rounded-xl border border-dashed border-gray-200"
+                  class="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-200"
                 >
-                  <p class="text-gray-500 text-sm">No visits scheduled yet.</p>
+                  <svg
+                    class="w-12 h-12 mx-auto text-gray-400 mb-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    ></path>
+                  </svg>
+                  <p class="text-gray-500 text-sm font-medium">No visits scheduled yet</p>
+                  <p class="text-gray-400 text-xs mt-1">
+                    Click "Schedule Visit" to add a new farm visit
+                  </p>
                 </div>
 
+                <!-- Visit Cards -->
                 <div
                   *ngFor="let v of visits"
-                  class="flex gap-4 p-4 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50/30 transition-all group"
+                  class="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-all"
                 >
-                  <div
-                    class="flex-shrink-0 w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex flex-col items-center justify-center font-bold"
-                  >
-                    <span class="text-xs uppercase">Dec</span>
-                    <span class="text-lg leading-none">12</span>
-                  </div>
-                  <div class="flex-1">
-                    <div class="flex justify-between items-start">
-                      <h5 class="font-semibold text-gray-900">Farm Inspection</h5>
-                      <span
-                        class="text-xs font-semibold px-2 py-0.5 rounded bg-gray-100 text-gray-600"
-                        >{{ v.visitStatus || 'Scheduled' }}</span
+                  <div class="flex gap-4">
+                    <!-- Date Badge -->
+                    <div class="flex-shrink-0">
+                      <div
+                        class="w-20 h-20 rounded-xl flex flex-col items-center justify-center font-bold shadow-sm"
+                        [ngClass]="{
+                          'bg-blue-50 border-2 border-blue-200 text-blue-600':
+                            v.visitStatus === 'SCHEDULED',
+                          'bg-green-50 border-2 border-green-200 text-green-600':
+                            v.visitStatus === 'COMPLETED',
+                          'bg-red-50 border-2 border-red-200 text-red-600':
+                            v.visitStatus === 'CANCELLED',
+                          'bg-gray-50 border-2 border-gray-200 text-gray-600':
+                            v.visitStatus === 'MISSED'
+                        }"
                       >
+                        <span class="text-xs uppercase tracking-wide">{{
+                          v.scheduledDate | date : 'MMM'
+                        }}</span>
+                        <span class="text-2xl leading-none my-1">{{
+                          v.scheduledDate | date : 'dd'
+                        }}</span>
+                        <span class="text-xs">{{ v.scheduledDate | date : 'yyyy' }}</span>
+                      </div>
                     </div>
-                    <p class="text-sm text-gray-600 mt-1">
-                      {{ v.visitNotes || 'Regular checkup' }}
-                    </p>
-                    <p class="text-xs text-gray-400 mt-2 flex items-center gap-1">
-                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                      </svg>
-                      {{ v.scheduledDate | date : 'mediumDate' }}
-                    </p>
+
+                    <!-- Visit Details -->
+                    <div class="flex-1 min-w-0">
+                      <!-- Header -->
+                      <div class="flex justify-between items-start mb-3">
+                        <div class="flex-1">
+                          <h5 class="font-bold text-gray-900 text-lg">Farm Visit</h5>
+                          <p class="text-sm text-gray-500 mt-0.5">
+                            {{ v.scheduledDate | date : 'EEEE, h:mm a' }}
+                          </p>
+                        </div>
+                        <!-- Status Badge -->
+                        <span
+                          class="text-xs font-bold px-3 py-1.5 rounded-full whitespace-nowrap ml-3"
+                          [ngClass]="{
+                            'bg-blue-100 text-blue-700': v.visitStatus === 'SCHEDULED',
+                            'bg-green-100 text-green-700': v.visitStatus === 'COMPLETED',
+                            'bg-red-100 text-red-700': v.visitStatus === 'CANCELLED',
+                            'bg-gray-100 text-gray-700': v.visitStatus === 'MISSED'
+                          }"
+                        >
+                          {{ v.visitStatus }}
+                        </span>
+                      </div>
+
+                      <!-- Visit Notes -->
+                      <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                        {{ v.visitNotes || 'No notes provided' }}
+                      </p>
+
+                      <!-- Overdue Warning -->
+                      <div *ngIf="v.isOverdue && v.visitStatus === 'SCHEDULED'" class="mb-3">
+                        <div
+                          class="flex items-center gap-2 text-xs text-amber-700 bg-amber-50 px-3 py-2 rounded-lg border border-amber-200"
+                        >
+                          <svg
+                            class="w-4 h-4 flex-shrink-0"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                            ></path>
+                          </svg>
+                          <span class="font-medium">This visit is overdue</span>
+                        </div>
+                      </div>
+
+                      <!-- Action Buttons - Simplified -->
+                      <div class="flex flex-wrap gap-2 pt-2 border-t border-gray-100">
+                        <!-- Quick Actions for SCHEDULED visits -->
+                        <div *ngIf="v.visitStatus === 'SCHEDULED'" class="flex gap-2">
+                          <button
+                            (click)="completeVisit(v.id)"
+                            class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors"
+                          >
+                            <svg
+                              class="w-3.5 h-3.5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M5 13l4 4L19 7"
+                              ></path>
+                            </svg>
+                            Mark Complete
+                          </button>
+                          <button
+                            (click)="cancelVisit(v.id)"
+                            class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+                          >
+                            <svg
+                              class="w-3.5 h-3.5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"
+                              ></path>
+                            </svg>
+                            Cancel
+                          </button>
+                        </div>
+
+                        <!-- Status Change Dropdown (only for SCHEDULED and MISSED visits) -->
+                        <select
+                          *ngIf="v.visitStatus === 'SCHEDULED' || v.visitStatus === 'MISSED'"
+                          (change)="updateVisitStatus(v.id, $any($event.target).value)"
+                          [value]="v.visitStatus"
+                          class="text-xs font-medium px-3 py-1.5 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition-colors cursor-pointer"
+                        >
+                          <option value="" disabled>Change Status</option>
+                          <option value="SCHEDULED">SCHEDULED</option>
+                          <option value="COMPLETED">COMPLETED</option>
+                          <option value="CANCELLED">CANCELLED</option>
+                          <option value="MISSED">MISSED</option>
+                        </select>
+
+                        <!-- Delete Button -->
+                        <button
+                          (click)="deleteVisit(v.id)"
+                          class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg text-red-600 hover:bg-red-50 transition-colors ml-auto"
+                        >
+                          <svg
+                            class="w-3.5 h-3.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            ></path>
+                          </svg>
+                          Delete
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -263,29 +410,87 @@
                   <p class="text-gray-500 text-sm">No reports filed yet.</p>
                 </div>
 
+                <!-- Reports List -->
                 <div
                   *ngFor="let r of reports"
-                  class="bg-gray-50 p-5 rounded-xl border border-gray-100 space-y-3"
+                  (click)="viewReportDetails(r.id)"
+                  class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4 hover:shadow-md hover:border-indigo-200 transition-all cursor-pointer"
                 >
-                  <div class="flex justify-between items-start">
-                    <span
-                      class="bg-white px-2 py-1 rounded border text-xs font-bold text-gray-500"
-                      >{{ r.createdAt | date : 'MMM d, y' }}</span
-                    >
+                  <div class="flex items-start justify-between">
+                    <div class="flex gap-4">
+                      <div class="flex-shrink-0">
+                        <div
+                          class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center"
+                        >
+                          <svg
+                            class="w-6 h-6"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            ></path>
+                          </svg>
+                        </div>
+                      </div>
+                      <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Consultation Report</h3>
+                        <p class="text-xs text-gray-400">
+                          Generated on {{ r.createdAt | date : 'medium' }}
+                        </p>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span
+                        class="text-xs font-medium text-gray-500 bg-gray-50 px-3 py-1 rounded-full"
+                      >
+                        Report #{{ r.id }}
+                      </span>
+                      <svg
+                        class="w-5 h-5 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M9 5l7 7-7 7"
+                        ></path>
+                      </svg>
+                    </div>
                   </div>
-                  <div>
-                    <p class="text-xs font-semibold text-gray-500 uppercase">Identified Issue</p>
-                    <p class="font-medium text-gray-900">{{ r.identifiedIssue }}</p>
+
+                  <div class="space-y-2">
+                    <div class="bg-red-50 border border-red-100 rounded-xl p-3">
+                      <p class="text-xs font-semibold text-red-600 uppercase tracking-wider mb-1">
+                        Issue
+                      </p>
+                      <p class="text-gray-900 font-medium text-sm line-clamp-2">
+                        {{ r.identifiedIssue }}
+                      </p>
+                    </div>
+
+                    <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-3">
+                      <p
+                        class="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-1"
+                      >
+                        Recommendations
+                      </p>
+                      <p class="text-gray-900 text-sm line-clamp-2">{{ r.recommendations }}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p class="text-xs font-semibold text-gray-500 uppercase">Recommendations</p>
-                    <p class="text-sm text-gray-700 bg-white p-3 rounded-lg border mt-1">
-                      {{ r.recommendations }}
-                    </p>
-                  </div>
-                  <div *ngIf="r.reportText">
-                    <p class="text-xs font-semibold text-gray-500 uppercase">Notes</p>
-                    <p class="text-sm text-gray-600 mt-1">{{ r.reportText }}</p>
+
+                  <div class="flex items-center justify-between pt-2 border-t border-gray-100">
+                    <span class="text-xs text-gray-500">Click to view full details</span>
+                    <span *ngIf="r.followUpDate" class="text-xs text-amber-600 font-medium">
+                      Follow-up: {{ r.followUpDate | date : 'shortDate' }}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -468,17 +673,6 @@
           placeholder="Add detailed observations..."
           class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
         ></textarea>
-      </div>
-
-      <div>
-        <label class="text-sm font-semibold text-gray-700 block mb-1.5"
-          >Follow-up Date (Optional)</label
-        >
-        <input
-          type="date"
-          formControlName="followUpDate"
-          class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-        />
       </div>
 
       <div class="flex justify-end gap-3 mt-6 pt-2">

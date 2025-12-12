@@ -12,7 +12,8 @@ import com.server.entity.Consultant;
 @Repository
 
 public interface ConsultantRepository extends JpaRepository<Consultant, Long> {
-	Optional<Consultant> findByEmail(String email);
+    Optional<Consultant> findByEmail(String email);
+
     List<Consultant> findByVerificationStatus(VerificationStatus verificationStatus);
 
 }

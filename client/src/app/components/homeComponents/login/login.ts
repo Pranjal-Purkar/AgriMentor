@@ -7,7 +7,7 @@ import { AuthService } from '../../../services/auth/auth-service';
 
 @Component({
   selector: 'app-login',
-  imports: [NgClass, NgStyle, ReactiveFormsModule, RouterLink],
+  imports: [NgClass, ReactiveFormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css',
   schemas: [NO_ERRORS_SCHEMA]

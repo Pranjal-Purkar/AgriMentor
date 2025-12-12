@@ -8,7 +8,7 @@ import { AdminNavbar } from "../../components/adminComponent/admin-navbar/admin-
 
 @Component({
   selector: 'app-admin-dashboard-layout',
-  imports: [RouterOutlet, CommonModule, ConsultantNavbar, AdminNavbar],
+  imports: [RouterOutlet, CommonModule, AdminNavbar],
   templateUrl: './admin-dashboard-layout.html',
   styleUrl: './admin-dashboard-layout.css',
   animations: [RouteAnimations],

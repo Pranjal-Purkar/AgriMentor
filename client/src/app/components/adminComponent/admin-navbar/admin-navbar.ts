@@ -1,7 +1,7 @@
-import { Component, EventEmitter, Output, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Output, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { AdminService } from '../../../services/adminService/admin.service';
+import { AdminService } from '../../../services/adminService/admin-service';
 import { AdminDashboardStats } from '../../../interfaces/admin.interfaces';
 
 @Component({
@@ -52,31 +52,35 @@ export class AdminNavbar implements OnInit {
     },
   ];
 
-  constructor(private router: Router, private adminService: AdminService) {}
+  constructor(
+    private router: Router,
+    private adminService: AdminService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   ngOnInit(): void {
-    this.loadDashboardStats();
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadDashboardStats();
+    }
   }
 
   loadDashboardStats(): void {
-    console.log('🟣 [AdminNavbar] Loading dashboard stats for badges...');
-    this.adminService.getDashboardStatistics().subscribe({
-      next: (response) => {
-        console.log('🟣 [AdminNavbar] Received response:', response);
-        this.dashboardStats = response.data;
-        console.log('🟣 [AdminNavbar] Dashboard stats:', this.dashboardStats);
-        console.log(
-          '🟣 [AdminNavbar] Badge values - Users:',
-          this.getBadge('users'),
-          'Consultations:',
-          this.getBadge('consultations'),
-          'Pending:',
-          this.getBadge('pending')
-        );
+    console.log('🟣 [AdminNavbar] Subscribing to dashboard stats...');
+    // Subscribe to the shared BehaviorSubject
+    this.adminService.dashboardStats$.subscribe({
+      next: (stats) => {
+        if (stats) {
+          console.log('🟣 [AdminNavbar] Received dashboard stats update:', stats);
+          this.dashboardStats = stats;
+        } else {
+          // If no stats yet, trigger a fetch (optional, as AdminHome usually does it)
+          // But to be safe if landing on other pages:
+          console.log('🟣 [AdminNavbar] No stats in cache, triggering fetch...');
+          this.adminService.getDashboardStatistics().subscribe();
+        }
       },
       error: (error) => {
-        console.error('🔴 [AdminNavbar] Error loading dashboard stats:', error);
-        console.error('🔴 [AdminNavbar] Error status:', error.status);
+        console.error('🔴 [AdminNavbar] Error receiving dashboard stats:', error);
       },
     });
   }

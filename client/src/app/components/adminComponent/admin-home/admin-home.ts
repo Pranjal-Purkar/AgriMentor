@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { AdminService } from '../../../services/adminService/admin.service';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { AdminService } from '../../../services/adminService/admin-service';
 import { AdminDashboardStats, Activity } from '../../../interfaces/admin.interfaces';
 
 @Component({
@@ -18,11 +18,16 @@ export class AdminHome implements OnInit {
   isLoadingStats = true;
   isLoadingActivities = true;
 
-  constructor(private adminService: AdminService) {}
+  constructor(
+    private adminService: AdminService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   ngOnInit(): void {
-    this.loadDashboardStatistics();
-    this.loadRecentActivities();
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadDashboardStatistics();
+      this.loadRecentActivities();
+    }
   }
 
   loadDashboardStatistics(): void {
@@ -31,7 +36,12 @@ export class AdminHome implements OnInit {
     this.adminService.getDashboardStatistics().subscribe({
       next: (response) => {
         console.log('🟢 [AdminHome] Received response:', response);
-        this.dashboardStats = response.data;
+        if (response && response.data) {
+          this.dashboardStats = response.data;
+        } else {
+          // Fallback if response itself is the data (depending on API service handling)
+          this.dashboardStats = response.data || response;
+        }
         console.log('🟢 [AdminHome] Dashboard stats assigned:', this.dashboardStats);
         console.log('🟢 [AdminHome] Total Users:', this.dashboardStats?.totalUsers);
         console.log(

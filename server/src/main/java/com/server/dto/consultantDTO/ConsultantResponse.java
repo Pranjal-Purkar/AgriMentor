@@ -1,5 +1,6 @@
 package com.server.dto.consultantDTO;
 
+import com.server.dto.AddressDTO;
 import com.server.dto.verificationDocumentDTOs.VerificationDocumentDTO;
 import com.server.entity.VerificationDocument;
 import com.server.enumeration.VerificationStatus;
@@ -8,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -27,4 +30,7 @@ public class ConsultantResponse {
     private VerificationStatus verificationStatus;
     private VerificationDocumentDTO verificationDocument;
     private Boolean isActive;
+    private String bio;
+    private AddressDTO address;
+    private LocalDateTime verifiedAt;
 }

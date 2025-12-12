@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import com.server.dto.consultantDTO.ConsultantResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -201,10 +202,10 @@ public class AdminController {
         }
         log.info("Admin user {} accessing all consultants", authentication.getName());
         try {
-            log.info("Consultants fetched successfully");
+            List<ConsultantResponse> consultants = consultantService.getAllConsultants();
+            log.info("Consultants fetched successfully. Total: {}", consultants.size());
             return ResponseEntity.ok().body(
-                    new ApiResponse<>(HttpStatus.OK, "Consultants retrieved successfully",
-                            consultantService.getAllConsultants()));
+                    new ApiResponse<>(HttpStatus.OK, "Consultants retrieved successfully", consultants));
         } catch (Exception e) {
             log.error("Error fetching consultants", e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -213,7 +214,7 @@ public class AdminController {
         }
     }
 
-    @PostMapping("/verify/consultant/{username}")
+    @PutMapping("/verify/consultant/{username}")
     public ResponseEntity<?> verifyConsultant(@PathVariable String username, Authentication authentication) {
         log.info("Verifying consultant with username: {}", username);
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -238,7 +239,7 @@ public class AdminController {
         }
     }
 
-    @PostMapping("/reject/consultant/{username}")
+    @PutMapping("/reject/consultant/{username}")
     public ResponseEntity<?> rejectConsultant(@PathVariable String username, Authentication authentication) {
         log.info("Rejecting consultant with username: {}", username);
         if (authentication == null || !authentication.isAuthenticated()) {

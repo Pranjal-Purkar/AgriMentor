@@ -9,7 +9,7 @@ import { ConsultantNavbar } from "../../components/consultantComponents/consulta
 
 @Component({
   selector: 'app-consultant-dashboard-layout',
-  imports: [RouterOutlet, FarmerNavbar, CommonModule, ConsultantNavbar],
+  imports: [RouterOutlet, CommonModule, ConsultantNavbar],
   templateUrl: './consultant-dashboard-layout.html',
   styleUrl: './consultant-dashboard-layout.css',
   animations: [RouteAnimations]

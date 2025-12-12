@@ -5,7 +5,7 @@ import com.server.entity.Consultation;
 import com.server.entity.User;
 import com.server.enumeration.ConsultationRequestStatus;
 import com.server.enumeration.Role;
-import com.server.repository.AdminRepository;
+
 import com.server.repository.ConsultationRepository;
 import com.server.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +21,6 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class AdminService {
-    @Autowired
-    private AdminRepository adminRepository;
     @Autowired
     private EmailService emailService;
     @Autowired
@@ -237,7 +235,11 @@ public class AdminService {
                                 + consultation.getTopic());
             }
 
-            activity.setUsername(consultation.getFarmer().getEmail());
+            if (consultation.getFarmer() != null) {
+                activity.setUsername(consultation.getFarmer().getEmail());
+            } else {
+                activity.setUsername("Unknown Farmer");
+            }
             activity.setUserRole("FARMER");
             activity.setTimestamp(consultation.getCreatedAt());
             activities.add(activity);

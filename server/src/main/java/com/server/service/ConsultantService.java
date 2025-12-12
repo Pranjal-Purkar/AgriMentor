@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.server.dto.AddressDTO;
 import com.server.dto.ConsultationDTO.ConsultationResponse;
 import com.server.dto.CropDTO;
 import com.server.dto.FarmVisitRequest;
@@ -27,14 +28,14 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class ConsultantService {
-	@Autowired
-	private ConsultantRepository consultantRepository;
+    @Autowired
+    private ConsultantRepository consultantRepository;
     @Autowired
     private EmailService emailService;
     @Autowired
     private FarmvisitService farmvisitService;
 
-	// Get all verified consultants
+    // Get all verified consultants
     @Transactional
     public List<ConsultantResponse> getVerifiedConsultants() {
         log.info("Fetching verified consultants from database");
@@ -66,7 +67,7 @@ public class ConsultantService {
                             VerificationDocumentDTO docDTO = new VerificationDocumentDTO();
                             docDTO.setId(doc.getId());
                             docDTO.setDocumentType(doc.getDocumentType());
-                            docDTO.setDocumentUrl("/api/documents/" + doc.getId() + "/download");
+                            docDTO.setDocumentUrl("/api/v1/documents/" + doc.getId() + "/download");
                             response.setVerificationDocument(docDTO);
                         }
 
@@ -113,7 +114,7 @@ public class ConsultantService {
                             VerificationDocumentDTO docDTO = new VerificationDocumentDTO();
                             docDTO.setId(doc.getId());
                             docDTO.setDocumentType(doc.getDocumentType());
-                            docDTO.setDocumentUrl("/api/documents/" + doc.getId() + "/download");
+                            docDTO.setDocumentUrl("/api/v1/documents/" + doc.getId() + "/download");
                             response.setVerificationDocument(docDTO);
                         }
 
@@ -129,91 +130,93 @@ public class ConsultantService {
         }
     }
 
+    // Get consultant by ID
+    public Optional<Consultant> getConsultantById(Long id) {
+        log.info("Inside ConsultantService.getConsultantById with id: {}", id);
+        return consultantRepository.findById(id);
+    }
 
-	// Get consultant by ID
-	public Optional<Consultant> getConsultantById(Long id) {
-		log.info("Inside ConsultantService.getConsultantById with id: {}", id);
-		return consultantRepository.findById(id);
-	}
-	// Get consultant by email
-	public Optional<Consultant> getConsultantByUsername(String username) {
-		log.info("Inside ConsultantService.getConsultantByEmail with email: {}", username);
-		return consultantRepository.findByEmail(username);
-	}
-	// Check if consultant is verified
-	public boolean isVerified(String email) {
-		log.info("Inside ConsultantService.isVerified with email: {}", email);
-		Optional<Consultant> consultantOpt = this.getConsultantByUsername(email);
-		if (consultantOpt.isPresent()) {
-			return consultantOpt.get().getIsVerified();
-		} else {
-			log.warn("Consultant with email {} not found", email);
-			return false;
-		}
-	}
-	
-	// Check verification status
-	public VerificationStatus checkVerificationStatus(String email) {
-		log.info("Inside ConsultantService.checkVerificationStatus with email: {}", email);
-		Optional<Consultant> consultantOpt = this.getConsultantByUsername(email);
-		
-		if (consultantOpt.isPresent()) {
-			log.info("Consultant with email {} found with verification status: {}", email, consultantOpt.get().getVerificationStatus());
-			return consultantOpt.get().getVerificationStatus();
-		} else {
-			log.warn("Consultant with email {} not found", email);
-			return null;
-		}
-	}
-	
-	
-	
-	//update verification status
-	@Transactional
-	public void updateVerificationStatus(String email, VerificationStatus status) {
-		log.info("Inside ConsultantService.updateVerificationStatus with email: {} and status: {}", email, status);
-		Optional<Consultant> consultantOpt = this.getConsultantByUsername(email);
-		if (consultantOpt.isPresent()) {
-			Consultant consultant = consultantOpt.get();
-			consultant.setVerificationStatus(status);
-			if (status == VerificationStatus.VERIFIED) {
-				consultant.setIsVerified(true);
-				consultant.setIsActive(true);
-			} else {
-				consultant.setIsVerified(false);
-				consultant.setIsActive(false);
-			}
-			consultantRepository.save(consultant);
-			log.info("Consultant with email {} updated to verification status: {}", email, status);
-		} else {
-			log.warn("Consultant with email {} not found. Cannot update verification status.", email);
-			throw new RuntimeException("Consultant not found");
-		}
-	}
+    // Get consultant by email
+    public Optional<Consultant> getConsultantByUsername(String username) {
+        log.info("Inside ConsultantService.getConsultantByEmail with email: {}", username);
+        return consultantRepository.findByEmail(username);
+    }
 
-	//verify consultant
-	public boolean verifyConsultant(String email) {
-		log.info("Inside ConsultantService.verifyConsultant with email: {}", email);
-		try {
-			this.updateVerificationStatus(email, VerificationStatus.VERIFIED);
-			log.info("Consultant with email {} verified successfully", email);
-            this.emailService.sendEmail(
-            	   "Dear Consultant,\n\n" +
-                   "We are pleased to inform you that your account has been successfully verified. " +
-                   "You can now access all the features and services available to verified consultants on our platform.\n\n" +
-                   "Thank you for being a valued member of our community.\n\n" +
-                   "Best regards,\n" +
-                   "The Team");
-			return true;
-		} catch (Exception e) {
-			log.error("Error verifying consultant with email {}: {}", email, e.getMessage());
-			return false;
-		}
-	}
+    // Check if consultant is verified
+    public boolean isVerified(String email) {
+        log.info("Inside ConsultantService.isVerified with email: {}", email);
+        Optional<Consultant> consultantOpt = this.getConsultantByUsername(email);
+        if (consultantOpt.isPresent()) {
+            return consultantOpt.get().getIsVerified();
+        } else {
+            log.warn("Consultant with email {} not found", email);
+            return false;
+        }
+    }
 
-    //Remove Consultant
+    // Check verification status
+    public VerificationStatus checkVerificationStatus(String email) {
+        log.info("Inside ConsultantService.checkVerificationStatus with email: {}", email);
+        Optional<Consultant> consultantOpt = this.getConsultantByUsername(email);
+
+        if (consultantOpt.isPresent()) {
+            log.info("Consultant with email {} found with verification status: {}", email,
+                    consultantOpt.get().getVerificationStatus());
+            return consultantOpt.get().getVerificationStatus();
+        } else {
+            log.warn("Consultant with email {} not found", email);
+            return null;
+        }
+    }
+
+    // update verification status
     @Transactional
-    public boolean deleteConsultant(String username){
+    public void updateVerificationStatus(String email, VerificationStatus status) {
+        log.info("Inside ConsultantService.updateVerificationStatus with email: {} and status: {}", email, status);
+        Optional<Consultant> consultantOpt = this.getConsultantByUsername(email);
+        if (consultantOpt.isPresent()) {
+            Consultant consultant = consultantOpt.get();
+            consultant.setVerificationStatus(status);
+            if (status == VerificationStatus.VERIFIED) {
+                consultant.setIsVerified(true);
+                consultant.setIsActive(true);
+            } else {
+                consultant.setIsVerified(false);
+                consultant.setIsActive(false);
+            }
+            consultantRepository.save(consultant);
+            log.info("Consultant with email {} updated to verification status: {}", email, status);
+        } else {
+            log.warn("Consultant with email {} not found. Cannot update verification status.", email);
+            throw new RuntimeException("Consultant not found");
+        }
+    }
+
+    // verify consultant
+    @Transactional
+    public boolean verifyConsultant(String email) {
+        log.info("Inside ConsultantService.verifyConsultant with email: {}", email);
+        try {
+            this.updateVerificationStatus(email, VerificationStatus.VERIFIED);
+            log.info("Consultant with email {} verified successfully", email);
+            this.emailService.sendEmail(
+                    "Dear Consultant,\n\n" +
+                            "We are pleased to inform you that your account has been successfully verified. " +
+                            "You can now access all the features and services available to verified consultants on our platform.\n\n"
+                            +
+                            "Thank you for being a valued member of our community.\n\n" +
+                            "Best regards,\n" +
+                            "The Team");
+            return true;
+        } catch (Exception e) {
+            log.error("Error verifying consultant with email {}: {}", email, e.getMessage());
+            return false;
+        }
+    }
+
+    // Remove Consultant
+    @Transactional
+    public boolean deleteConsultant(String username) {
         log.info("Inside ConsultantService.deleteConsultant with username: {}", username);
         try {
             Consultant consultant = this.getConsultantByUsername(username).orElse(null);
@@ -232,8 +235,7 @@ public class ConsultantService {
         }
     }
 
-
-    //gell all consultation requests of consultant
+    // gell all consultation requests of consultant
     public Optional<List<ConsultationResponse>> getAllConsultationRequests(String username) {
         log.info("Fetching all consultation requests for username: {}", username);
         try {
@@ -303,7 +305,8 @@ public class ConsultantService {
                 return false;
             }
         } catch (Exception e) {
-            log.error("Error accepting consultation request with id: {} for consultant: {}: {}", consultationId, username, e.getMessage());
+            log.error("Error accepting consultation request with id: {} for consultant: {}: {}", consultationId,
+                    username, e.getMessage());
             return false;
         }
     }
@@ -329,14 +332,16 @@ public class ConsultantService {
                 return false;
             }
         } catch (Exception e) {
-            log.error("Error accepting consultation request with id: {} for consultant: {}: {}", consultationId, username, e.getMessage());
+            log.error("Error accepting consultation request with id: {} for consultant: {}: {}", consultationId,
+                    username, e.getMessage());
             return false;
         }
     }
 
     @Transactional
     public boolean scheduleConsultatinVisit(String username, Long consultationId, FarmVisitRequest request) {
-        log.info("Consultant {} is attempting to schedule farm visit for consultation request with id: {}", username, consultationId);
+        log.info("Consultant {} is attempting to schedule farm visit for consultation request with id: {}", username,
+                consultationId);
         try {
             Consultant consultant = consultantRepository.findByEmail(username)
                     .orElseThrow(() -> new RuntimeException("Consultant not found with username: " + username));
@@ -348,13 +353,16 @@ public class ConsultantService {
             if (consultationOpt.isPresent()) {
                 Consultation consultation = consultationOpt.get();
                 Farmvisit scheduled = farmvisitService.scheduleFarmVisit(consultation, request).orElse(null);
-                if(scheduled != null){
-                    log.info("Farm visit scheduled for consultation request with id: {} by consultant: {}", consultationId, username);
+                if (scheduled != null) {
+                    log.info("Farm visit scheduled for consultation request with id: {} by consultant: {}",
+                            consultationId, username);
                     consultation.getFarmVisits().add(scheduled);
-           log.info("Linked farm visit to consultation successfully for consultation id: {}", consultation.getId());
+                    log.info("Linked farm visit to consultation successfully for consultation id: {}",
+                            consultation.getId());
                     return true;
                 } else {
-                    log.warn("Failed to schedule farm visit for consultation request with id: {} by consultant: {}", consultationId, username);
+                    log.warn("Failed to schedule farm visit for consultation request with id: {} by consultant: {}",
+                            consultationId, username);
                     return false;
                 }
             } else {
@@ -362,15 +370,15 @@ public class ConsultantService {
                 return false;
             }
         } catch (Exception e) {
-            log.error("Error scheduling farm visit for consultation request with id: {} for consultant: {}: {}", consultationId, username, e.getMessage());
+            log.error("Error scheduling farm visit for consultation request with id: {} for consultant: {}: {}",
+                    consultationId, username, e.getMessage());
             return false;
         }
     }
 
+    // Update Consultant Profile
 
-    //Update Consultant Profile
-
-    //Update Consultant Profile
+    // Update Consultant Profile
     @Transactional
     public boolean updateConsultantProfile(String username, ConsultantUpdateRequest updateRequest) {
         log.info("Updating consultant profile for user: {}", username);
@@ -460,6 +468,5 @@ public class ConsultantService {
             return false;
         }
     }
-
 
 }

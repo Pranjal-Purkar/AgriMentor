@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { AdminService } from '../../../services/adminService/admin.service';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { AdminService } from '../../../services/adminService/admin-service';
 import { UserStatistics, ConsultationOverview } from '../../../interfaces/admin.interfaces';
 
 @Component({
@@ -14,10 +14,15 @@ export class AdminReports implements OnInit {
   consultationStats: ConsultationOverview | null = null;
   isLoading = true;
 
-  constructor(private adminService: AdminService) {}
+  constructor(
+    private adminService: AdminService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   ngOnInit(): void {
-    this.loadStatistics();
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadStatistics();
+    }
   }
 
   loadStatistics(): void {
@@ -26,7 +31,7 @@ export class AdminReports implements OnInit {
     // Load user statistics
     this.adminService.getUserStatistics().subscribe({
       next: (response) => {
-        this.userStats = response.data;
+        this.userStats = response.data || null;
       },
       error: (error) => {
         console.error('Error loading user statistics:', error);
@@ -36,7 +41,7 @@ export class AdminReports implements OnInit {
     // Load consultation statistics
     this.adminService.getConsultationStatistics().subscribe({
       next: (response) => {
-        this.consultationStats = response.data;
+        this.consultationStats = response.data || null;
         this.isLoading = false;
       },
       error: (error) => {

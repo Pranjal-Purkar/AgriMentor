@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AdminService } from '../../../services/adminService/admin.service';
+import { AdminService } from '../../../services/adminService/admin-service';
 import { ConsultationOverview } from '../../../interfaces/admin.interfaces';
 import { toast } from 'ngx-sonner';
 

@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { ConsultantVerificationDetails } from './components/adminComponent/consultant-verification-details/consultant-verification-details';
 import { Home } from './components/homeComponents/home/home';
 import { HomeLayout } from './layouts/home-layout/home-layout';
 import { Login } from './components/homeComponents/login/login';
@@ -174,6 +175,11 @@ export const routes: Routes = [
         path: 'approvals',
         component: AdminApprovals,
         data: { animation: 'AdminApprovals' },
+      },
+      {
+        path: 'verification/:id',
+        component: ConsultantVerificationDetails,
+        data: { animation: 'ConsultantVerificationDetails' },
       },
       {
         path: 'reports',

@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { AdminService } from '../../../services/adminService/admin.service';
+import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Router } from '@angular/router';
+import { AdminService } from '../../../services/adminService/admin-service';
 import { toast } from 'ngx-sonner';
 
 @Component({
@@ -17,10 +18,21 @@ export class AdminApprovals implements OnInit {
   pendingConsultants: any[] = [];
   isLoading = true;
 
-  constructor(private adminService: AdminService) {}
+  constructor(
+    private adminService: AdminService,
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private cdr: ChangeDetectorRef,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.loadPendingConsultants();
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadPendingConsultants();
+    }
+  }
+
+  viewDetails(idOrEmail: string | number): void {
+    this.router.navigate(['/admin/verification', idOrEmail]);
   }
 
   loadPendingConsultants(): void {
@@ -29,6 +41,8 @@ export class AdminApprovals implements OnInit {
       next: (response) => {
         // Filter for unverified consultants
         const allConsultants = response.data || [];
+        // Log to debug
+        console.log('AdminApprovals: Loaded consultants', allConsultants);
         this.pendingConsultants = allConsultants.filter((c: any) => !c.isVerified);
         this.pendingApprovals = this.pendingConsultants.length;
 
@@ -37,11 +51,13 @@ export class AdminApprovals implements OnInit {
         this.rejectedToday = 0;
 
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error loading consultants:', error);
         toast.error('Failed to load pending approvals');
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
     });
   }

@@ -89,6 +89,8 @@ public class ConsultantService {
         try {
             List<Consultant> consultants = consultantRepository.findAll();
 
+            log.info("Successfully fetched {} consultants from database", consultants);
+
             if (consultants.isEmpty()) {
                 log.warn("No consultants found in database");
                 return new ArrayList<>();
@@ -108,7 +110,18 @@ public class ConsultantService {
                         response.setSpecialization(consultant.getSpecialization());
                         response.setVerificationStatus(consultant.getVerificationStatus());
                         response.setIsActive(consultant.getIsActive());
-
+                        log.info("Consultant {}", consultant);
+                        if (consultant.getAddress() != null) {
+                            AddressDTO addressDTO = new AddressDTO();
+                            addressDTO.setCity(consultant.getAddress().getCity());
+                            addressDTO.setState(consultant.getAddress().getState());
+                            addressDTO.setCountry(consultant.getAddress().getCountry());
+                            addressDTO.setPinCode(consultant.getAddress().getPinCode());
+                            addressDTO.setStreet(consultant.getAddress().getStreet());
+                            addressDTO.setLatitude(consultant.getAddress().getLatitude());
+                            addressDTO.setLongitude(consultant.getAddress().getLongitude());
+                            response.setAddress(addressDTO);
+                        }
                         if (consultant.getVerificationDocument() != null) {
                             VerificationDocument doc = consultant.getVerificationDocument();
                             VerificationDocumentDTO docDTO = new VerificationDocumentDTO();

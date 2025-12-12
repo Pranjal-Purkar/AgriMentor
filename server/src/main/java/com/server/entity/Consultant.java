@@ -45,20 +45,6 @@ public class Consultant extends User {
     @Value("false")
     private Boolean isActive;
 
-    @Override
-    public String toString() {
-        return "Consultant{" +
-                "id=" + getId() +
-                ", email='" + getEmail() + '\'' +
-                ", bio='" + bio + '\'' +
-                ", expertiseArea='" + expertiseArea + '\'' +
-                ", experienceYears=" + experienceYears +
-                ", qualifications='" + qualifications + '\'' +
-                ", specialization='" + specialization + '\'' +
-                ", verificationStatus=" + verificationStatus +
-                ", verifiedAt=" + verifiedAt +
-                ", isActive=" + isActive +
-                '}';
-    }
+    
 
 }

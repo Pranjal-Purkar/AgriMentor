@@ -55,6 +55,10 @@ public class Consultation {
     @JsonManagedReference
     private Address farmAddress;
 
+    @OneToOne(mappedBy = "consultation", cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "consultation-feedback")
+    private Feedback feedback;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime closedAt;

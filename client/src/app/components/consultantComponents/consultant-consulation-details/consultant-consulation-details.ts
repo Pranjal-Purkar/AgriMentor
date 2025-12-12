@@ -9,10 +9,13 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FarmVisitiongSchedule } from '../farm-visitiong-schedule/farm-visitiong-schedule';
+
 import { ConsultationService } from '../../../services/consultationService/consultation-service';
 import { ConsultationReportService } from '../../../services/consultationReport/consultation-report-service';
 import { FarmVisit } from '../../../services/farmVisit/farm-visit';
+
+import { FarmVisitiongSchedule } from '../farm-visitiong-schedule/farm-visitiong-schedule';
+import { FeedbackDisplayComponent } from '../feedback-display/feedback-display';
 
 // Custom validator to ensure date is in the future
 function futureDateValidator(control: AbstractControl): ValidationErrors | null {
@@ -33,7 +36,7 @@ function futureDateValidator(control: AbstractControl): ValidationErrors | null 
 
 @Component({
   selector: 'app-consultant-consulation-details',
-  imports: [CommonModule, ReactiveFormsModule, FarmVisitiongSchedule],
+  imports: [CommonModule, ReactiveFormsModule, FarmVisitiongSchedule, FeedbackDisplayComponent],
   templateUrl: './consultant-consulation-details.html',
   styleUrl: './consultant-consulation-details.css',
 })
@@ -100,46 +103,33 @@ export class ConsultantConsulationDetails implements OnInit, OnDestroy {
     this.isLoading = true;
 
     // Subscribe to the BehaviorSubject observable for consultation data
+    // Subscribe to the BehaviorSubject observable for consultation data
     this.consultationService.listConsultationData$.subscribe({
       next: (data) => {
+        // If data is null/undefined, it might be initial state.
+        // We trigger a fetch if we haven't already (logic for that should ideally be in service, but here we trigger it).
+        // However, we shouldn't get stuck. If data is null, we request it.
+        // We do NOT return here if we want to avoid getting stuck if the service never updates.
+        // But assuming the service works, we wait for the update.
         if (!data) {
-          // Data not yet loaded, trigger initial fetch
           this.consultationService.getConsultationRequests();
           return;
         }
 
         // Find the specific consultation from the list
-        this.consultation = data.find((c: any) => c.id === id);
+        const found = data.find((c: any) => c.id === id);
 
-        if (this.consultation) {
-          // Load reports using the report service for reactive state
+        // Update state only if changed or initial load
+        if (found) {
+          this.consultation = found;
+
+          // Load related data
           this.reportService.loadReportsByConsultationId(this.consultation.id);
-
-          // Subscribe to reports state
-          this.reportService.currentConsultationReports$.subscribe({
-            next: (reports) => {
-              if (reports) {
-                this.reports = reports;
-                console.log('📊 Reports updated:', reports);
-              }
-            },
-          });
-
-          // Load farm visits using the farm visit service
           this.farmVisitService.getFarmVisitsByConsultationId(this.consultation.id);
-
-          // Subscribe to farm visits state
-          this.farmVisitService.farmVisits$.subscribe({
-            next: (visits) => {
-              // Sort visits by nearest date (ascending)
-              this.visits = visits.sort((a, b) => {
-                const dateA = new Date(a.scheduledDate).getTime();
-                const dateB = new Date(b.scheduledDate).getTime();
-                return dateA - dateB;
-              });
-              console.log('📅 Farm visits updated and sorted:', this.visits);
-            },
-          });
+        } else {
+          // Handle case where id is not found in the loaded data
+          console.warn(`Consultation with ID ${id} not found in loaded data.`);
+          // Optionally redirect or show error, but for now just stop loading so user sees something (empty state)
         }
 
         this.isLoading = false;
@@ -149,6 +139,30 @@ export class ConsultantConsulationDetails implements OnInit, OnDestroy {
         console.error('🔴 Error fetching consultation details:', err);
         this.isLoading = false;
         this.cdr.detectChanges();
+      },
+    });
+
+    // Subscribe to reports state separately to avoid nesting complexity
+    this.reportService.currentConsultationReports$.subscribe({
+      next: (reports) => {
+        if (reports) {
+          this.reports = reports;
+          this.cdr.detectChanges();
+        }
+      },
+    });
+
+    // Subscribe to farm visits state
+    this.farmVisitService.farmVisits$.subscribe({
+      next: (visits) => {
+        if (visits) {
+          this.visits = visits.sort((a, b) => {
+            const dateA = new Date(a.scheduledDate).getTime();
+            const dateB = new Date(b.scheduledDate).getTime();
+            return dateA - dateB;
+          });
+          this.cdr.detectChanges();
+        }
       },
     });
   }

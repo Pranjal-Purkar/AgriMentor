@@ -1,4 +1,3 @@
-
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/core';
 import { Router } from '@angular/router';
@@ -6,15 +5,14 @@ import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-consultant-navbar',
-  imports: [RouterModule,CommonModule],
+  imports: [RouterModule, CommonModule],
   templateUrl: './consultant-navbar.html',
   styleUrl: './consultant-navbar.css',
 })
 export class ConsultantNavbar {
-
   @Output() closeMenu = new EventEmitter<void>();
   isMobileMenuOpen = false;
-   isInitialized = false;
+  isInitialized = false;
 
   menuItems = [
     {
@@ -26,7 +24,7 @@ export class ConsultantNavbar {
       </path>
     `,
     },
-    
+
     {
       title: 'Consultation Request',
       route: 'consultation-request',
@@ -55,6 +53,15 @@ export class ConsultantNavbar {
     // `,
     // },
     {
+      title: 'Feedbacks',
+      route: '/consultant/feedbacks',
+      icon: `
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z">
+      </path>
+    `,
+    },
+    {
       title: 'Profile',
       route: '/consultant/profile',
       icon: `
@@ -65,10 +72,7 @@ export class ConsultantNavbar {
     },
   ];
 
-  constructor(
-    private router: Router,
-    private cdr: ChangeDetectorRef
-  ) {}
+  constructor(private router: Router, private cdr: ChangeDetectorRef) {}
 
   ngAfterViewInit() {
     // Mark the component as initialized
@@ -76,7 +80,6 @@ export class ConsultantNavbar {
     // Trigger change detection
     this.cdr.detectChanges();
   }
-
 
   // Close mobile menu when a link is clicked
   onLinkClick() {
@@ -102,5 +105,4 @@ export class ConsultantNavbar {
   toggleMobileMenu() {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }
-
 }

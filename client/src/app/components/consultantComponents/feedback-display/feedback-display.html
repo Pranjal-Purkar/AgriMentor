@@ -1,0 +1,91 @@
+<div *ngIf="isLoading" class="flex justify-center p-4">
+  <div
+    class="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"
+  ></div>
+</div>
+
+<div
+  *ngIf="!isLoading && !feedback"
+  class="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-200"
+>
+  <p class="text-gray-500 text-sm">No feedback provided yet.</p>
+</div>
+
+<div
+  *ngIf="!isLoading && feedback"
+  class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 animate-fadeIn"
+>
+  <!-- Header -->
+  <div class="flex items-start justify-between mb-6">
+    <div class="flex gap-4">
+      <div class="flex-shrink-0">
+        <div
+          class="w-12 h-12 bg-linear-to-br from-purple-100 to-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold text-lg shadow-inner"
+        >
+          {{ feedback.farmerName.charAt(0) }}
+        </div>
+      </div>
+      <div>
+        <h3 class="text-lg font-bold text-gray-900">{{ feedback.farmerName }}</h3>
+        <p class="text-xs text-gray-500">{{ feedback.createdAt | date : 'mediumDate' }}</p>
+      </div>
+    </div>
+
+    <div class="flex flex-col items-end">
+      <div
+        class="flex items-center gap-1 bg-yellow-50 px-3 py-1 rounded-full border border-yellow-100"
+      >
+        <span class="text-sm font-bold text-yellow-700">{{
+          feedback.ratingOverall | number : '1.1-1'
+        }}</span>
+        <svg class="w-4 h-4 text-yellow-500 fill-current" viewBox="0 0 24 24">
+          <path
+            d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+          />
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Ratings -->
+  <div class="grid grid-cols-3 gap-2 mb-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
+    <div class="text-center">
+      <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Communication</p>
+      <div class="flex justify-center text-yellow-400">
+        <span
+          *ngFor="let s of stars"
+          class="text-sm"
+          [class.text-gray-300]="s > feedback.ratingCommunication"
+          >★</span
+        >
+      </div>
+    </div>
+    <div class="text-center border-x border-gray-200">
+      <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Expertise</p>
+      <div class="flex justify-center text-yellow-400">
+        <span
+          *ngFor="let s of stars"
+          class="text-sm"
+          [class.text-gray-300]="s > feedback.ratingExpertise"
+          >★</span
+        >
+      </div>
+    </div>
+    <div class="text-center">
+      <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Timeliness</p>
+      <div class="flex justify-center text-yellow-400">
+        <span
+          *ngFor="let s of stars"
+          class="text-sm"
+          [class.text-gray-300]="s > feedback.ratingTimeliness"
+          >★</span
+        >
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="prose prose-sm text-gray-600">
+    <p>{{ feedback.feedbackText }}</p>
+  </div>
+</div>

@@ -4,10 +4,13 @@ import { FarmerService } from '../../../services/farmerService/farmer-service';
 import { ConsultationReportService } from '../../../services/consultationReport/consultation-report-service';
 import { FarmVisit } from '../../../services/farmVisit/farm-visit';
 import { CommonModule, DatePipe } from '@angular/common';
+import { FeedbackService } from '../../../services/feedbackService/feedback-service';
+import { FeedbackFormComponent } from '../feedback-form/feedback-form';
+import { FeedbackDisplayComponent } from '../../consultantComponents/feedback-display/feedback-display';
 
 @Component({
   selector: 'app-cosultation-details',
-  imports: [CommonModule, DatePipe],
+  imports: [CommonModule, DatePipe, FeedbackFormComponent, FeedbackDisplayComponent],
   templateUrl: './cosultation-details.html',
   styleUrl: './cosultation-details.css',
 })
@@ -17,6 +20,11 @@ export class CosultationDetails implements OnInit, OnDestroy {
   reports: any[] = [];
   visits: any[] = [];
 
+  // Feedback state
+  hasFeedback: boolean = false;
+  feedbackData: any = null;
+  isEditing: boolean = false;
+
   activeTab: string = 'request';
 
   constructor(
@@ -24,7 +32,8 @@ export class CosultationDetails implements OnInit, OnDestroy {
     private router: Router,
     private farmerService: FarmerService,
     private reportService: ConsultationReportService,
-    private farmVisitService: FarmVisit
+    private farmVisitService: FarmVisit,
+    private feedbackService: FeedbackService
   ) {}
 
   ngOnInit(): void {
@@ -66,6 +75,11 @@ export class CosultationDetails implements OnInit, OnDestroy {
               console.log('📅 Farmer - Farm visits updated and sorted:', this.visits);
             },
           });
+
+          // Check for Feedback if Completed
+          if (this.consultation.consultationRequestStatus === 'COMPLETED') {
+            this.loadFeedback();
+          }
         }
 
         this.isLoading = false;
@@ -77,12 +91,38 @@ export class CosultationDetails implements OnInit, OnDestroy {
     });
   }
 
+  loadFeedback() {
+    this.feedbackService.getFeedbackByConsultationId(this.consultation.id).subscribe({
+      next: (res) => {
+        this.hasFeedback = true;
+        this.feedbackData = res;
+      },
+      error: (err) => {
+        this.hasFeedback = false;
+        this.feedbackData = null;
+      },
+    });
+  }
+
   setTab(tabName: string) {
     this.activeTab = tabName;
   }
 
   viewReportDetails(reportId: number): void {
     this.router.navigate(['/farmer/report', reportId]);
+  }
+
+  onFeedbackSubmitted() {
+    this.loadFeedback();
+    this.isEditing = false;
+  }
+
+  startEdit() {
+    this.isEditing = true;
+  }
+
+  onFeedbackEditCancel() {
+    this.isEditing = false;
   }
 
   ngOnDestroy() {

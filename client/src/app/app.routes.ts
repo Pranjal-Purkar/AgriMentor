@@ -28,6 +28,7 @@ import { AdminApprovals } from './components/adminComponent/admin-approvals/admi
 import { AdminReports } from './components/adminComponent/admin-reports/admin-reports';
 import { AdminSettings } from './components/adminComponent/admin-settings/admin-settings';
 import { ReportyReportDetail } from './components/reporty-report-detail/reporty-report-detail';
+import { GlobalFeedbackComponent } from './components/shared/global-feedback/global-feedback';
 
 export const routes: Routes = [
   {
@@ -114,6 +115,11 @@ export const routes: Routes = [
         component: ReportyReportDetail,
         data: { animation: 'ReportDetail' },
       },
+      {
+        path: 'feedbacks',
+        component: GlobalFeedbackComponent,
+        data: { animation: 'Feedbacks' },
+      },
     ],
   },
   {
@@ -150,6 +156,11 @@ export const routes: Routes = [
         component: ReportyReportDetail,
         data: { animation: 'ReportDetail' },
       },
+      {
+        path: 'feedbacks',
+        component: GlobalFeedbackComponent,
+        data: { animation: 'Feedbacks' },
+      },
     ],
   },
   {
@@ -185,6 +196,11 @@ export const routes: Routes = [
         path: 'reports',
         component: AdminReports,
         data: { animation: 'AdminReports' },
+      },
+      {
+        path: 'feedbacks',
+        component: GlobalFeedbackComponent,
+        data: { animation: 'Feedbacks' },
       },
       {
         path: 'settings',

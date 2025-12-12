@@ -303,4 +303,57 @@ export class ConsultantConsulationDetails implements OnInit, OnDestroy {
       },
     });
   }
+
+  // Helper method to check if there are any incomplete farm visits
+  hasIncompleteFarmVisits(): boolean {
+    return this.visits.some(
+      (visit) => visit.visitStatus === 'SCHEDULED' || visit.visitStatus === 'MISSED'
+    );
+  }
+
+  // Complete consultation with validation
+  completeConsultation() {
+    // Check if there are any incomplete farm visits
+    if (this.hasIncompleteFarmVisits()) {
+      const incompletVisits = this.visits.filter(
+        (visit) => visit.visitStatus === 'SCHEDULED' || visit.visitStatus === 'MISSED'
+      );
+
+      alert(
+        `Cannot complete consultation. You have ${incompletVisits.length} incomplete farm visit(s).\n\n` +
+          `Please complete or cancel all scheduled/missed farm visits before marking the consultation as complete.\n\n` +
+          `Incomplete visits:\n` +
+          incompletVisits
+            .map(
+              (v, i) =>
+                `${i + 1}. ${new Date(v.scheduledDate).toLocaleDateString()} - Status: ${
+                  v.visitStatus
+                }`
+            )
+            .join('\n')
+      );
+      return;
+    }
+
+    // Confirm completion
+    if (!confirm('Are you sure you want to mark this consultation as completed?')) {
+      return;
+    }
+
+    // Call the service to complete the consultation
+    this.consultationService.completeConsultation(this.consultation.id).subscribe({
+      next: (res: any) => {
+        console.log('✅ Consultation completed successfully:', res);
+        alert('Consultation has been marked as completed successfully!');
+
+        // Refresh consultation data
+        this.consultationService.getListConsultationRequestsData();
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('❌ Error completing consultation:', err);
+        alert('Failed to complete consultation. Please try again.');
+      },
+    });
+  }
 }

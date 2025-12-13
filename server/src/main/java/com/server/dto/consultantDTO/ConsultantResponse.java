@@ -33,4 +33,5 @@ public class ConsultantResponse {
     private String bio;
     private AddressDTO address;
     private LocalDateTime verifiedAt;
+    private String profilePhotoUrl; // Profile picture URL
 }

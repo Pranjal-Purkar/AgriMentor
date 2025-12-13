@@ -7,31 +7,24 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class ConsultantService {
-
   private consultantDataSubject = new BehaviorSubject<any | null>(null);
-    consultantData$ = this.consultantDataSubject.asObservable();
+  consultantData$ = this.consultantDataSubject.asObservable();
 
   private verifiedConsultantDataSubject = new BehaviorSubject<any | null>(null);
   verifiedConsultantData$ = this.verifiedConsultantDataSubject.asObservable();
 
-
-   
-  
-    constructor(
-    private api: ApiService, 
-    private router: Router,
-  ) {} 
+  constructor(private api: ApiService, private router: Router) {}
 
   getConsultantProfile() {
-    if(!this.consultantDataSubject.getValue()) {   
+    if (!this.consultantDataSubject.getValue()) {
       this.getConsultantProfileData();
     }
-    console.log("getConsultantProfile");
-      console.log(this.consultantDataSubject.getValue());
+    console.log('getConsultantProfile');
+    console.log(this.consultantDataSubject.getValue());
     return this.consultantData$;
   }
 
-getConsultantProfileData() {
+  getConsultantProfileData() {
     this.api.getConsultantProfile().subscribe({
       next: (res: any) => {
         this.consultantDataSubject.next(res.data);
@@ -44,11 +37,11 @@ getConsultantProfileData() {
 
   /*get verified consultants */
   getVerifiedConsultants() {
-    if(!this.verifiedConsultantDataSubject.getValue()) {   
+    if (!this.verifiedConsultantDataSubject.getValue()) {
       this.getVerifiedConsultantsData();
     }
-    console.log("getVerifiedConsultants");
-      console.log(this.verifiedConsultantDataSubject.getValue());
+    console.log('getVerifiedConsultants');
+    console.log(this.verifiedConsultantDataSubject.getValue());
     return this.verifiedConsultantData$;
   }
 
@@ -64,9 +57,9 @@ getConsultantProfileData() {
     });
   }
 
-  updateConsultantProfile(profileData: any){
-    console.log("inside consultant profile");
-    
+  updateConsultantProfile(profileData: any) {
+    console.log('inside consultant profile');
+
     this.api.updateConsultantProfile(profileData).subscribe({
       next: (res: any) => {
         this.getConsultantProfileData();
@@ -76,9 +69,11 @@ getConsultantProfileData() {
       error: (err: any) => {
         console.error('CONSULTANT:updateProfile::ERROR: ', err);
         console.error(err);
-      }
+      },
     });
   }
 
-  
+  uploadProfilePicture(file: File): Observable<any> {
+    return this.api.uploadProfilePicture(file);
+  }
 }

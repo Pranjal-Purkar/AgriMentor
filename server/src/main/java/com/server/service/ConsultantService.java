@@ -71,6 +71,12 @@ public class ConsultantService {
                             response.setVerificationDocument(docDTO);
                         }
 
+                        // Add profile picture URL if exists
+                        if (consultant.getProfilePicture() != null && consultant.getProfilePicture().getIsActive()) {
+                            response.setProfilePhotoUrl(
+                                    "http://localhost:8080/api/v1/consultants/profile-picture/" + consultant.getId());
+                        }
+
                         return response;
                     })
                     .collect(Collectors.toList());
@@ -129,6 +135,12 @@ public class ConsultantService {
                             docDTO.setDocumentType(doc.getDocumentType());
                             docDTO.setDocumentUrl("/api/v1/documents/" + doc.getId() + "/download");
                             response.setVerificationDocument(docDTO);
+                        }
+
+                        // Add profile picture URL if exists
+                        if (consultant.getProfilePicture() != null && consultant.getProfilePicture().getIsActive()) {
+                            response.setProfilePhotoUrl(
+                                    "http://localhost:8080/api/v1/consultants/profile-picture/" + consultant.getId());
                         }
 
                         return response;
@@ -479,6 +491,95 @@ public class ConsultantService {
         } catch (Exception e) {
             log.error("Error updating consultant profile for user: {}", username, e);
             return false;
+        }
+    }
+
+    // Upload Profile Picture
+    @Transactional
+    public boolean uploadProfilePicture(String username, org.springframework.web.multipart.MultipartFile file) {
+        log.info("Uploading profile picture for user: {}", username);
+        try {
+            Optional<Consultant> consultantOptional = this.getConsultantByUsername(username);
+            if (consultantOptional.isEmpty()) {
+                log.warn("Consultant not found for username: {}", username);
+                return false;
+            }
+
+            Consultant consultant = consultantOptional.get();
+
+            // Get project root directory
+            String projectRoot = System.getProperty("user.dir");
+            java.nio.file.Path uploadDir = java.nio.file.Paths.get(projectRoot, "uploads", "profile-pictures");
+
+            // Create directories if they don't exist
+            java.nio.file.Files.createDirectories(uploadDir);
+
+            // Generate unique filename
+            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            java.nio.file.Path uploadPath = uploadDir.resolve(fileName);
+
+            // Transfer file to the resolved path
+            file.transferTo(uploadPath.toFile());
+
+            log.info("Profile picture uploaded to: {}", uploadPath.toAbsolutePath());
+
+            // Create or update UserProfilePicture entity
+            UserProfilePicture profilePicture = consultant.getProfilePicture();
+            if (profilePicture == null) {
+                profilePicture = new UserProfilePicture();
+            }
+
+            profilePicture.setFilePath(uploadPath.toString());
+            profilePicture.setFileName(fileName);
+            profilePicture.setFileType(file.getContentType());
+            profilePicture.setFileSize(file.getSize());
+            profilePicture.setIsActive(true);
+            profilePicture.setUploadedAt(java.time.LocalDateTime.now());
+            profilePicture.setUser(consultant);
+
+            consultant.setProfilePicture(profilePicture);
+            consultantRepository.save(consultant);
+
+            log.info("Profile picture saved successfully for user: {}", username);
+            return true;
+        } catch (Exception e) {
+            log.error("Error uploading profile picture for user: {}", username, e);
+            return false;
+        }
+    }
+
+    // Get Profile Picture
+    public org.springframework.core.io.Resource getProfilePicture(Long consultantId) {
+        log.info("Fetching profile picture for consultant ID: {}", consultantId);
+        try {
+            Optional<Consultant> consultantOptional = this.getConsultantById(consultantId);
+            if (consultantOptional.isEmpty()) {
+                log.warn("Consultant not found for ID: {}", consultantId);
+                return null;
+            }
+
+            Consultant consultant = consultantOptional.get();
+            UserProfilePicture profilePicture = consultant.getProfilePicture();
+
+            if (profilePicture == null || !profilePicture.getIsActive()) {
+                log.warn("No active profile picture found for consultant ID: {}", consultantId);
+                return null;
+            }
+
+            java.nio.file.Path filePath = java.nio.file.Paths.get(profilePicture.getFilePath());
+            org.springframework.core.io.Resource resource = new org.springframework.core.io.UrlResource(
+                    filePath.toUri());
+
+            if (resource.exists() && resource.isReadable()) {
+                log.info("Profile picture found for consultant ID: {}", consultantId);
+                return resource;
+            } else {
+                log.warn("Profile picture file not found or not readable for consultant ID: {}", consultantId);
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Error fetching profile picture for consultant ID: {}", consultantId, e);
+            return null;
         }
     }
 

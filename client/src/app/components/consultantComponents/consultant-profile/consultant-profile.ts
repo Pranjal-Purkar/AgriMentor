@@ -140,8 +140,15 @@ export class ConsultantProfile implements OnInit, OnDestroy {
       this.consultantProfile = state;
       this.patchFormValues();
 
+      // Set profile picture URL
       if (this.consultantProfile?.profilePhotoUrl) {
+        // If profilePhotoUrl is provided (from consultant list API)
         this.profilePreview = this.consultantProfile.profilePhotoUrl;
+      } else if (this.consultantProfile?.profilePicture?.fileName) {
+        // If profilePicture object exists, construct URL
+        const consultantId = this.consultantProfile.id;
+        this.profilePreview = `http://localhost:8080/api/v1/consultants/profile-picture/${consultantId}`;
+        console.log('📸 Profile picture URL:', this.profilePreview);
       }
 
       console.log('Final consultant profile:', this.consultantProfile);
@@ -247,6 +254,28 @@ export class ConsultantProfile implements OnInit, OnDestroy {
       return;
     }
 
+    // 1. Upload profile picture first if selected
+    if (this.selectedPhotoFile) {
+      console.log('📤 Uploading profile picture...');
+      this.consultantService.uploadProfilePicture(this.selectedPhotoFile).subscribe({
+        next: (response) => {
+          console.log('✅ Profile picture uploaded successfully:', response);
+          this.selectedPhotoFile = null;
+          // 2. Then update profile data
+          this.updateProfileData();
+        },
+        error: (error) => {
+          console.error('❌ Error uploading profile picture:', error);
+          alert('Failed to upload profile picture. Please try again.');
+        },
+      });
+    } else {
+      // No photo selected, just update profile
+      this.updateProfileData();
+    }
+  }
+
+  private updateProfileData() {
     const formValue = this.profileForm.value;
 
     const updateRequest: ConsultantProfileUpdateRequest = {
@@ -273,6 +302,8 @@ export class ConsultantProfile implements OnInit, OnDestroy {
 
     this.consultantService.updateConsultantProfile(updateRequest);
     this.getConsultantProfile();
+    this.editMode = false;
+    this.saveSuccess = true;
   }
 
   get f() {

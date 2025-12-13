@@ -12,12 +12,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 
 import com.server.response.ApiResponse;
 import com.server.service.ConsultantService;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -304,6 +311,104 @@ public class ConsultantController {
         } catch (Exception e) {
             log.error("Error previewing document", e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Document not found");
+        }
+    }
+
+    /**
+     * Upload profile picture for consultant
+     */
+    @PostMapping("/profile-picture")
+    public ResponseEntity<?> uploadProfilePicture(
+            @RequestParam("file") MultipartFile file,
+            Authentication authentication) {
+        log.info("Received request to upload profile picture");
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            log.warn("Unauthorized access attempt to upload profile picture");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponse<String>(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+        }
+
+        String username = authentication.getName();
+        log.info("Uploading profile picture for user: {}", username);
+
+        try {
+            // Validate file
+            if (file.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ApiResponse<String>(HttpStatus.BAD_REQUEST, "File is empty"));
+            }
+
+            // Validate file type
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ApiResponse<String>(HttpStatus.BAD_REQUEST, "File must be an image"));
+            }
+
+            // Validate file size (5MB max)
+            if (file.getSize() > 5 * 1024 * 1024) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ApiResponse<String>(HttpStatus.BAD_REQUEST, "File size must be less than 5MB"));
+            }
+
+            // Upload profile picture using service
+            boolean uploaded = consultantService.uploadProfilePicture(username, file);
+
+            if (uploaded) {
+                log.info("Profile picture uploaded successfully for user: {}", username);
+                return ResponseEntity.ok(
+                        new ApiResponse<>(HttpStatus.OK, "Profile picture uploaded successfully"));
+            } else {
+                log.warn("Failed to upload profile picture for user: {}", username);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(new ApiResponse<String>(HttpStatus.INTERNAL_SERVER_ERROR,
+                                "Failed to upload profile picture"));
+            }
+        } catch (Exception e) {
+            log.error("Error uploading profile picture for user: {}", username, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<String>(HttpStatus.INTERNAL_SERVER_ERROR,
+                            "Error uploading profile picture: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Download/view profile picture by consultant ID
+     */
+    @GetMapping("/profile-picture/{consultantId}")
+    public ResponseEntity<?> getProfilePicture(@PathVariable Long consultantId) {
+        log.info("Fetching profile picture for consultant ID: {}", consultantId);
+
+        try {
+            Resource resource = consultantService.getProfilePicture(consultantId);
+
+            if (resource == null || !resource.exists()) {
+                log.warn("Profile picture not found for consultant ID: {}", consultantId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Profile picture not found");
+            }
+
+            // Determine content type
+            String contentType = "image/jpeg"; // default
+            try {
+                Path path = resource.getFile().toPath();
+                contentType = Files.probeContentType(path);
+                if (contentType == null) {
+                    contentType = "image/jpeg";
+                }
+            } catch (IOException e) {
+                log.warn("Could not determine file type for consultant ID: {}", consultantId);
+            }
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_TYPE, contentType)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline")
+                    .body(resource);
+        } catch (Exception e) {
+            log.error("Error fetching profile picture for consultant ID: {}", consultantId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error fetching profile picture: " + e.getMessage());
         }
     }
 

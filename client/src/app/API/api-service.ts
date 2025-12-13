@@ -76,6 +76,14 @@ export class ApiService {
     return this.http.put(this.baseUrl + 'consultants/profile/update', consultantProfile);
   }
 
+  uploadProfilePicture(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    // Don't set Content-Type header for FormData - browser will set it automatically with boundary
+    return this.http.post(this.baseUrl + 'consultants/profile-picture', formData);
+  }
+
   /*
    * Admin API endpoints
    */

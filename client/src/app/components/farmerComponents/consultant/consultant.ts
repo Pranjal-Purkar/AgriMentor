@@ -1,19 +1,18 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { UserCard } from '../../user-card/user-card';
-import { ApiService } from '../../../API/api-service';
-import AOS from 'aos';
 import { ConsultantService } from '../../../services/consultantService/consultant-service';
-import { Subscription } from 'rxjs';
+import { FeedbackService } from '../../../services/feedbackService/feedback-service';
+import { Subscription, forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-consultant',
-  imports: [CommonModule, UserCard],
+  imports: [CommonModule],
   templateUrl: './consultant.html',
   styleUrl: './consultant.css',
 })
-export class Consultant implements OnInit, AfterViewInit, OnDestroy {
+export class Consultant implements OnInit, OnDestroy {
   consultants: any[] = [];
   filteredConsultants: any[] = [];
   isLoading = true;
@@ -22,58 +21,86 @@ export class Consultant implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private consultantService: ConsultantService,
+    private feedbackService: FeedbackService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.loadConsultants();
-
-    // Initialize AOS
-    AOS.init({
-      duration: 800,
-      easing: 'ease-in-out',
-      once: true,
-      offset: 100,
-    });
-  }
-
-  ngAfterViewInit(): void {
-    // Refresh AOS after view init
-    setTimeout(() => {
-      AOS.refresh();
-    }, 100);
   }
 
   ngOnDestroy(): void {
-    // Clean up AOS
-    AOS.refresh();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
-
-  /**LOADING CONSULTANTS */
-  loadVerifiedConsultant() {}
 
   loadConsultants(): void {
     this.isLoading = true;
     this.subscription = this.consultantService.getVerifiedConsultants().subscribe((state: any) => {
       console.log('Consultants loaded:', state);
-      // The response is already an array from the BehaviorSubject
-      if (Array.isArray(state)) {
+
+      if (Array.isArray(state) && state.length > 0) {
         this.consultants = state;
+        // Load ratings for all consultants
+        this.loadConsultantRatings();
       } else {
         this.consultants = [];
+        this.filteredConsultants = [];
+        this.isLoading = false;
+        this.cdr.detectChanges();
       }
+    });
+  }
 
-      this.filteredConsultants = this.consultants;
-      console.log('Processed consultants:', this.consultants);
-      console.log('Filtered consultants:', this.filteredConsultants);
-      this.isLoading = false;
-      this.cdr.detectChanges();
+  loadConsultantRatings(): void {
+    // Create an array of observables to fetch feedback for each consultant
+    // Use catchError to handle individual failures without breaking forkJoin
+    const feedbackRequests = this.consultants.map((consultant) =>
+      this.feedbackService.getConsultantStats(consultant.id).pipe(
+        catchError((error: any) => {
+          console.warn(`Failed to load stats for consultant ${consultant.id}:`, error);
+          // Return default stats if this consultant's stats fail
+          return of({ data: { averageRating: 0, totalFeedbacks: 0 } });
+        })
+      )
+    );
 
-      // Refresh AOS after data loads
-      setTimeout(() => {
-        AOS.refresh();
-      }, 100);
+    // Execute all requests in parallel
+    forkJoin(feedbackRequests).subscribe({
+      next: (results: any[]) => {
+        // Update each consultant with their rating data
+        this.consultants = this.consultants.map((consultant, index) => {
+          const stats = results[index];
+          const data = stats?.data || stats;
+
+          return {
+            ...consultant,
+            rating: data?.averageRating || 0,
+            reviewCount: data?.totalFeedbacks || 0,
+            experience: consultant.experience || 0,
+          };
+        });
+
+        this.filteredConsultants = this.consultants;
+        console.log('Consultants with ratings:', this.consultants);
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error loading consultant ratings:', error);
+        // If stats API fails, use consultants without ratings
+        this.consultants = this.consultants.map((consultant) => ({
+          ...consultant,
+          rating: 0,
+          reviewCount: 0,
+          experience: consultant.experience || 0,
+        }));
+        this.filteredConsultants = this.consultants;
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
     });
   }
 
@@ -90,11 +117,6 @@ export class Consultant implements OnInit, AfterViewInit, OnDestroy {
         specialization.includes(this.searchTerm)
       );
     });
-
-    // Refresh AOS after filtering
-    setTimeout(() => {
-      AOS.refresh();
-    }, 50);
   }
 
   handleCardAction(event: { action: string; user: any }): void {

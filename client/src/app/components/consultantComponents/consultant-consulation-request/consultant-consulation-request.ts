@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from '../../../services/consultationService/consultation-service';
 import { FarmVisitiongSchedule } from '../farm-visitiong-schedule/farm-visitiong-schedule';
+import { FormsModule } from '@angular/forms';
 
 interface ConsultationRequest {
   id: number;
@@ -11,6 +12,7 @@ interface ConsultationRequest {
   description: string;
   consultationRequestStatus: string;
   createdAt: string;
+  date: string; // Add formatted date
   farmer: {
     firstName: string;
     lastName: string;
@@ -34,7 +36,7 @@ interface ConsultationRequest {
 
 @Component({
   selector: 'app-consultant-consulation-request',
-  imports: [CommonModule, DatePipe, FarmVisitiongSchedule],
+  imports: [CommonModule, DatePipe, FarmVisitiongSchedule, FormsModule],
   templateUrl: './consultant-consulation-request.html',
   styleUrl: './consultant-consulation-request.css',
 })
@@ -60,7 +62,7 @@ export class ConsultantConsulationRequest implements OnInit, OnDestroy {
   isLoading = false;
   consultationRequests: ConsultationRequest[] = [];
   filteredRequests: ConsultationRequest[] = []; // For search results
-  searchTerm = ''; // Search input
+  searchQuery = ''; // Search input (renamed from searchTerm for consistency)
   selectedConsultation: ConsultationRequest | null = null;
   showDetailsModal = false;
   showScheduleModal = false;
@@ -124,6 +126,11 @@ export class ConsultantConsulationRequest implements OnInit, OnDestroy {
             pinCode: item.farmAddress?.pinCode || '',
             country: item.farmAddress?.country || '',
           },
+          date: new Date(item.createdAt).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          }),
         }));
 
         console.log('🟢 Mapped Consultation Requests:', this.consultationRequests);
@@ -149,36 +156,39 @@ export class ConsultantConsulationRequest implements OnInit, OnDestroy {
     ).length;
   }
 
-  // Filter consultations by active tab and search term
+  // Filter consultations: GLOBAL SEARCH FIRST, then by active tab
   applyFilters(): void {
-    let filtered = this.consultationRequests.filter(
-      (c) => c.consultationRequestStatus.toLowerCase() === this.activeTab
-    );
+    let filtered = this.consultationRequests;
 
-    // Apply search filter if search term exists
-    if (this.searchTerm.trim()) {
-      const search = this.searchTerm.toLowerCase();
+    // Apply search filter FIRST (globally across all consultations)
+    if (this.searchQuery.trim()) {
+      const search = this.searchQuery.toLowerCase();
       filtered = filtered.filter((c) => {
         const farmerName = `${c.farmer.firstName} ${c.farmer.lastName}`.toLowerCase();
         const topic = c.topic.toLowerCase();
         const cropName = c.crop.name.toLowerCase();
         const city = c.farmAddress.city.toLowerCase();
+        const status = c.consultationRequestStatus.toLowerCase();
 
         return (
           farmerName.includes(search) ||
           topic.includes(search) ||
           cropName.includes(search) ||
-          city.includes(search)
+          city.includes(search) ||
+          status.includes(search)
         );
       });
     }
+
+    // Then filter by active tab
+    filtered = filtered.filter((c) => c.consultationRequestStatus.toLowerCase() === this.activeTab);
 
     this.filteredRequests = filtered;
   }
 
   // Handle search input
   onSearch(event: any): void {
-    this.searchTerm = event.target.value;
+    this.searchQuery = event.target.value;
     this.applyFilters();
   }
 

@@ -43,7 +43,7 @@ export class AdminApprovals implements OnInit {
         const allConsultants = response.data || [];
         // Log to debug
         console.log('AdminApprovals: Loaded consultants', allConsultants);
-        this.pendingConsultants = allConsultants.filter((c: any) => !c.isVerified);
+        this.pendingConsultants = allConsultants.filter((c: any) => c.verificationStatus != "VERIFIED" );
         this.pendingApprovals = this.pendingConsultants.length;
 
         // Calculate today's approvals/rejections (mock for now)

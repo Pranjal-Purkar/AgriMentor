@@ -14,6 +14,7 @@ import { ConsultationRequest } from './components/farmerComponents/consultation-
 import { FarmerProfile } from './components/farmerComponents/farmer-profile/farmer-profile';
 import { CosultationDetails } from './components/farmerComponents/cosultation-details/cosultation-details';
 import { Consultant } from './components/farmerComponents/consultant/consultant';
+import { ConsultantProfile as FarmerConsultantProfile } from './components/farmerComponents/consultant-profile/consultant-profile';
 import { ConsultantDashboardLayout } from './layouts/consultant-dashboard-layout/consultant-dashboard-layout';
 import { ConsultantHome } from './components/consultantComponents/consultant-home/consultant-home';
 import { ConsultantProfile } from './components/consultantComponents/consultant-profile/consultant-profile';
@@ -107,7 +108,7 @@ export const routes: Routes = [
       },
       {
         path: 'consultant/profile/:id',
-        component: ConsultantProfile,
+        component: FarmerConsultantProfile,
         data: { animation: 'ConsultantProfile' },
       },
       {

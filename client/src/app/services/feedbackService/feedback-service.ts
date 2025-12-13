@@ -56,6 +56,10 @@ export class FeedbackService {
     return this.api.getConsultantStats(consultantId);
   }
 
+  getFeedbackByConsultantId(consultantId: number): Observable<any> {
+    return this.api.getFeedbackByConsultantId(consultantId);
+  }
+
   getAllFeedback(): Observable<any> {
     return this.api.getAllFeedback();
   }

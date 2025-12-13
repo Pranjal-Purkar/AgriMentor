@@ -1,4 +1,4 @@
-<div class="w-full  mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
   <!-- Header Card with Glassmorphism -->
   <div
     class="relative bg-gradient-to-br from-white/90 via-emerald-50/30 to-teal-50/40 backdrop-blur-xl rounded-3xl shadow-xl border border-white/50 p-6 mb-6 overflow-hidden"
@@ -240,9 +240,22 @@
                 class="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl blur-md opacity-50 group-hover:opacity-75 transition-opacity duration-300"
               ></div>
               <div
-                class="relative w-14 h-14 bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300"
+                class="relative w-14 h-14 rounded-xl overflow-hidden shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300"
               >
-                {{ c.consultant.firstName.charAt(0) }}{{ c.consultant.lastName.charAt(0) }}
+                <!-- Profile Picture -->
+                <img
+                  *ngIf="c.consultant.profilePhotoUrl"
+                  [src]="c.consultant.profilePhotoUrl"
+                  [alt]="c.consultant.firstName + ' ' + c.consultant.lastName"
+                  class="w-full h-full object-cover"
+                />
+                <!-- Initials Fallback -->
+                <div
+                  *ngIf="!c.consultant.profilePhotoUrl"
+                  class="w-full h-full bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 flex items-center justify-center text-white font-bold text-lg"
+                >
+                  {{ c.consultant.firstName.charAt(0) }}{{ c.consultant.lastName.charAt(0) }}
+                </div>
               </div>
               <!-- Status indicator dot -->
               <div

@@ -21,6 +21,7 @@ import { ConsultantProfile } from './components/consultantComponents/consultant-
 import { ConsultantConsulationDetails } from './components/consultantComponents/consultant-consulation-details/consultant-consulation-details';
 import { ConsultantConsulationRequest } from './components/consultantComponents/consultant-consulation-request/consultant-consulation-request';
 import { FarmVisitiongSchedule } from './components/consultantComponents/farm-visitiong-schedule/farm-visitiong-schedule';
+import { FarmVisitDashboard } from './components/consultantComponents/farm-visit-dashboard/farm-visit-dashboard';
 import { AdminDashboardLayout } from './layouts/admin-dashboard-layout/admin-dashboard-layout';
 import { AdminHome } from './components/adminComponent/admin-home/admin-home';
 import { AdminUsers } from './components/adminComponent/admin-users/admin-users';
@@ -151,6 +152,11 @@ export const routes: Routes = [
         path: 'farm-schedule/:id',
         component: FarmVisitiongSchedule,
         data: { animation: 'FarmVisitiongSchedule' },
+      },
+      {
+        path: 'farm-visits',
+        component: FarmVisitDashboard,
+        data: { animation: 'FarmVisitDashboard' },
       },
       {
         path: 'report/:reportId',

@@ -8,7 +8,6 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root',
 })
 export class FarmerService {
-
   private farmerDataSubject = new BehaviorSubject<any | null>(null);
   farmerData$ = this.farmerDataSubject.asObservable();
 
@@ -18,40 +17,35 @@ export class FarmerService {
   private verifiedConsultantDataSubject = new BehaviorSubject<any | null>(null);
   verifiedConsultantData$ = this.verifiedConsultantDataSubject.asObservable();
 
-  
-
-  constructor(
-    private api: ApiService,
-  ) {} 
+  constructor(private api: ApiService) {}
 
   getFarmerProfile() {
-    if(!this.farmerDataSubject.getValue()) {   
+    if (!this.farmerDataSubject.getValue()) {
       this.getFarmerProfileData();
     }
-    console.log("getFarmerProfile");
-      console.log(this.farmerDataSubject.getValue());
+    console.log('getFarmerProfile');
+    console.log(this.farmerDataSubject.getValue());
     return this.farmerData$;
   }
 
   getVerifiedConsultants() {
-    if(!this.verifiedConsultantDataSubject.getValue()) {   
+    if (!this.verifiedConsultantDataSubject.getValue()) {
       this.getVerifiedConsultantsData();
     }
-    console.log("getVerifiedConsultants");
-      console.log(this.verifiedConsultantDataSubject.getValue());
+    console.log('getVerifiedConsultants');
+    console.log(this.verifiedConsultantDataSubject.getValue());
     return this.verifiedConsultantData$;
   }
 
-   getConsultationRequest() {
-    if(!this.consultationRequestSubject.getValue()) {   
+  getConsultationRequest() {
+    if (!this.consultationRequestSubject.getValue()) {
       this.getConsultationRequestData();
     }
     this.getConsultationRequestData();
-    console.log("getConsultationRequest");
-      console.log(this.consultationRequestSubject.getValue());
+    console.log('getConsultationRequest');
+    console.log(this.consultationRequestSubject.getValue());
     return this.consultationRequest$;
   }
-  
 
   // api calls
   getFarmerProfileData() {
@@ -65,12 +59,12 @@ export class FarmerService {
     });
   }
 
-  updateFarmerProfile(farmerProfile:any){
+  updateFarmerProfile(farmerProfile: any) {
     this.api.updateFarmerProfile(farmerProfile).subscribe({
       next: (res: any) => {
         this.farmerDataSubject.next(res.data);
         toast.success(res.message);
-        this.getFarmerProfileData()
+        this.getFarmerProfileData();
       },
       error: (err: any) => {
         console.log('FARMER::ERROR: ', err);
@@ -78,23 +72,18 @@ export class FarmerService {
     });
   }
 
-createConsultationRequest(requestData: any){
+  createConsultationRequest(requestData: any) {
     this.api.createConsultationRequest(requestData).subscribe({
       next: (res: any) => {
         console.log('Consultation request created:', res);
-        toast.success(res.message)
+        toast.success(res.message);
       },
       error: (err: any) => {
         console.log('Error creating consultation request:', err);
         toast.error('Failed to create consultation request');
-      }
+      },
     });
-}
-
-
-
- 
-
+  }
 
   getVerifiedConsultantsData() {
     this.api.getVerifiedConsultants().subscribe({
@@ -108,9 +97,6 @@ createConsultationRequest(requestData: any){
     });
   }
 
- 
-
-
   getConsultationRequestData() {
     this.api.getConsultationsRequests().subscribe({
       next: (res: any) => {
@@ -122,5 +108,8 @@ createConsultationRequest(requestData: any){
       },
     });
   }
-}
 
+  uploadProfilePicture(file: File) {
+    return this.api.uploadFarmerProfilePicture(file);
+  }
+}

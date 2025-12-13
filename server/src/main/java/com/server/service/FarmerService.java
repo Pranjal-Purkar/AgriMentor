@@ -71,6 +71,12 @@ public class FarmerService {
 		farmerDTO.setSoilType(farmer.getSoilType());
 		farmerDTO.setAddress(farmer.getAddress());
 		farmerDTO.setFarmAreaHectares(farmer.getFarmAreaHectares());
+
+		// Add profile picture URL if exists
+		if (farmer.getProfilePicture() != null && farmer.getProfilePicture().getIsActive()) {
+			farmerDTO.setProfilePhotoUrl("http://localhost:8080/api/v1/farmers/profile-picture/" + farmer.getId());
+		}
+
 		log.info("Converted Farmer to FarmerDTO: {}", farmerDTO);
 		return Optional.of(farmerDTO);
 	}
@@ -170,6 +176,86 @@ public class FarmerService {
 		} catch (Exception e) {
 			log.error("Failed to fetch consultation requests for username {}: {}", username, e.getMessage(), e);
 			throw new RuntimeException("Failed to fetch consultation requests: " + e.getMessage(), e);
+		}
+	}
+
+	// Upload Profile Picture
+	@Transactional
+	public boolean uploadProfilePicture(String username, org.springframework.web.multipart.MultipartFile file) {
+		log.info("Uploading profile picture for farmer: {}", username);
+		try {
+			Farmer farmer = farmerRepository.findByEmail(username)
+					.orElseThrow(() -> new RuntimeException("Farmer not found with username: " + username));
+
+			// Get project root directory
+			String projectRoot = System.getProperty("user.dir");
+			java.nio.file.Path uploadDir = java.nio.file.Paths.get(projectRoot, "uploads", "profile-pictures");
+
+			// Create directories if they don't exist
+			java.nio.file.Files.createDirectories(uploadDir);
+
+			// Generate unique filename
+			String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+			java.nio.file.Path uploadPath = uploadDir.resolve(fileName);
+
+			// Transfer file to the resolved path
+			file.transferTo(uploadPath.toFile());
+
+			log.info("Profile picture uploaded to: {}", uploadPath.toAbsolutePath());
+
+			// Create or update UserProfilePicture entity
+			com.server.entity.UserProfilePicture profilePicture = farmer.getProfilePicture();
+			if (profilePicture == null) {
+				profilePicture = new com.server.entity.UserProfilePicture();
+			}
+
+			profilePicture.setFilePath(uploadPath.toString());
+			profilePicture.setFileName(fileName);
+			profilePicture.setFileType(file.getContentType());
+			profilePicture.setFileSize(file.getSize());
+			profilePicture.setIsActive(true);
+			profilePicture.setUploadedAt(java.time.LocalDateTime.now());
+			profilePicture.setUser(farmer);
+
+			farmer.setProfilePicture(profilePicture);
+			farmerRepository.save(farmer);
+
+			log.info("Profile picture saved successfully for farmer: {}", username);
+			return true;
+		} catch (Exception e) {
+			log.error("Error uploading profile picture for farmer: {}", username, e);
+			return false;
+		}
+	}
+
+	// Get Profile Picture
+	public org.springframework.core.io.Resource getProfilePicture(Long farmerId) {
+		log.info("Fetching profile picture for farmer ID: {}", farmerId);
+		try {
+			Farmer farmer = farmerRepository.findById(farmerId)
+					.orElseThrow(() -> new RuntimeException("Farmer not found with id: " + farmerId));
+
+			com.server.entity.UserProfilePicture profilePicture = farmer.getProfilePicture();
+
+			if (profilePicture == null || !profilePicture.getIsActive()) {
+				log.warn("No active profile picture found for farmer ID: {}", farmerId);
+				return null;
+			}
+
+			java.nio.file.Path filePath = java.nio.file.Paths.get(profilePicture.getFilePath());
+			org.springframework.core.io.Resource resource = new org.springframework.core.io.UrlResource(
+					filePath.toUri());
+
+			if (resource.exists() && resource.isReadable()) {
+				log.info("Profile picture found for farmer ID: {}", farmerId);
+				return resource;
+			} else {
+				log.warn("Profile picture file not found or not readable for farmer ID: {}", farmerId);
+				return null;
+			}
+		} catch (Exception e) {
+			log.error("Error fetching profile picture for farmer ID: {}", farmerId, e);
+			return null;
 		}
 	}
 }

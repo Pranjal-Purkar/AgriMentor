@@ -358,4 +358,26 @@ export class FarmVisit {
   getOverdueVisits(): FarmVisitResponse[] {
     return this.farmVisitsSubject.value.filter((visit) => visit.isOverdue);
   }
+
+  /**
+   * Get all farm visits for the logged-in consultant
+   */
+  getAllConsultantVisits(): Observable<ApiResponse<FarmVisitResponse[]>> {
+    console.log('🔵 Service: Fetching all farm visits for consultant');
+    return this.farmVisitApi.getAllConsultantVisits();
+  }
+
+  /**
+   * Complete a visit (simplified method for dashboard)
+   */
+  completeVisit(visitId: number): Observable<ApiResponse<FarmVisitResponse>> {
+    return this.completeFarmVisit(visitId);
+  }
+
+  /**
+   * Cancel a visit (simplified method for dashboard)
+   */
+  cancelVisit(visitId: number): Observable<ApiResponse<FarmVisitResponse>> {
+    return this.cancelFarmVisit(visitId);
+  }
 }

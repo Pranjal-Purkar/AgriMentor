@@ -60,12 +60,14 @@ public class FarmvisitService {
             farmvisit.setConsultation(consultation);
             farmvisit.setScheduledDate(request.getScheduledDate());
             farmvisit.setVisitNotes(request.getVisitNotes() != null ? request.getVisitNotes() : "");
-            farmvisit.setVisitStatus(request.getVisitStatus() != null ? request.getVisitStatus() : VisitStatus.SCHEDULED);
+            farmvisit.setVisitStatus(
+                    request.getVisitStatus() != null ? request.getVisitStatus() : VisitStatus.SCHEDULED);
             farmvisit.setFarmAddress(consultation.getFarmAddress());
 
             log.debug("Created farm visit entity with scheduled date: {}", request.getScheduledDate());
             farmvisit = this.save(farmvisit).orElseThrow(() -> new RuntimeException("Failed to save farm visit"));
-            log.info("Farm visit scheduled successfully. Visit ID: {}, Consultation ID: {}", farmvisit.getId(), consultation.getId());
+            log.info("Farm visit scheduled successfully. Visit ID: {}, Consultation ID: {}", farmvisit.getId(),
+                    consultation.getId());
 
             return Optional.ofNullable(farmvisit);
         } catch (Exception e) {
@@ -275,7 +277,8 @@ public class FarmvisitService {
     private boolean isValidStatusTransition(VisitStatus currentStatus, VisitStatus newStatus) {
         // Define valid transitions
         return switch (currentStatus) {
-            case SCHEDULED -> newStatus == VisitStatus.COMPLETED || newStatus == VisitStatus.CANCELLED || newStatus == VisitStatus.MISSED;
+            case SCHEDULED -> newStatus == VisitStatus.COMPLETED || newStatus == VisitStatus.CANCELLED
+                    || newStatus == VisitStatus.MISSED;
             case COMPLETED -> false; // Cannot transition from completed
             case CANCELLED -> false; // Cannot transition from cancelled
             case MISSED -> newStatus == VisitStatus.SCHEDULED; // Can reschedule a missed visit
@@ -291,6 +294,19 @@ public class FarmvisitService {
                 farmvisit.getScheduledDate().isBefore(LocalDateTime.now());
     }
 
-
+    /**
+     * Get all farm visits for a consultant
+     */
+    public List<Farmvisit> getAllVisitsForConsultant(String consultantEmail) {
+        log.info("Fetching all farm visits for consultant: {}", consultantEmail);
+        try {
+            List<Farmvisit> visits = farmvisitRepository.findByConsultation_Consultant_Email(consultantEmail);
+            log.info("Found {} farm visits for consultant: {}", visits.size(), consultantEmail);
+            return visits;
+        } catch (Exception e) {
+            log.error("Error fetching farm visits for consultant: {}", consultantEmail, e);
+            throw new RuntimeException("Error fetching farm visits: " + e.getMessage());
+        }
+    }
 
 }

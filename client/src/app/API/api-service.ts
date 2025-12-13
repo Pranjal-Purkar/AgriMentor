@@ -84,6 +84,13 @@ export class ApiService {
     return this.http.post(this.baseUrl + 'consultants/profile-picture', formData);
   }
 
+  uploadFarmerProfilePicture(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http.post(this.baseUrl + 'farmers/profile-picture', formData);
+  }
+
   /*
    * Admin API endpoints
    */

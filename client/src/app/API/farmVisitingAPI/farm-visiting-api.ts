@@ -189,4 +189,13 @@ export class FarmVisitingApi {
     console.log('🔵 API: Deleting farm visit:', visitId);
     return this.http.delete<ApiResponse<null>>(`${this.baseUrl}/${visitId}`);
   }
+
+  /**
+   * Get all farm visits for the logged-in consultant
+   * GET /api/v1/farmvisits/consultant/all
+   */
+  getAllConsultantVisits(): Observable<ApiResponse<FarmVisitResponse[]>> {
+    console.log('🔵 API: Fetching all farm visits for consultant');
+    return this.http.get<ApiResponse<FarmVisitResponse[]>>(`${this.baseUrl}/consultant/all`);
+  }
 }

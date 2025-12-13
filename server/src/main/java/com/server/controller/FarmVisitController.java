@@ -620,6 +620,42 @@ public class FarmVisitController {
                 }
         }
 
+        /**
+         * Get all farm visits for the logged-in consultant
+         * GET /api/v1/farmvisits/consultant/all
+         */
+        @GetMapping("/consultant/all")
+        public ResponseEntity<?> getAllVisitsForConsultant(Authentication authentication) {
+                try {
+                        log.info("Request to get all farm visits for logged-in consultant");
+
+                        if (authentication == null || !authentication.isAuthenticated()) {
+                                log.warn("Unauthorized access attempt");
+                                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                                .body(new ApiResponse<>(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+                        }
+
+                        String consultantEmail = authentication.getName();
+                        log.info("Fetching all farm visits for consultant: {}", consultantEmail);
+
+                        List<Farmvisit> farmvisits = farmvisitService.getAllVisitsForConsultant(consultantEmail);
+                        List<FarmVisitResponse> responses = farmvisits.stream()
+                                        .map(this::mapToResponse)
+                                        .collect(Collectors.toList());
+
+                        log.info("Found {} farm visits for consultant: {}", responses.size(), consultantEmail);
+                        return ResponseEntity.ok()
+                                        .body(new ApiResponse<>(HttpStatus.OK, "Farm visits retrieved successfully",
+                                                        responses));
+
+                } catch (Exception e) {
+                        log.error("Error fetching farm visits for consultant: {}", e.getMessage(), e);
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                        .body(new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR,
+                                                        "Error fetching farm visits: " + e.getMessage()));
+                }
+        }
+
         // ==================== Helper Methods ====================
 
         /**

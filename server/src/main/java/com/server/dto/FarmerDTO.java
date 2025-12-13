@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class FarmerDTO extends FarmerRegistrationResponse {
 	private Address address;
-    private SoilType soilType;
+	private SoilType soilType;
 	private Double farmAreaHectares;
+	private String profilePhotoUrl; // Profile picture URL
 }

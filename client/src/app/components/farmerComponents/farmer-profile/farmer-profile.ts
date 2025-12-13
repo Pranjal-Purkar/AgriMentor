@@ -1,4 +1,3 @@
-
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -44,19 +43,19 @@ export class FarmerProfile implements OnInit, OnDestroy {
   selectedPhotoFile: File | null = null;
 
   soilTypes = [
-  { value: 'ALLUVIAL', label: 'Alluvial' },
-  { value: 'BLACK', label: 'Black' },
-  { value: 'RED', label: 'Red' },
-  { value: 'LATERITE', label: 'Laterite' },
-  { value: 'MOUNTAIN', label: 'Mountain' },
-  { value: 'DESERT', label: 'Desert' },
-  { value: 'PEATY', label: 'Peaty' },
-  { value: 'SALINE', label: 'Saline' },
-  { value: 'LOAMY', label: 'Loamy' },
-  { value: 'CLAYEY', label: 'Clayey' },
-  { value: 'SILTY', label: 'Silty' },
-  { value: 'CHALKY', label: 'Chalky' }
-];
+    { value: 'ALLUVIAL', label: 'Alluvial' },
+    { value: 'BLACK', label: 'Black' },
+    { value: 'RED', label: 'Red' },
+    { value: 'LATERITE', label: 'Laterite' },
+    { value: 'MOUNTAIN', label: 'Mountain' },
+    { value: 'DESERT', label: 'Desert' },
+    { value: 'PEATY', label: 'Peaty' },
+    { value: 'SALINE', label: 'Saline' },
+    { value: 'LOAMY', label: 'Loamy' },
+    { value: 'CLAYEY', label: 'Clayey' },
+    { value: 'SILTY', label: 'Silty' },
+    { value: 'CHALKY', label: 'Chalky' },
+  ];
 
   // Format soil type for display (e.g., 'BLACK_SOIL' -> 'Black Soil')
   formatSoilType(soilType: string): string {
@@ -64,7 +63,7 @@ export class FarmerProfile implements OnInit, OnDestroy {
     return soilType
       .toLowerCase()
       .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   }
 
@@ -86,7 +85,7 @@ export class FarmerProfile implements OnInit, OnDestroy {
       pinCode: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
       country: ['India', Validators.required],
       latitude: [''],
-      longitude: ['']
+      longitude: [''],
     });
 
     console.log('👤 FarmerProfile Constructor Initialized');
@@ -122,7 +121,7 @@ export class FarmerProfile implements OnInit, OnDestroy {
       email: this.farmerProfile.email || '',
       phone: this.farmerProfile.phone || '',
       soilType: this.farmerProfile.soilType || '',
-      farmAreaHectares: this.farmerProfile.farmAreaHectares || 0
+      farmAreaHectares: this.farmerProfile.farmAreaHectares || 0,
     };
 
     if (this.farmerProfile.addressDTO || this.farmerProfile.address) {
@@ -193,6 +192,30 @@ export class FarmerProfile implements OnInit, OnDestroy {
       return;
     }
 
+    this.isLoading = true;
+
+    // If there's a new photo selected, upload it first
+    if (this.selectedPhotoFile) {
+      console.log('📸 Uploading profile picture first...');
+      this.farmerService.uploadProfilePicture(this.selectedPhotoFile).subscribe({
+        next: (uploadRes: any) => {
+          console.log('✅ Profile picture uploaded successfully:', uploadRes);
+          // After successful upload, update profile data
+          this.updateProfileData();
+        },
+        error: (uploadErr: any) => {
+          console.error('❌ Error uploading profile picture:', uploadErr);
+          this.isLoading = false;
+          alert('Failed to upload profile picture. Please try again.');
+        },
+      });
+    } else {
+      // No new photo, just update profile data
+      this.updateProfileData();
+    }
+  }
+
+  private updateProfileData() {
     const formValue = this.profileForm.value;
 
     const updateRequest: FarmerProfileUpdateRequest = {
@@ -209,16 +232,18 @@ export class FarmerProfile implements OnInit, OnDestroy {
         pinCode: formValue.pinCode,
         country: formValue.country,
         latitude: formValue.latitude || undefined,
-        longitude: formValue.longitude || undefined
-      }
+        longitude: formValue.longitude || undefined,
+      },
     };
 
     console.log('💾 Saving updated data:', updateRequest);
 
-    // Temporary local update
     this.farmerService.updateFarmerProfile(updateRequest);
-    this.getFarmerProfile()
+    this.getFarmerProfile();
 
+    this.isLoading = false;
+    this.editMode = false;
+    this.selectedPhotoFile = null;
     this.cdr.detectChanges();
   }
 

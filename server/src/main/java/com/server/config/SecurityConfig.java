@@ -44,6 +44,8 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .requestMatchers("/api/v1/consultants/verified").permitAll()
                         .requestMatchers("/api/v1/consultants/profile-picture/**").permitAll() // Allow public access to
                                                                                                // profile pictures
+                        .requestMatchers("/api/v1/farmers/profile-picture/**").permitAll() // Allow public access to
+                                                                                           // farmer profile pictures
                         .requestMatchers("/api/v1/farmers/consultation/request").authenticated()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/user/**").hasAnyRole("USER", "ADMIN", "FARMER", "CONSULTANT")

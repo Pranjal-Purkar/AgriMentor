@@ -14,17 +14,38 @@ export class FeedbackService {
   submitFeedback(data: any): Observable<any> {
     return this.api.createFeedback(data).pipe(
       tap((res) => {
-        // Optionally update local state
+        // Update state immediately after submission
+        const feedbackData = res.data || res;
+        this.feedbackSubject.next(feedbackData);
+        console.log('✅ Feedback submitted and state updated:', feedbackData);
       })
     );
   }
 
   updateFeedback(id: number, data: any): Observable<any> {
-    return this.api.updateFeedback(id, data);
+    return this.api.updateFeedback(id, data).pipe(
+      tap((res) => {
+        // Update state after editing
+        const feedbackData = res.data || res;
+        this.feedbackSubject.next(feedbackData);
+        console.log('✅ Feedback updated and state refreshed:', feedbackData);
+      })
+    );
   }
 
   getFeedbackByConsultationId(consultationId: number): Observable<any> {
-    return this.api.getFeedbackByConsultationId(consultationId);
+    return this.api.getFeedbackByConsultationId(consultationId).pipe(
+      tap((res) => {
+        // Update state when fetching
+        const feedbackData = res.data || res;
+        this.feedbackSubject.next(feedbackData);
+        console.log('✅ Feedback fetched and state updated:', feedbackData);
+      })
+    );
+  }
+
+  clearFeedbackState(): void {
+    this.feedbackSubject.next(null);
   }
 
   hasFeedback(consultationId: number): Observable<any> {

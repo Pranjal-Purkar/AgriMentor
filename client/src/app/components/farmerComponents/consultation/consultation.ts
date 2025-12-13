@@ -3,10 +3,11 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FarmerService } from '../../../services/farmerService/farmer-service';
 import { Subscription } from 'rxjs';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-consultation',
-  imports: [TitleCasePipe, CommonModule],
+  imports: [TitleCasePipe, CommonModule, FormsModule],
   templateUrl: './consultation.html',
   styleUrl: './consultation.css',
 })
@@ -21,6 +22,7 @@ export class Consultation implements OnInit {
 
   activeTab: string = 'pending'; // Default because backend usually returns pending first
   isLoading = false;
+  searchQuery: string = '';
   private subscription!: Subscription;
 
   // ---------- CONSULTATION LIST (AFTER MAPPING) ----------
@@ -54,9 +56,15 @@ export class Consultation implements OnInit {
           topic: item.topic,
           consultationRequestStatus: item.consultationRequestStatus,
           createdAt: item.createdAt,
+          date: new Date(item.createdAt).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          }),
           consultant: {
             firstName: item.consultant?.firstName || 'N/A',
             lastName: item.consultant?.lastName || '',
+            specialization: item.consultant?.specialization || 'Agriculture Expert',
           },
         }));
 
@@ -75,11 +83,39 @@ export class Consultation implements OnInit {
     console.log('Fetching consultation requests...');
   }
 
-  // ---------- FILTER BY ACTIVE TAB ----------
+  // ---------- FILTER BY SEARCH GLOBALLY, THEN BY ACTIVE TAB ----------
   filteredConsultations() {
+    let filtered = this.consultationRequests;
+
+    // Apply search filter FIRST (globally across all consultations)
+    if (this.searchQuery.trim()) {
+      const query = this.searchQuery.toLowerCase();
+      filtered = filtered.filter((c) => {
+        const consultantName = `${c.consultant.firstName} ${c.consultant.lastName}`.toLowerCase();
+        const topic = c.topic.toLowerCase();
+        const specialization = c.consultant.specialization.toLowerCase();
+        const status = c.consultationRequestStatus.toLowerCase();
+
+        return (
+          consultantName.includes(query) ||
+          topic.includes(query) ||
+          specialization.includes(query) ||
+          status.includes(query)
+        );
+      });
+    }
+
+    // Then filter by active tab
+    filtered = filtered.filter((c) => c.consultationRequestStatus.toLowerCase() === this.activeTab);
+
+    return filtered;
+  }
+
+  // ---------- GET COUNT FOR SPECIFIC TAB ----------
+  getCountForTab(tabKey: string): number {
     return this.consultationRequests.filter(
-      (c) => c.consultationRequestStatus.toLowerCase() === this.activeTab
-    );
+      (c) => c.consultationRequestStatus.toLowerCase() === tabKey
+    ).length;
   }
 
   // ---------- NAVIGATION ----------

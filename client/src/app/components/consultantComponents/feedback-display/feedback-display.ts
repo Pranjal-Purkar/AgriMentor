@@ -24,24 +24,38 @@ export class FeedbackDisplayComponent implements OnChanges {
       if (!this.feedbackData) {
         this.fetchFeedback();
       } else {
-        this.feedback = this.feedbackData;
+        // Handle both response structures
+        this.feedback = this.feedbackData.data || this.feedbackData;
       }
     }
 
     if (changes['feedbackData'] && this.feedbackData) {
-      this.feedback = this.feedbackData;
+      // Handle both response structures
+      this.feedback = this.feedbackData.data || this.feedbackData;
     }
+
+    // Subscribe to reactive feedback state for immediate updates
+    this.feedbackService.feedback$.subscribe({
+      next: (feedback) => {
+        if (feedback && feedback.consultationId === this.consultationId) {
+          this.feedback = feedback;
+          this.isLoading = false;
+        }
+      },
+    });
   }
 
   fetchFeedback() {
     this.isLoading = true;
     this.feedbackService.getFeedbackByConsultationId(this.consultationId).subscribe({
       next: (res: any) => {
-        this.feedback = res.data;
+        console.log('✅ Feedback fetched successfully', res);
+        // Handle both response structures: res.data or direct response
+        this.feedback = res.data || res;
         this.isLoading = false;
       },
       error: (err) => {
-        // Not found or error
+        console.log('⚠️ Feedback not found or error', err);
         this.feedback = null;
         this.isLoading = false;
       },

@@ -39,6 +39,18 @@ export class CosultationDetails implements OnInit, OnDestroy {
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) this.loadConsultationDetails(+id);
+
+    // Subscribe to feedback service's reactive state for immediate updates
+    this.feedbackService.feedback$.subscribe({
+      next: (feedback) => {
+        if (feedback) {
+          this.hasFeedback = true;
+          this.feedbackData = feedback;
+          this.isEditing = false; // Auto-hide form after submission
+          console.log('✅ Feedback state updated in parent component:', feedback);
+        }
+      },
+    });
   }
 
   loadConsultationDetails(id: number) {
@@ -95,7 +107,8 @@ export class CosultationDetails implements OnInit, OnDestroy {
     this.feedbackService.getFeedbackByConsultationId(this.consultation.id).subscribe({
       next: (res) => {
         this.hasFeedback = true;
-        this.feedbackData = res;
+        // Handle both response structures
+        this.feedbackData = res.data || res;
       },
       error: (err) => {
         this.hasFeedback = false;
@@ -113,7 +126,8 @@ export class CosultationDetails implements OnInit, OnDestroy {
   }
 
   onFeedbackSubmitted() {
-    this.loadFeedback();
+    // No need to reload - service BehaviorSubject will update state automatically
+    // The subscription in ngOnInit will handle the UI update
     this.isEditing = false;
   }
 

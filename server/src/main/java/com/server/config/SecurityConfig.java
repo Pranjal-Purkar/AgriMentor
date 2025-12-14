@@ -52,6 +52,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .requestMatchers("/api/v1/farmers/**").hasAnyRole("FARMER", "ADMIN")
                         .requestMatchers("/api/v1/consultants/**").hasAnyRole("CONSULTANT", "ADMIN")
                         .requestMatchers("/api/v1/farmvisits/**").hasAnyRole("CONSULTANT", "ADMIN", "FARMER")
+                        .requestMatchers("/api/chat/**").authenticated() // Allow any authenticated user
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilterChain, UsernamePasswordAuthenticationFilter.class);
 

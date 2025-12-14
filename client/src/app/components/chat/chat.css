@@ -1,0 +1,226 @@
+.chat-container {
+    display: flex;
+    height: calc(100vh - 80px);
+    background: #f0f2f5;
+    margin: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+  
+  .chat-sidebar {
+    width: 300px;
+    background: white;
+    border-right: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .sidebar-header {
+    padding: 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .sidebar-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #333;
+  }
+  
+  .room-list {
+    flex: 1;
+    overflow-y: auto;
+  }
+  
+  .room-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .room-item:hover {
+    background: #f5f5f5;
+  }
+  
+  .room-item.active {
+    background: #e8f5e9;
+  }
+  
+  .avatar {
+    width: 40px;
+    height: 40px;
+    background: #4caf50;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 15px;
+  }
+  
+  .room-info {
+    flex: 1;
+    min-width: 0;
+    margin-right: 10px;
+  }
+
+  .room-info h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  .room-topic {
+    font-size: 0.8rem;
+    color: #666;
+    margin: 2px 0 0 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+  }
+
+  .room-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    margin-left: auto; /* Push to right */
+  }
+
+  .unread-badge {
+    background: #25D366;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+  }
+
+  .timestamp {
+    font-size: 0.7rem;
+    color: #888;
+  }
+  
+  .chat-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #e5ddd5;
+  }
+  
+  .chat-header {
+    background: white;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+  }
+  
+  .header-info h3 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+  
+  .status {
+    font-size: 0.8rem;
+    color: #4caf50;
+  }
+  
+  .messages-container {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .message-bubble {
+    max-width: 70%;
+    padding: 10px 15px;
+    border-radius: 12px;
+    position: relative;
+    font-size: 0.95rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+  
+  .message-bubble.sent {
+    background: #dcf8c6;
+    align-self: flex-end;
+    border-top-right-radius: 0;
+  }
+  
+  .message-bubble.received {
+    background: white;
+    align-self: flex-start;
+    border-top-left-radius: 0;
+  }
+  
+  .message-time {
+    display: block;
+    font-size: 0.7rem;
+    color: #888;
+    text-align: right;
+    margin-top: 4px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .chat-input {
+    background: #f0f0f0;
+    padding: 15px;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .chat-input input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 24px;
+    outline: none;
+    font-size: 1rem;
+  }
+  
+  .chat-input button {
+    background: #4caf50;
+    color: white;
+    border: none;
+    padding: 0 25px;
+    border-radius: 24px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  
+  .chat-input button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .no-selection {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f2f5;
+    color: #888;
+  }
+  
+  .no-rooms {
+    padding: 20px;
+    text-align: center;
+    color: #888;
+  }

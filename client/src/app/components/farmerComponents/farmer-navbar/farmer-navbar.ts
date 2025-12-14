@@ -5,14 +5,14 @@ import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-farmer-navbar',
-  imports: [RouterModule,CommonModule],
+  imports: [RouterModule, CommonModule],
   templateUrl: './farmer-navbar.html',
   styleUrl: './farmer-navbar.css',
 })
 export class FarmerNavbar {
   @Output() closeMenu = new EventEmitter<void>();
   isMobileMenuOpen = false;
-   isInitialized = false;
+  isInitialized = false;
 
   menuItems = [
     {
@@ -52,6 +52,15 @@ export class FarmerNavbar {
     `,
     },
     {
+      title: 'Chat',
+      route: '/farmer/chat',
+      icon: `
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z">
+      </path>
+    `,
+    },
+    {
       title: 'Consultants',
       route: '/farmer/consultants',
       icon: `
@@ -71,10 +80,7 @@ export class FarmerNavbar {
     },
   ];
 
-  constructor(
-    private router: Router,
-    private cdr: ChangeDetectorRef
-  ) {}
+  constructor(private router: Router, private cdr: ChangeDetectorRef) {}
 
   ngAfterViewInit() {
     // Mark the component as initialized
@@ -82,7 +88,6 @@ export class FarmerNavbar {
     // Trigger change detection
     this.cdr.detectChanges();
   }
-
 
   // Close mobile menu when a link is clicked
   onLinkClick() {

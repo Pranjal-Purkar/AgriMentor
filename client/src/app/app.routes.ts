@@ -31,6 +31,7 @@ import { AdminReports } from './components/adminComponent/admin-reports/admin-re
 import { AdminSettings } from './components/adminComponent/admin-settings/admin-settings';
 import { ReportyReportDetail } from './components/reporty-report-detail/reporty-report-detail';
 import { GlobalFeedbackComponent } from './components/shared/global-feedback/global-feedback';
+import { ChatComponent } from './components/chat/chat';
 
 export const routes: Routes = [
   {
@@ -122,6 +123,11 @@ export const routes: Routes = [
         component: GlobalFeedbackComponent,
         data: { animation: 'Feedbacks' },
       },
+      {
+        path: 'chat',
+        component: ChatComponent,
+        data: { animation: 'Chat' },
+      },
     ],
   },
   {
@@ -167,6 +173,11 @@ export const routes: Routes = [
         path: 'feedbacks',
         component: GlobalFeedbackComponent,
         data: { animation: 'Feedbacks' },
+      },
+      {
+        path: 'chat',
+        component: ChatComponent,
+        data: { animation: 'Chat' },
       },
     ],
   },

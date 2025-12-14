@@ -10,9 +10,8 @@ import { map, Observable } from 'rxjs';
 export class AuthService {
   constructor(
     private api: ApiService,
-    private router: Router
-  ) // private farmerService:FarmerService
-  {}
+    private router: Router // private farmerService:FarmerService
+  ) {}
 
   isUserAlreadyExist(username: string, role: string): Observable<boolean> {
     return this.api.isUserAlreadyExistst(username, role).pipe(
@@ -68,6 +67,7 @@ export class AuthService {
         // // sessionStorage.setItem('refresh', tokens.refresh);
         sessionStorage.setItem('userId', tokens.id);
         sessionStorage.setItem('role', tokens.role);
+        sessionStorage.setItem('email', userData.username);
         //switch route based on role
         if (tokens.role === 'CONSULTANT') {
           this.router.navigate(['consultant/dashboard']);

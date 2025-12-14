@@ -25,6 +25,8 @@ public class ConsultationService {
     private ConsultantService consultantService;
     @Autowired
     private CropService cropService;
+    @Autowired
+    private SimpleChatService chatService;
 
     @Transactional
     public Optional<Consultation> createConsultationRequest(
@@ -202,6 +204,15 @@ public class ConsultationService {
 
         Consultation updated = consultationRepository.save(consultation);
         log.info("Consultation {} approved successfully", consultationId);
+
+        // Auto-create chat room using SimpleChatService
+        try {
+            chatService.createChatRoom(updated);
+            log.info("Chat room created for consultation: {}", consultationId);
+        } catch (Exception e) {
+            log.error("Failed to create chat room for consultation {}: {}", consultationId, e.getMessage());
+            // Don't fail the transaction if chat creation fails, just log it
+        }
 
         return Optional.of(updated);
     }

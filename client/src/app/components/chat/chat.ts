@@ -40,47 +40,29 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
+  // Subscription holder
+  private roomSubscription: any;
+
   ngOnInit(): void {
     if (this.isBrowser) {
-      console.log('Chat Init - Session Storage:', {
-        token: sessionStorage.getItem('token'),
-        email: sessionStorage.getItem('email'),
-        role: sessionStorage.getItem('role'),
-      });
       this.loadRooms();
-      // Poll for new messages every 3 seconds
-      this.refreshInterval = setInterval(() => {
-        if (this.selectedRoom) {
-          this.refreshMessages();
-        } else {
-          this.loadRooms(); // Refresh room list to show new chats/last message updates
-        }
-      }, 3000);
     }
-    console.log('chatRoom', this.chatRooms);
   }
 
   ngOnDestroy(): void {
-    if (this.refreshInterval) {
-      clearInterval(this.refreshInterval);
+    if (this.roomSubscription) {
+      this.roomSubscription.unsubscribe();
     }
   }
 
-  ngAfterViewChecked(): void {
-    // Only scroll if we just loaded messages or sent one
-    // We can add logic here if needed, but for now simple valid
-  }
+  ngAfterViewChecked(): void {}
 
   loadRooms() {
-    // Determine user role from sessionStorage (simple polling approach)
     if (!this.isBrowser) return;
 
     const role = sessionStorage.getItem('role') || 'FARMER';
     this.chatService.getChatRooms(role).subscribe({
       next: (rooms) => {
-        console.log('rooms', rooms);
-
-        // Filter unique participants to show only one entry per person (most recent)
         const uniqueParticipants = new Map<number, ChatRoom>();
 
         rooms.forEach((room) => {
@@ -91,7 +73,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           if (!uniqueParticipants.has(otherId)) {
             uniqueParticipants.set(otherId, room);
           } else {
-            // Keep the one with the latest activity
             const existingRoom = uniqueParticipants.get(otherId)!;
             const existingTime = existingRoom.lastMessageAt || existingRoom.createdAt || '';
             const newTime = room.lastMessageAt || room.createdAt || '';
@@ -110,19 +91,11 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     });
   }
 
-  selectRoom(room: ChatRoom) {
-    this.selectedRoom = room;
-    this.loadMessages();
-    setTimeout(() => this.scrollToBottom(), 100);
-  }
-
   loadMessages() {
     if (!this.selectedRoom) return;
 
     this.chatService.getMessages(this.selectedRoom.id).subscribe({
       next: (page) => {
-        // Reverse because backend returns desc order (newest first)
-        // Frontend wants oldest top, newest bottom
         this.messages = page.content.reverse();
         this.cdr.detectChanges();
 
@@ -130,30 +103,46 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           this.selectedRoom.unreadCount = 0;
         }
 
-        // Mark as read
         this.chatService.markAsRead(this.selectedRoom!.id).subscribe();
       },
     });
   }
 
-  refreshMessages() {
-    if (!this.selectedRoom) return;
+  selectRoom(room: ChatRoom) {
+    if (this.selectedRoom?.id === room.id) return;
 
-    this.chatService.getMessages(this.selectedRoom.id).subscribe({
-      next: (page) => {
-        const newMessages = page.content.reverse();
-        // Only update if count changed to avoid flickering/scroll jumps
-        if (
-          newMessages.length !== this.messages.length ||
-          (newMessages.length > 0 &&
-            newMessages[newMessages.length - 1].id !== this.messages[this.messages.length - 1].id)
-        ) {
-          this.messages = newMessages;
-          this.cdr.detectChanges();
-          // If near bottom, scroll to bottom? For now, just let user scroll
+    // Unsubscribe previous
+    if (this.roomSubscription) {
+      this.roomSubscription.unsubscribe();
+      this.roomSubscription = null;
+    }
+
+    this.selectedRoom = room;
+    this.loadMessages(); // Initial fetch via REST
+
+    // Subscribe to WebSocket
+    this.roomSubscription = this.chatService.subscribeToRoom(room.id, (msg: ChatMessage) => {
+      // Create new array reference for Angular change detection if needed, or just push
+      this.messages = [...this.messages, msg];
+
+      // Update last message time for sorting
+      if (this.selectedRoom) {
+        this.selectedRoom.lastMessageAt = msg.sentAt || new Date().toISOString();
+        this.sortRooms();
+
+        // If I am not the sender, mark as read (optimistic)
+        if (!this.isSentByMe(msg)) {
+          this.selectedRoom.unreadCount = 0; // Reset unread locally
+          // Ideally call markAsRead backend too.
+          this.chatService.markAsRead(this.selectedRoom.id).subscribe();
         }
-      },
+      }
+
+      this.cdr.detectChanges();
+      setTimeout(() => this.scrollToBottom(), 50);
     });
+
+    setTimeout(() => this.scrollToBottom(), 100);
   }
 
   sendMessage() {
@@ -205,6 +194,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   formatTime(dateStr: string): string {
     if (!dateStr) return '';
     return new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  trackByRoomId(index: number, room: ChatRoom): number {
+    return room.id;
   }
 
   sortRooms() {

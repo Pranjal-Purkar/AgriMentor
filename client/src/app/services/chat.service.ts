@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 export interface ChatRoom {
   id: number;
@@ -31,7 +33,30 @@ export interface ChatMessage {
 export class ChatService {
   private apiUrl = 'http://localhost:8080/api/chat';
 
-  constructor(private http: HttpClient) {}
+  private stompClient: Client | undefined;
+
+  constructor(private http: HttpClient) {
+    this.initializeWebSocketConnection();
+  }
+
+  initializeWebSocketConnection() {
+    // Only init if in browser
+    if (typeof window !== 'undefined') {
+      const socket = new SockJS('http://localhost:8080/ws');
+      this.stompClient = new Client({
+        webSocketFactory: () => socket,
+        debug: (str) => {
+          console.log(str);
+        },
+        reconnectDelay: 5000,
+        onConnect: (frame) => {
+          console.log('Connected to WebSocket');
+        },
+      });
+
+      this.stompClient.activate();
+    }
+  }
 
   getChatRooms(role: string): Observable<ChatRoom[]> {
     return this.http.get<ChatRoom[]>(`${this.apiUrl}/rooms?role=${role}`);
@@ -51,5 +76,19 @@ export class ChatService {
 
   getUnreadCount(): Observable<{ count: number }> {
     return this.http.get<{ count: number }>(`${this.apiUrl}/unread-count`);
+  }
+
+  // WebSocket Methods
+  subscribeToRoom(roomId: number, callback: (message: ChatMessage) => void): any {
+    if (this.stompClient && this.stompClient.connected) {
+      return this.stompClient.subscribe(`/topic/room/${roomId}`, (message) => {
+        if (message.body) {
+          callback(JSON.parse(message.body));
+        }
+      });
+    }
+    // If not connected yet, retry in 1s (simple logic for demo)
+    setTimeout(() => this.subscribeToRoom(roomId, callback), 1000);
+    return null;
   }
 }

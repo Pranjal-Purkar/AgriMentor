@@ -34,6 +34,9 @@ public class SimpleChatService {
     @Autowired
     private com.server.repository.ConsultationRepository consultationRepository;
 
+    @Autowired
+    private org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
+
     /**
      * Sync chat rooms for all approved consultations (Recovery tool)
      * Runs automatically on server startup to fix missing rooms.
@@ -125,6 +128,13 @@ public class SimpleChatService {
         // Update room timestamp
         chatRoom.setLastMessageAt(LocalDateTime.now());
         chatRoomRepository.save(chatRoom);
+
+        // Broadcast to WebSocket subscribers
+        try {
+            messagingTemplate.convertAndSend("/topic/room/" + chatRoomId, savedMessage);
+        } catch (Exception e) {
+            log.error("Failed to broadcast message to WebSocket", e);
+        }
 
         return savedMessage;
     }

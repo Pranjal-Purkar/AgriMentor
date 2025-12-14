@@ -151,21 +151,14 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     const content = this.newMessage;
     this.newMessage = ''; // Clear input immediately
 
-    this.chatService.sendMessage(this.selectedRoom.id, content).subscribe({
-      next: (msg) => {
-        this.messages.push(msg);
-        if (this.selectedRoom) {
-          this.selectedRoom.lastMessageAt = msg.sentAt || new Date().toISOString();
-          this.sortRooms();
-        }
-        this.cdr.detectChanges(); // Update view immediately
-        setTimeout(() => this.scrollToBottom(), 50);
-      },
-      error: (e) => {
-        console.error('Failed to send', e);
-        this.newMessage = content; // Restore if failed
-      },
-    });
+    // Send via WebSocket
+    const email = sessionStorage.getItem('email') || '';
+    this.chatService.sendWebSocketMessage(this.selectedRoom.id, content, email);
+
+    // We do NOT push to this.messages here.
+    // We rely on the WebSocket echo (subscription) to add the message.
+    // This proves 2-way communication works.
+    setTimeout(() => this.scrollToBottom(), 50);
   }
 
   scrollToBottom(): void {

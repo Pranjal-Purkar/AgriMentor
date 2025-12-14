@@ -72,4 +72,13 @@ public class ChatController {
         int created = chatService.syncChatRooms();
         return ResponseEntity.ok(Map.of("created", created));
     }
+
+    @org.springframework.messaging.handler.annotation.MessageMapping("/chat/{roomId}/send")
+    public void sendMessageWebSocket(@org.springframework.messaging.handler.annotation.DestinationVariable Long roomId,
+            @org.springframework.messaging.handler.annotation.Payload Map<String, String> payload) {
+        String content = payload.get("content");
+        String email = payload.get("email"); // For demo simplicity (avoids JWT WebSocket interceptor complexity)
+        // Service already broadcasts to /topic/room/{roomId}
+        chatService.sendMessage(roomId, email, content);
+    }
 }

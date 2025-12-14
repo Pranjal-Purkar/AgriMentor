@@ -79,6 +79,17 @@ export class ChatService {
   }
 
   // WebSocket Methods
+  sendWebSocketMessage(roomId: number, content: string, email: string) {
+    if (this.stompClient && this.stompClient.connected) {
+      this.stompClient.publish({
+        destination: `/app/chat/${roomId}/send`,
+        body: JSON.stringify({ content, email }),
+      });
+    } else {
+      console.error('STOMP Client not connected. Message not sent.');
+    }
+  }
+
   subscribeToRoom(roomId: number, callback: (message: ChatMessage) => void): any {
     if (this.stompClient && this.stompClient.connected) {
       return this.stompClient.subscribe(`/topic/room/${roomId}`, (message) => {

@@ -13235,3 +13235,11 @@
 2025-12-14T21:13:06.029+05:30  INFO 17615 --- [http-nio-0.0.0.0-8080-exec-1] com.server.util.JwtFilterChain           : Security Context updated with authentication
 2025-12-14T21:13:06.029+05:30  INFO 17615 --- [http-nio-0.0.0.0-8080-exec-1] com.server.util.JwtFilterChain           : Proceeding with filter chain
 2025-12-14T21:13:17.481+05:30  INFO 17615 --- [MessageBroker-8] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[2 current WS(2)-HttpStream(0)-HttpPoll(0), 2 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(2)-CONNECTED(2)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 16, active threads = 0, queued tasks = 0, completed tasks = 18], outboundChannel[pool size = 5, active threads = 0, queued tasks = 0, completed tasks = 5], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 3, completed tasks = 12]
+2025-12-14T21:14:33.037+05:30  INFO 17615 --- [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-12-14T21:14:33.040+05:30  INFO 17615 --- [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-12-14T21:14:33.048+05:30  INFO 17615 --- [SpringApplicationShutdownHook] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopping...
+2025-12-14T21:14:33.048+05:30  INFO 17615 --- [SpringApplicationShutdownHook] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@44e3e473]]
+2025-12-14T21:14:33.048+05:30  INFO 17615 --- [SpringApplicationShutdownHook] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopped.
+2025-12-14T21:14:33.056+05:30  INFO 17615 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-12-14T21:14:33.062+05:30  INFO 17615 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-12-14T21:14:33.068+05:30  INFO 17615 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

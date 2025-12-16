@@ -17,10 +17,70 @@
       </span>
     </div>
 
+    <!-- Search Bar -->
+    <div class="p-3 border-b border-gray-200">
+      <div class="relative">
+        <svg
+          class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          ></path>
+        </svg>
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          placeholder="Search conversations..."
+          class="w-full pl-10 pr-4 py-2.5 bg-gray-100 border-2 border-transparent rounded-xl text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-white transition-all"
+        />
+        <button
+          *ngIf="searchQuery"
+          (click)="searchQuery = ''"
+          class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            ></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
     <!-- Room List -->
     <div class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
+      <!-- No Results Message -->
       <div
-        *ngFor="let room of chatRooms; trackBy: trackByRoomId"
+        *ngIf="filteredChatRooms.length === 0 && searchQuery"
+        class="text-center py-8 text-gray-500"
+      >
+        <svg
+          class="w-12 h-12 mx-auto mb-3 text-gray-300"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          ></path>
+        </svg>
+        <p class="text-sm font-medium">No conversations found</p>
+        <p class="text-xs text-gray-400 mt-1">Try a different search term</p>
+      </div>
+      <div
+        *ngFor="let room of filteredChatRooms; trackBy: trackByRoomId"
         (click)="selectRoom(room)"
         class="group flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 relative hover:scale-[1.02]"
         [ngClass]="{

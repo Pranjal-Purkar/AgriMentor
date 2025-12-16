@@ -28,6 +28,21 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   messages: ChatMessage[] = [];
   newMessage = '';
   loading = false;
+  searchQuery = '';
+
+  // Filtered chat rooms based on search query
+  get filteredChatRooms(): ChatRoom[] {
+    if (!this.searchQuery.trim()) {
+      return this.chatRooms;
+    }
+    const query = this.searchQuery.toLowerCase().trim();
+    return this.chatRooms.filter((room) => {
+      const other = this.getOtherParticipant(room);
+      const fullName = `${other.firstName || ''} ${other.lastName || ''}`.toLowerCase();
+      const topic = (room.consultation?.topic || '').toLowerCase();
+      return fullName.includes(query) || topic.includes(query);
+    });
+  }
 
   private refreshInterval: any;
   private isBrowser: boolean;

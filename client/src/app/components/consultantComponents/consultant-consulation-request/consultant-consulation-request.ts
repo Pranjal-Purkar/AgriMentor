@@ -183,6 +183,13 @@ export class ConsultantConsulationRequest implements OnInit, OnDestroy {
     // Then filter by active tab
     filtered = filtered.filter((c) => c.consultationRequestStatus.toLowerCase() === this.activeTab);
 
+    // Sort by date (most recent first)
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return dateB - dateA; // Descending order (newest first)
+    });
+
     this.filteredRequests = filtered;
   }
 

@@ -8,6 +8,7 @@
     <p class="text-gray-600">Monitor all platform consultations</p>
   </div>
 
+  <!-- Stats Cards -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <div
       class="bg-white/90 backdrop-blur-sm rounded-2xl p-6 border border-purple-100 shadow-lg"
@@ -42,26 +43,518 @@
     </div>
   </div>
 
+  <!-- Consultations Table -->
   <div
-    class="bg-white/90 backdrop-blur-sm rounded-2xl p-8 border border-purple-100 shadow-lg text-center"
-    data-aos="zoom-in"
+    class="bg-white/90 backdrop-blur-sm rounded-2xl border border-purple-100 shadow-lg overflow-hidden"
+    data-aos="fade-up"
   >
-    <svg
-      class="w-16 h-16 text-purple-300 mx-auto mb-4"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
+    <!-- Table Header -->
+    <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-indigo-50">
+      <h3 class="text-lg font-bold text-gray-900">All Consultations</h3>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="p-8 text-center">
+      <div
+        class="animate-spin w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"
+      ></div>
+      <p class="text-gray-500">Loading consultations...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && sortedConsultations.length === 0" class="p-8 text-center">
+      <svg
+        class="w-16 h-16 text-purple-300 mx-auto mb-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+        />
+      </svg>
+      <h3 class="text-xl font-bold text-gray-900 mb-2">No Consultations Found</h3>
+      <p class="text-gray-600">There are no consultations to display at this time.</p>
+    </div>
+
+    <!-- Consultations List -->
+    <div *ngIf="!isLoading && sortedConsultations.length > 0" class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <!-- ID Header -->
+            <th
+              (click)="toggleSort('id')"
+              class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-purple-50 transition-colors select-none"
+            >
+              <div class="flex items-center gap-1">
+                <span>ID</span>
+                <span class="text-purple-400">
+                  <svg
+                    *ngIf="getSortIcon('id') === 'neutral'"
+                    class="w-4 h-4 opacity-40"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+                    />
+                  </svg>
+                  <svg
+                    *ngIf="getSortIcon('id') === 'asc'"
+                    class="w-4 h-4 text-purple-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 15l7-7 7 7"
+                    />
+                  </svg>
+                  <svg
+                    *ngIf="getSortIcon('id') === 'desc'"
+                    class="w-4 h-4 text-purple-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </th>
+
+            <!-- Farmer Header -->
+            <th
+              (click)="toggleSort('farmer')"
+              class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-purple-50 transition-colors select-none"
+            >
+              <div class="flex items-center gap-1">
+                <span>Farmer</span>
+                <span class="text-purple-400">
+                  <svg
+                    *ngIf="getSortIcon('farmer') === 'neutral'"
+                    class="w-4 h-4 opacity-40"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+                    />
+                  </svg>
+                  <svg
+                    *ngIf="getSortIcon('farmer') === 'asc'"
+                    class="w-4 h-4 text-purple-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 15l7-7 7 7"
+                    />
+                  </svg>
+                  <svg
+                    *ngIf="getSortIcon('farmer') === 'desc'"
+                    class="w-4 h-4 text-purple-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </th>
+
+            <!-- Consultant Header -->
+            <th
+              (click)="toggleSort('consultant')"
+              class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-purple-50 transition-colors select-none"
+            >
+              <div class="flex items-center gap-1">
+                <span>Consultant</span>
+                <span class="text-purple-400">
+                  <svg
+                    *ngIf="getSortIcon('consultant') === 'neutral'"
+                    class="w-4 h-4 opacity-40"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+                    />
+                  </svg>
+                  <svg
+                    *ngIf="getSortIcon('consultant') === 'asc'"
+                    class="w-4 h-4 text-purple-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 15l7-7 7 7"
+                    />
+                  </svg>
+                  <svg
+                    *ngIf="getSortIcon('consultant') === 'desc'"
+                    class="w-4 h-4 text-purple-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </th>
+
+            <!-- Topic Header -->
+            <th
+              (click)="toggleSort('topic')"
+              class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-purple-50 transition-colors select-none"
+            >
+              <div class="flex items-center gap-1">
+                <span>Topic / Crop</span>
+                <span class="text-purple-400">
+                  <svg
+                    *ngIf="getSortIcon('topic') === 'neutral'"
+                    class="w-4 h-4 opacity-40"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+                    />
+                  </svg>
+                  <svg
+                    *ngIf="getSortIcon('topic') === 'asc'"
+                    class="w-4 h-4 text-purple-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 15l7-7 7 7"
+                    />
+                  </svg>
+                  <svg
+                    *ngIf="getSortIcon('topic') === 'desc'"
+                    class="w-4 h-4 text-purple-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </th>
+
+            <!-- Date Header -->
+            <th
+              (click)="toggleSort('date')"
+              class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-purple-50 transition-colors select-none"
+            >
+              <div class="flex items-center gap-1">
+                <span>Date</span>
+                <span class="text-purple-400">
+                  <svg
+                    *ngIf="getSortIcon('date') === 'neutral'"
+                    class="w-4 h-4 opacity-40"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+                    />
+                  </svg>
+                  <svg
+                    *ngIf="getSortIcon('date') === 'asc'"
+                    class="w-4 h-4 text-purple-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 15l7-7 7 7"
+                    />
+                  </svg>
+                  <svg
+                    *ngIf="getSortIcon('date') === 'desc'"
+                    class="w-4 h-4 text-purple-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </th>
+
+            <!-- Status Header -->
+            <th
+              (click)="toggleSort('status')"
+              class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-purple-50 transition-colors select-none"
+            >
+              <div class="flex items-center gap-1">
+                <span>Status</span>
+                <span class="text-purple-400">
+                  <svg
+                    *ngIf="getSortIcon('status') === 'neutral'"
+                    class="w-4 h-4 opacity-40"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+                    />
+                  </svg>
+                  <svg
+                    *ngIf="getSortIcon('status') === 'asc'"
+                    class="w-4 h-4 text-purple-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 15l7-7 7 7"
+                    />
+                  </svg>
+                  <svg
+                    *ngIf="getSortIcon('status') === 'desc'"
+                    class="w-4 h-4 text-purple-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </th>
+
+            <!-- Actions Header (not sortable) -->
+            <!-- <th
+              class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Actions
+            </th> -->
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <tr
+            *ngFor="let c of sortedConsultations; let i = index"
+            class="hover:bg-purple-50/50 transition-colors duration-200"
+          >
+            <!-- ID -->
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="text-sm font-medium text-gray-900">#{{ c.id }}</span>
+            </td>
+
+            <!-- Farmer -->
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center text-white text-xs font-bold"
+                >
+                  {{ c.farmer?.firstName?.charAt(0) || 'F'
+                  }}{{ c.farmer?.lastName?.charAt(0) || '' }}
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-gray-900">
+                    {{ c.farmer?.firstName || 'N/A' }} {{ c.farmer?.lastName || '' }}
+                  </p>
+                </div>
+              </div>
+            </td>
+
+            <!-- Consultant -->
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg flex items-center justify-center text-white text-xs font-bold"
+                >
+                  {{ c.consultant?.firstName?.charAt(0) || 'C'
+                  }}{{ c.consultant?.lastName?.charAt(0) || '' }}
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-gray-900">
+                    {{ c.consultant?.firstName || 'N/A' }} {{ c.consultant?.lastName || '' }}
+                  </p>
+                </div>
+              </div>
+            </td>
+
+            <!-- Topic / Crop -->
+            <td class="px-6 py-4">
+              <p class="text-sm font-medium text-gray-900 truncate max-w-[200px]">
+                {{ c.topic || c.crop?.name || 'N/A' }}
+              </p>
+            </td>
+
+            <!-- Date -->
+            <td class="px-6 py-4 whitespace-nowrap">
+              <p class="text-sm text-gray-600">{{ c.createdAt | date : 'mediumDate' }}</p>
+            </td>
+
+            <!-- Status -->
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
+                [ngClass]="{
+                  'bg-amber-100 text-amber-700':
+                    c.consultationRequestStatus === 'PENDING' || c.status === 'PENDING',
+                  'bg-green-100 text-green-700':
+                    c.consultationRequestStatus === 'ACTIVE' ||
+                    c.consultationRequestStatus === 'APPROVED' ||
+                    c.status === 'ACTIVE',
+                  'bg-blue-100 text-blue-700':
+                    c.consultationRequestStatus === 'COMPLETED' || c.status === 'COMPLETED',
+                  'bg-red-100 text-red-700':
+                    c.consultationRequestStatus === 'REJECTED' ||
+                    c.consultationRequestStatus === 'CANCELLED' ||
+                    c.status === 'REJECTED'
+                }"
+              >
+                <span
+                  class="w-1.5 h-1.5 rounded-full"
+                  [ngClass]="{
+                    'bg-amber-500': c.consultationRequestStatus === 'PENDING' || c.status === 'PENDING',
+                    'bg-green-500':
+                      c.consultationRequestStatus === 'ACTIVE' ||
+                      c.consultationRequestStatus === 'APPROVED' ||
+                      c.status === 'ACTIVE',
+                    'bg-blue-500': c.consultationRequestStatus === 'COMPLETED' || c.status === 'COMPLETED',
+                    'bg-red-500':
+                      c.consultationRequestStatus === 'REJECTED' ||
+                      c.consultationRequestStatus === 'CANCELLED' ||
+                      c.status === 'REJECTED'
+                  }"
+                ></span>
+                {{ c.consultationRequestStatus || c.status || 'Unknown' }}
+              </span>
+            </td>
+
+            <!-- Actions -->
+            <!-- <td class="px-6 py-4 whitespace-nowrap text-center">
+              <button
+                class="p-2 text-purple-600 hover:bg-purple-100 rounded-lg transition-colors duration-200"
+                title="View Details"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                  />
+                </svg>
+              </button>
+            </td> -->
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer -->
+    <div
+      *ngIf="!isLoading && sortedConsultations.length > 0"
+      class="px-6 py-4 border-t border-gray-200 bg-gray-50"
     >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-      />
-    </svg>
-    <h3 class="text-xl font-bold text-gray-900 mb-2">Consultations Management</h3>
-    <p class="text-gray-600">
-      Detailed consultation list and management features will be implemented here
-    </p>
+      <div class="flex items-center justify-between">
+        <p class="text-sm text-gray-600">
+          Showing
+          <span class="font-semibold text-purple-700">{{ sortedConsultations.length }}</span>
+          consultations
+        </p>
+        <p class="text-xs text-gray-500">
+          Sorted by <span class="font-medium text-purple-600">{{ sortColumn }}</span> ({{
+            sortDirection === 'asc' ? 'A → Z' : 'Z → A'
+          }})
+        </p>
+      </div>
+    </div>
   </div>
 </div>

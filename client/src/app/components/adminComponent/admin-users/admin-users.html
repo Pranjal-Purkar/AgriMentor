@@ -116,11 +116,11 @@
             (ngModelChange)="filterUsers()"
             class="px-4 py-2 border-2 border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
           />
-          <button
+          <!-- <button
             class="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all"
           >
             Add User
-          </button>
+          </button> -->
         </div>
       </div>
     </div>
@@ -155,11 +155,11 @@
             >
               Joined
             </th>
-            <th
+            <!-- <th
               class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
             >
               Actions
-            </th>
+            </th> -->
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
@@ -210,7 +210,7 @@
               {{ user.address?.city || 'N/A' }}, {{ user.address?.state || 'N/A' }}
             </td>
             <td class="px-6 py-4 text-gray-600">{{ user.createdAt | date : 'mediumDate' }}</td>
-            <td class="px-6 py-4">
+            <!-- <td class="px-6 py-4">
               <div class="flex gap-2">
                 <button class="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -239,7 +239,7 @@
                   </svg>
                 </button>
               </div>
-            </td>
+            </td> -->
           </tr>
           }
         </tbody>

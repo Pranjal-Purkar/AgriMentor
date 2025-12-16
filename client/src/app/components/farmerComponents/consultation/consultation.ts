@@ -108,6 +108,9 @@ export class Consultation implements OnInit {
     // Then filter by active tab
     filtered = filtered.filter((c) => c.consultationRequestStatus.toLowerCase() === this.activeTab);
 
+    // Sort by date: latest first (newest to oldest)
+    filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
     return filtered;
   }
 

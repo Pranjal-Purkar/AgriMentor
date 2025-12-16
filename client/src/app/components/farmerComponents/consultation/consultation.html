@@ -13,7 +13,7 @@
     <div class="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
         <h2
-          class="text-3xl font-bold bg-gradient-to-r from-emerald-700 to-teal-600 bg-clip-text text-transparent"
+          class="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent"
         >
           My Consultations
         </h2>
@@ -189,10 +189,10 @@
         data-aos-duration="500"
       >
         <div
-          class="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-inner"
+          class="w-20 h-20 bg-gradient-to-br from-emerald-100 to-teal-200 rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-inner"
         >
           <svg
-            class="w-10 h-10 text-gray-400"
+            class="w-10 h-10 text-emerald-600"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -252,7 +252,7 @@
                 <!-- Initials Fallback -->
                 <div
                   *ngIf="!c.consultant.profilePhotoUrl"
-                  class="w-full h-full bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 flex items-center justify-center text-white font-bold text-lg"
+                  class="w-full h-full bg-gradient-to-br from-emerald-500 via-green-600 to-teal-600 flex items-center justify-center text-white font-bold text-lg"
                 >
                   {{ c.consultant.firstName.charAt(0) }}{{ c.consultant.lastName.charAt(0) }}
                 </div>
@@ -262,7 +262,7 @@
                 class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white shadow-sm"
                 [ngClass]="{
                   'bg-amber-400 animate-pulse': c.consultationRequestStatus === 'PENDING',
-                  'bg-emerald-500': c.consultationRequestStatus === 'APPROVED',
+                  'bg-green-500': c.consultationRequestStatus === 'APPROVED',
                   'bg-blue-500': c.consultationRequestStatus === 'COMPLETED',
                   'bg-red-500': c.consultationRequestStatus === 'REJECTED'
                 }"

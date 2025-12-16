@@ -29,6 +29,8 @@ export interface FarmVisitResponse {
   visitNotes: string;
   visitStatus: 'SCHEDULED' | 'COMPLETED' | 'CANCELLED' | 'MISSED';
   farmAddress: AddressDTO;
+  firstName?: string; // Farmer's first name
+  lastName?: string; // Farmer's last name
   createdAt: string;
   updatedAt: string;
   isOverdue: boolean;

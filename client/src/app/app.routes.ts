@@ -18,7 +18,6 @@ import { ConsultantProfile as FarmerConsultantProfile } from './components/farme
 import { ConsultantDashboardLayout } from './layouts/consultant-dashboard-layout/consultant-dashboard-layout';
 import { ConsultantHome } from './components/consultantComponents/consultant-home/consultant-home';
 import { ConsultantProfile } from './components/consultantComponents/consultant-profile/consultant-profile';
-import { ConsultantConsulationDetails } from './components/consultantComponents/consultant-consulation-details/consultant-consulation-details';
 import { ConsultantConsulationRequest } from './components/consultantComponents/consultant-consulation-request/consultant-consulation-request';
 import { FarmVisitiongSchedule } from './components/consultantComponents/farm-visitiong-schedule/farm-visitiong-schedule';
 import { FarmVisitDashboard } from './components/consultantComponents/farm-visit-dashboard/farm-visit-dashboard';
@@ -106,7 +105,7 @@ export const routes: Routes = [
       },
       {
         path: 'consultation/:id',
-        component: ConsultantConsulationDetails,
+        component: CosultationDetails,
         data: { animation: 'Cosultation' },
       },
       {
@@ -133,7 +132,7 @@ export const routes: Routes = [
         path: 'weather',
         component: Weather,
         data: { animation: 'Weather' },
-      }
+      },
     ],
   },
   {
@@ -157,7 +156,7 @@ export const routes: Routes = [
       },
       {
         path: 'consultation-details/:id',
-        component: ConsultantConsulationDetails,
+        component: ConsultantVerificationDetails,
         data: { animation: 'ConsultantConsulationDetails' },
       },
       {
@@ -189,16 +188,21 @@ export const routes: Routes = [
         path: 'weather',
         component: Weather,
         data: { animation: 'Weather' },
-      }
+      },
     ],
   },
   {
     path: 'admin',
     component: AdminDashboardLayout,
     children: [
+      // {
+      //   path: 'home',
+      //   component: AdminHome,
+      //   data: { animation: 'AdminHome' },
+      // },
       {
         path: 'home',
-        component: AdminHome,
+        component: AdminUsers,
         data: { animation: 'AdminHome' },
       },
       {

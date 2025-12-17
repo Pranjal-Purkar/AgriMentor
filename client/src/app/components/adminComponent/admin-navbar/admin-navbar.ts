@@ -3,6 +3,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AdminService } from '../../../services/adminService/admin-service';
 import { AdminDashboardStats } from '../../../interfaces/admin.interfaces';
+import { AuthService } from '../../../services/auth/auth-service';
 
 @Component({
   selector: 'app-admin-navbar',
@@ -61,6 +62,7 @@ export class AdminNavbar implements OnInit {
   constructor(
     private router: Router,
     private adminService: AdminService,
+    private authService: AuthService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
@@ -122,7 +124,6 @@ export class AdminNavbar implements OnInit {
   }
 
   onLogout(): void {
-    sessionStorage.clear();
-    this.router.navigate(['/login']);
+    this.authService.logout();
   }
 }

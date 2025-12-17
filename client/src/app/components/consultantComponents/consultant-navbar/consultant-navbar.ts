@@ -3,6 +3,8 @@ import { ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/cor
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 
+import { AuthService } from '../../../services/auth/auth-service';
+
 @Component({
   selector: 'app-consultant-navbar',
   imports: [RouterModule, CommonModule],
@@ -52,7 +54,11 @@ export class ConsultantNavbar {
     },
   ];
 
-  constructor(private router: Router, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService
+  ) {}
 
   ngAfterViewInit() {
     // Mark the component as initialized
@@ -68,18 +74,13 @@ export class ConsultantNavbar {
 
   // Handle logout
   onLogout() {
-    // Add your logout logic here
     console.log('Logging out...');
 
     // Close menu
     this.closeMenu.emit();
 
-    // Example: Clear auth token and redirect
-    // localStorage.removeItem('authToken');
-    // this.router.navigate(['/login']);
-
-    // For now, just navigate to login
-    this.router.navigate(['/login']);
+    // Call auth service logout
+    this.authService.logout();
   }
 
   toggleMobileMenu() {

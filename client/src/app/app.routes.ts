@@ -34,6 +34,10 @@ import { GlobalFeedbackComponent } from './components/shared/global-feedback/glo
 import { ChatComponent } from './components/chat/chat';
 import { Weather } from './components/weather/weather/weather';
 
+import { RoleGuard } from './guards/role.guard';
+
+import { GuestGuard } from './guards/guest.guard';
+
 export const routes: Routes = [
   {
     path: '',
@@ -47,11 +51,13 @@ export const routes: Routes = [
       {
         path: 'login',
         component: Login,
+        canActivate: [GuestGuard],
         data: { animation: 'Login' },
       },
       {
         path: 'register/farmer',
         component: FarmerRegister,
+        canActivate: [GuestGuard],
         data: {
           animation: 'FarmerRegister',
         },
@@ -59,6 +65,7 @@ export const routes: Routes = [
       {
         path: 'register/consultant',
         component: ConsultantRegister,
+        canActivate: [GuestGuard],
         data: {
           animation: 'ConsultantRegister',
         },
@@ -66,6 +73,7 @@ export const routes: Routes = [
       {
         path: 'forgot-password',
         component: ForgotPassword,
+        canActivate: [GuestGuard],
         data: { animation: 'ForgotPassword' },
       },
     ],
@@ -73,6 +81,8 @@ export const routes: Routes = [
   {
     path: 'farmer',
     component: FarmerDashboardLayout,
+    canActivate: [RoleGuard],
+    data: { roles: ['FARMER'] },
     children: [
       {
         path: 'dashboard',
@@ -139,6 +149,8 @@ export const routes: Routes = [
   {
     path: 'consultant',
     component: ConsultantDashboardLayout,
+    canActivate: [RoleGuard],
+    data: { roles: ['CONSULTANT'] },
     children: [
       {
         path: 'dashboard',
@@ -195,6 +207,8 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminDashboardLayout,
+    canActivate: [RoleGuard],
+    data: { roles: ['ADMIN'] },
     children: [
       // {
       //   path: 'home',
@@ -247,5 +261,9 @@ export const routes: Routes = [
         pathMatch: 'full',
       },
     ],
+  },
+  {
+    path: '**',
+    redirectTo: '',
   },
 ];

@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { ApiService } from '../../API/api-service';
 import { Router } from '@angular/router';
 import { toast } from 'ngx-sonner';
@@ -10,7 +11,8 @@ import { map, Observable } from 'rxjs';
 export class AuthService {
   constructor(
     private api: ApiService,
-    private router: Router // private farmerService:FarmerService
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   isUserAlreadyExist(username: string, role: string): Observable<boolean> {
@@ -65,11 +67,13 @@ export class AuthService {
         toast.success('Login successful');
         console.log(res);
         const tokens = res.data;
-        sessionStorage.setItem('token', tokens.jwt);
-        // // sessionStorage.setItem('refresh', tokens.refresh);
-        sessionStorage.setItem('userId', tokens.id);
-        sessionStorage.setItem('role', tokens.role);
-        sessionStorage.setItem('email', userData.username);
+        if (isPlatformBrowser(this.platformId)) {
+          sessionStorage.setItem('token', tokens.jwt);
+          // // sessionStorage.setItem('refresh', tokens.refresh);
+          sessionStorage.setItem('userId', tokens.id);
+          sessionStorage.setItem('role', tokens.role);
+          sessionStorage.setItem('email', userData.username);
+        }
         //switch route based on role
         if (tokens.role === 'CONSULTANT') {
           this.router.navigate(['consultant/dashboard']);
@@ -137,5 +141,36 @@ export class AuthService {
    */
   resetPassword(email: string, otp: string, newPassword: string): Observable<any> {
     return this.api.resetPassword(email, otp, newPassword);
+  }
+
+  /**
+   * Get the current user's role from session storage
+   */
+  getUserRole(): string | null {
+    if (isPlatformBrowser(this.platformId)) {
+      return sessionStorage.getItem('role');
+    }
+    return null;
+  }
+
+  /**
+   * Check if user is logged in
+   */
+  isLoggedIn(): boolean {
+    if (isPlatformBrowser(this.platformId)) {
+      return !!sessionStorage.getItem('token');
+    }
+    return false;
+  }
+
+  /**
+   * Log out the user and clear session storage
+   */
+  logout() {
+    if (isPlatformBrowser(this.platformId)) {
+      sessionStorage.clear();
+    }
+    this.router.navigate(['/login']);
+    toast.info('Logged out successfully');
   }
 }

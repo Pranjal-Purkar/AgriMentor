@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { ConsultantVerificationDetails } from './components/adminComponent/consultant-verification-details/consultant-verification-details';
+import { ConsultantConsulationDetails } from './components/consultantComponents/consultant-consulation-details/consultant-consulation-details';
 import { Home } from './components/homeComponents/home/home';
 import { HomeLayout } from './layouts/home-layout/home-layout';
 import { Login } from './components/homeComponents/login/login';
@@ -156,7 +157,7 @@ export const routes: Routes = [
       },
       {
         path: 'consultation-details/:id',
-        component: ConsultantVerificationDetails,
+        component: ConsultantConsulationDetails,
         data: { animation: 'ConsultantConsulationDetails' },
       },
       {

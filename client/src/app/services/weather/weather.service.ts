@@ -20,7 +20,7 @@ export class WeatherService {
   }
 
   getPastAndFutureWeather(lat: any, lon: any) {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&past_days=5&forecast_days=5&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode&hourly=temperature_2m,weathercode&timezone=auto`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&past_days=5&forecast_days=5&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode,sunrise,sunset&hourly=temperature_2m,weathercode,windspeed_10m,winddirection_10m,relativehumidity_2m&timezone=auto`;
     return this.http.get(url);
   }
 }

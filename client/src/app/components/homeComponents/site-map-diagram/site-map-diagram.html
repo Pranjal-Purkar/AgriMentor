@@ -1,0 +1,345 @@
+<div class="diagram-container">
+  <!-- Animated Background -->
+  <div class="bg-animation">
+    <div class="floating-orb orb-1"></div>
+    <div class="floating-orb orb-2"></div>
+    <div class="floating-orb orb-3"></div>
+    <div class="grid-overlay"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="diagram-header">
+    <div class="header-badge">
+      <span class="badge-pulse"></span>
+      <span class="badge-icon">🗺️</span>
+      <span class="badge-text">NAVIGATION FLOW</span>
+    </div>
+    <h1 class="main-title">Site Map <span class="gradient-text">Diagram</span></h1>
+    <p class="subtitle">
+      Interactive visualization of E-Consultancy for Farmers application structure
+    </p>
+  </header>
+
+  <!-- Main Diagram Area -->
+  <main class="diagram-wrapper">
+    <!-- Level 0: Root -->
+    <div class="tree-level level-0">
+      <div class="node-group">
+        <div class="node root-node" routerLink="/">
+          <div class="node-glow"></div>
+          <div class="node-icon">🏠</div>
+          <div class="node-content">
+            <span class="node-title">Home</span>
+            <span class="node-path">/</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connection Line from Root -->
+    <div class="connector-vertical main-connector">
+      <div class="connector-line"></div>
+      <div class="connector-pulse"></div>
+    </div>
+
+    <!-- Level 1: Main Branches -->
+    <div class="tree-level level-1">
+      <div class="horizontal-connector">
+        <div class="h-line"></div>
+      </div>
+
+      <div class="branches-container">
+        <!-- Public Branch -->
+        <div class="branch public-branch">
+          <div class="branch-header">
+            <span class="branch-icon">🌐</span>
+            <span class="branch-title">Public Routes</span>
+          </div>
+          <div class="connector-down"></div>
+          <div class="nodes-stack">
+            <a class="node public-node" routerLink="/login">
+              <div class="node-indicator"></div>
+              <div class="node-icon">🔑</div>
+              <div class="node-content">
+                <span class="node-title">Login</span>
+                <span class="node-path">/login</span>
+              </div>
+            </a>
+            <a class="node public-node" routerLink="/register/farmer">
+              <div class="node-indicator"></div>
+              <div class="node-icon">📝</div>
+              <div class="node-content">
+                <span class="node-title">Farmer Register</span>
+                <span class="node-path">/register/farmer</span>
+              </div>
+            </a>
+            <a class="node public-node" routerLink="/register/consultant">
+              <div class="node-indicator"></div>
+              <div class="node-icon">📋</div>
+              <div class="node-content">
+                <span class="node-title">Consultant Register</span>
+                <span class="node-path">/register/consultant</span>
+              </div>
+            </a>
+            <a class="node public-node" routerLink="/forgot-password">
+              <div class="node-indicator"></div>
+              <div class="node-icon">🔐</div>
+              <div class="node-content">
+                <span class="node-title">Forgot Password</span>
+                <span class="node-path">/forgot-password</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Farmer Branch -->
+        <div class="branch farmer-branch">
+          <div class="branch-header">
+            <span class="branch-icon">👨‍🌾</span>
+            <span class="branch-title">Farmer Portal</span>
+            <span class="role-badge farmer">FARMER</span>
+          </div>
+          <div class="connector-down"></div>
+          <div class="nodes-stack">
+            <div class="node farmer-node">
+              <div class="node-indicator"></div>
+              <div class="node-icon">📊</div>
+              <div class="node-content">
+                <span class="node-title">Dashboard</span>
+                <span class="node-path">/farmer/dashboard</span>
+              </div>
+            </div>
+            <div class="node farmer-node">
+              <div class="node-indicator"></div>
+              <div class="node-icon">💬</div>
+              <div class="node-content">
+                <span class="node-title">Consultation</span>
+                <span class="node-path">/farmer/consultation</span>
+              </div>
+            </div>
+            <div class="node farmer-node">
+              <div class="node-indicator"></div>
+              <div class="node-icon">👥</div>
+              <div class="node-content">
+                <span class="node-title">Consultants</span>
+                <span class="node-path">/farmer/consultants</span>
+              </div>
+            </div>
+            <div class="node farmer-node">
+              <div class="node-indicator"></div>
+              <div class="node-icon">📬</div>
+              <div class="node-content">
+                <span class="node-title">Consultation Request</span>
+                <span class="node-path">/farmer/consultation-request</span>
+              </div>
+            </div>
+            <div class="node farmer-node">
+              <div class="node-indicator"></div>
+              <div class="node-icon">👤</div>
+              <div class="node-content">
+                <span class="node-title">Profile</span>
+                <span class="node-path">/farmer/profile</span>
+              </div>
+            </div>
+            <div class="node farmer-node">
+              <div class="node-indicator"></div>
+              <div class="node-icon">💭</div>
+              <div class="node-content">
+                <span class="node-title">Chat</span>
+                <span class="node-path">/farmer/chat</span>
+              </div>
+            </div>
+            <div class="node farmer-node">
+              <div class="node-indicator"></div>
+              <div class="node-icon">🌤️</div>
+              <div class="node-content">
+                <span class="node-title">Weather</span>
+                <span class="node-path">/farmer/weather</span>
+              </div>
+            </div>
+            <div class="node farmer-node">
+              <div class="node-indicator"></div>
+              <div class="node-icon">⭐</div>
+              <div class="node-content">
+                <span class="node-title">Feedbacks</span>
+                <span class="node-path">/farmer/feedbacks</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Consultant Branch -->
+        <div class="branch consultant-branch">
+          <div class="branch-header">
+            <span class="branch-icon">👨‍🔬</span>
+            <span class="branch-title">Consultant Portal</span>
+            <span class="role-badge consultant">CONSULTANT</span>
+          </div>
+          <div class="connector-down"></div>
+          <div class="nodes-stack">
+            <div class="node consultant-node">
+              <div class="node-indicator"></div>
+              <div class="node-icon">📊</div>
+              <div class="node-content">
+                <span class="node-title">Dashboard</span>
+                <span class="node-path">/consultant/dashboard</span>
+              </div>
+            </div>
+            <div class="node consultant-node">
+              <div class="node-indicator"></div>
+              <div class="node-icon">📨</div>
+              <div class="node-content">
+                <span class="node-title">Consultation Requests</span>
+                <span class="node-path">/consultant/consultation-request</span>
+              </div>
+            </div>
+            <div class="node consultant-node">
+              <div class="node-indicator"></div>
+              <div class="node-icon">👤</div>
+              <div class="node-content">
+                <span class="node-title">Profile</span>
+                <span class="node-path">/consultant/profile</span>
+              </div>
+            </div>
+            <div class="node consultant-node">
+              <div class="node-indicator"></div>
+              <div class="node-icon">🚜</div>
+              <div class="node-content">
+                <span class="node-title">Farm Visits</span>
+                <span class="node-path">/consultant/farm-visits</span>
+              </div>
+            </div>
+            <div class="node consultant-node">
+              <div class="node-indicator"></div>
+              <div class="node-icon">💭</div>
+              <div class="node-content">
+                <span class="node-title">Chat</span>
+                <span class="node-path">/consultant/chat</span>
+              </div>
+            </div>
+            <div class="node consultant-node">
+              <div class="node-indicator"></div>
+              <div class="node-icon">🌤️</div>
+              <div class="node-content">
+                <span class="node-title">Weather</span>
+                <span class="node-path">/consultant/weather</span>
+              </div>
+            </div>
+            <div class="node consultant-node">
+              <div class="node-indicator"></div>
+              <div class="node-icon">⭐</div>
+              <div class="node-content">
+                <span class="node-title">Feedbacks</span>
+                <span class="node-path">/consultant/feedbacks</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Admin Branch -->
+        <div class="branch admin-branch">
+          <div class="branch-header">
+            <span class="branch-icon">🛡️</span>
+            <span class="branch-title">Admin Console</span>
+            <span class="role-badge admin">ADMIN</span>
+          </div>
+          <div class="connector-down"></div>
+          <div class="nodes-stack">
+            <div class="node admin-node">
+              <div class="node-indicator"></div>
+              <div class="node-icon">🏠</div>
+              <div class="node-content">
+                <span class="node-title">Home</span>
+                <span class="node-path">/admin/home</span>
+              </div>
+            </div>
+            <div class="node admin-node">
+              <div class="node-indicator"></div>
+              <div class="node-icon">👥</div>
+              <div class="node-content">
+                <span class="node-title">Users Management</span>
+                <span class="node-path">/admin/users</span>
+              </div>
+            </div>
+            <div class="node admin-node">
+              <div class="node-indicator"></div>
+              <div class="node-icon">📋</div>
+              <div class="node-content">
+                <span class="node-title">Consultations</span>
+                <span class="node-path">/admin/consultations</span>
+              </div>
+            </div>
+            <div class="node admin-node">
+              <div class="node-indicator"></div>
+              <div class="node-icon">✅</div>
+              <div class="node-content">
+                <span class="node-title">Approvals</span>
+                <span class="node-path">/admin/approvals</span>
+              </div>
+            </div>
+            <div class="node admin-node">
+              <div class="node-indicator"></div>
+              <div class="node-icon">📄</div>
+              <div class="node-content">
+                <span class="node-title">Reports</span>
+                <span class="node-path">/admin/reports</span>
+              </div>
+            </div>
+            <div class="node admin-node">
+              <div class="node-indicator"></div>
+              <div class="node-icon">⭐</div>
+              <div class="node-content">
+                <span class="node-title">Feedbacks</span>
+                <span class="node-path">/admin/feedbacks</span>
+              </div>
+            </div>
+            <div class="node admin-node">
+              <div class="node-indicator"></div>
+              <div class="node-icon">⚙️</div>
+              <div class="node-content">
+                <span class="node-title">Settings</span>
+                <span class="node-path">/admin/settings</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Legend -->
+  <section class="diagram-legend">
+    <h3 class="legend-title">Legend</h3>
+    <div class="legend-items">
+      <div class="legend-item">
+        <span class="legend-color public"></span>
+        <span class="legend-label">Public (No Auth Required)</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color farmer"></span>
+        <span class="legend-label">Farmer Role Required</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color consultant"></span>
+        <span class="legend-label">Consultant Role Required</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color admin"></span>
+        <span class="legend-label">Admin Role Required</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="diagram-footer">
+    <a routerLink="/" class="back-btn">
+      <span class="btn-icon">←</span>
+      <span class="btn-text">Back to Home</span>
+    </a>
+    <div class="footer-info">
+      <span class="footer-text">E-Consultancy for Farmers</span>
+      <span class="footer-divider">•</span>
+      <span class="footer-version">v1.0</span>
+    </div>
+  </footer>
+</div>

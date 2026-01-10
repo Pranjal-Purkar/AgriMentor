@@ -232,7 +232,7 @@
     >
       <div
         *ngFor="let msg of messages"
-        class="flex flex-col max-w-[80%] md:max-w-[70%]"
+        class="flex flex-col "
         [ngClass]="{
           'self-end items-end': isSentByMe(msg),
           'self-start items-start': !isSentByMe(msg)

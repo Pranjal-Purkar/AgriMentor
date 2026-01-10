@@ -21,7 +21,11 @@ spring:
     #    username: purkarpranjal12@gmail.com
     username: sbhor132@gmail.com
     #    password: tmoftjyeapiikmpa
+<<<<<<< HEAD
     password: nwpblepllhbtieev
+=======
+    password: 
+>>>>>>> client
     properties:
       mail:
         smtp:

@@ -8,6 +8,8 @@ import { FarmerRegister } from './components/homeComponents/farmer-register/farm
 import { ConsultantRegister } from './components/homeComponents/consultant-register/consultant-register';
 import { animation } from '@angular/animations';
 import { ForgotPassword } from './components/homeComponents/forgot-password/forgot-password';
+import { SiteMap } from './components/homeComponents/site-map/site-map';
+import { SiteMapDiagram } from './components/homeComponents/site-map-diagram/site-map-diagram';
 import { FarmerDashboardLayout } from './layouts/farmer-dashboard-layout/farmer-dashboard-layout';
 import { FarmerHome } from './components/farmerComponents/farmer-home/farmer-home';
 import { Consultation } from './components/farmerComponents/consultation/consultation';
@@ -75,6 +77,16 @@ export const routes: Routes = [
         component: ForgotPassword,
         canActivate: [GuestGuard],
         data: { animation: 'ForgotPassword' },
+      },
+      {
+        path: 'site-map',
+        component: SiteMap,
+        data: { animation: 'SiteMap' },
+      },
+      {
+        path: 'site-map-diagram',
+        component: SiteMapDiagram,
+        data: { animation: 'SiteMapDiagram' },
       },
     ],
   },

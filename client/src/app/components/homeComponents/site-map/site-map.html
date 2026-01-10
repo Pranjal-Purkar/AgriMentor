@@ -1,0 +1,409 @@
+<div class="sitemap-container">
+  <!-- Animated Background -->
+  <div class="bg-animation">
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    <div class="floating-shape shape-3"></div>
+  </div>
+
+  <!-- Header Section -->
+  <header class="sitemap-header">
+    <div class="header-badge">
+      <span class="badge-icon">🗺️</span>
+      <span class="badge-text">ARCHITECTURE</span>
+    </div>
+    <h1 class="main-title">System <span class="gradient-text">Flow Map</span></h1>
+    <p class="subtitle">Explore the complete architecture of E-Consultancy for Farmers</p>
+  </header>
+
+  <!-- Main Architecture Diagram -->
+  <main class="architecture-grid">
+    <!-- Client Layer -->
+    <section class="layer-section client-layer">
+      <div class="layer-header">
+        <div class="layer-icon">💻</div>
+        <div class="layer-info">
+          <h2>Presentation Layer</h2>
+          <span class="layer-tag">Angular 17 Frontend</span>
+        </div>
+      </div>
+
+      <div class="cards-grid">
+        <!-- Public Portal Card -->
+        <div class="architecture-card public-card">
+          <div class="card-glow"></div>
+          <div class="card-header">
+            <div class="card-icon-wrap public">
+              <span class="card-icon">🌐</span>
+            </div>
+            <div class="card-title-group">
+              <h3>Public Portal</h3>
+              <span class="card-badge">Open Access</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <ul class="route-list">
+              <li>
+                <span class="route-method get">GET</span>
+                <span class="route-path">/ (Home)</span>
+              </li>
+              <li>
+                <span class="route-method get">GET</span>
+                <span class="route-path">/login</span>
+              </li>
+              <li>
+                <span class="route-method get">GET</span>
+                <span class="route-path">/register</span>
+              </li>
+              <li>
+                <span class="route-method get">GET</span>
+                <span class="route-path">/about</span>
+              </li>
+            </ul>
+          </div>
+          <div class="card-connector"></div>
+        </div>
+
+        <!-- Farmer Portal Card -->
+        <div class="architecture-card farmer-card">
+          <div class="card-glow"></div>
+          <div class="card-header">
+            <div class="card-icon-wrap farmer">
+              <span class="card-icon">👨‍🌾</span>
+            </div>
+            <div class="card-title-group">
+              <h3>Farmer Portal</h3>
+              <span class="card-badge farmer">Role: FARMER</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <ul class="route-list">
+              <li>
+                <span class="route-method get">GET</span>
+                <span class="route-path">/farmer/dashboard</span>
+              </li>
+              <li>
+                <span class="route-method post">POST</span>
+                <span class="route-path">/consultations/new</span>
+              </li>
+              <li>
+                <span class="route-method get">GET</span>
+                <span class="route-path">/market-prices</span>
+              </li>
+              <li>
+                <span class="route-method get">GET</span>
+                <span class="route-path">/weather-forecast</span>
+              </li>
+            </ul>
+          </div>
+          <div class="card-connector"></div>
+        </div>
+
+        <!-- Consultant Portal Card -->
+        <div class="architecture-card consultant-card">
+          <div class="card-glow"></div>
+          <div class="card-header">
+            <div class="card-icon-wrap consultant">
+              <span class="card-icon">👨‍🔬</span>
+            </div>
+            <div class="card-title-group">
+              <h3>Consultant Portal</h3>
+              <span class="card-badge consultant">Role: CONSULTANT</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <ul class="route-list">
+              <li>
+                <span class="route-method get">GET</span>
+                <span class="route-path">/consultant/dashboard</span>
+              </li>
+              <li>
+                <span class="route-method get">GET</span>
+                <span class="route-path">/requests</span>
+              </li>
+              <li>
+                <span class="route-method post">POST</span>
+                <span class="route-path">/schedule-visit</span>
+              </li>
+              <li>
+                <span class="route-method post">POST</span>
+                <span class="route-path">/submit-report</span>
+              </li>
+            </ul>
+          </div>
+          <div class="card-connector"></div>
+        </div>
+
+        <!-- Admin Portal Card -->
+        <div class="architecture-card admin-card">
+          <div class="card-glow"></div>
+          <div class="card-header">
+            <div class="card-icon-wrap admin">
+              <span class="card-icon">🛡️</span>
+            </div>
+            <div class="card-title-group">
+              <h3>Admin Console</h3>
+              <span class="card-badge admin">Role: ADMIN</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <ul class="route-list">
+              <li>
+                <span class="route-method get">GET</span>
+                <span class="route-path">/admin/dashboard</span>
+              </li>
+              <li>
+                <span class="route-method get">GET</span>
+                <span class="route-path">/users</span>
+              </li>
+              <li>
+                <span class="route-method put">PUT</span>
+                <span class="route-path">/approvals</span>
+              </li>
+              <li>
+                <span class="route-method get">GET</span>
+                <span class="route-path">/statistics</span>
+              </li>
+            </ul>
+          </div>
+          <div class="card-connector"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- API Gateway -->
+    <div class="api-gateway">
+      <div class="gateway-line"></div>
+      <div class="gateway-box">
+        <span class="gateway-icon">⚡</span>
+        <span class="gateway-text">REST API Gateway</span>
+        <span class="gateway-protocol">HTTPS / JSON</span>
+      </div>
+      <div class="gateway-line"></div>
+    </div>
+
+    <!-- Server Layer -->
+    <section class="layer-section server-layer">
+      <div class="layer-header">
+        <div class="layer-icon">🖥️</div>
+        <div class="layer-info">
+          <h2>Application Layer</h2>
+          <span class="layer-tag">Spring Boot Backend</span>
+        </div>
+      </div>
+
+      <div class="cards-grid">
+        <!-- Auth Service -->
+        <div class="architecture-card service-card auth-service">
+          <div class="card-glow"></div>
+          <div class="card-header">
+            <div class="card-icon-wrap auth">
+              <span class="card-icon">🔐</span>
+            </div>
+            <div class="card-title-group">
+              <h3>Auth Service</h3>
+              <code class="endpoint-badge">/api/v1/auth</code>
+            </div>
+          </div>
+          <div class="card-body">
+            <ul class="api-list">
+              <li>
+                <span class="method-badge post">POST</span>
+                <span class="api-name">login()</span>
+              </li>
+              <li>
+                <span class="method-badge post">POST</span>
+                <span class="api-name">register()</span>
+              </li>
+              <li>
+                <span class="method-badge post">POST</span>
+                <span class="api-name">verifyOtp()</span>
+              </li>
+              <li>
+                <span class="method-badge post">POST</span>
+                <span class="api-name">refreshToken()</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Farmer Service -->
+        <div class="architecture-card service-card farmer-service">
+          <div class="card-glow"></div>
+          <div class="card-header">
+            <div class="card-icon-wrap farmer-svc">
+              <span class="card-icon">🌾</span>
+            </div>
+            <div class="card-title-group">
+              <h3>Farmer Service</h3>
+              <code class="endpoint-badge">/api/v1/farmers</code>
+            </div>
+          </div>
+          <div class="card-body">
+            <ul class="api-list">
+              <li>
+                <span class="method-badge get">GET</span>
+                <span class="api-name">getProfile()</span>
+              </li>
+              <li>
+                <span class="method-badge put">PUT</span>
+                <span class="api-name">updateProfile()</span>
+              </li>
+              <li>
+                <span class="method-badge post">POST</span>
+                <span class="api-name">requestConsultation()</span>
+              </li>
+              <li>
+                <span class="method-badge get">GET</span>
+                <span class="api-name">getConsultations()</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Consultant Service -->
+        <div class="architecture-card service-card consultant-service">
+          <div class="card-glow"></div>
+          <div class="card-header">
+            <div class="card-icon-wrap consultant-svc">
+              <span class="card-icon">🧪</span>
+            </div>
+            <div class="card-title-group">
+              <h3>Consultant Service</h3>
+              <code class="endpoint-badge">/api/v1/consultants</code>
+            </div>
+          </div>
+          <div class="card-body">
+            <ul class="api-list">
+              <li>
+                <span class="method-badge get">GET</span>
+                <span class="api-name">getPendingRequests()</span>
+              </li>
+              <li>
+                <span class="method-badge post">POST</span>
+                <span class="api-name">scheduleVisit()</span>
+              </li>
+              <li>
+                <span class="method-badge post">POST</span>
+                <span class="api-name">submitReport()</span>
+              </li>
+              <li>
+                <span class="method-badge put">PUT</span>
+                <span class="api-name">updateStatus()</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Admin Service -->
+        <div class="architecture-card service-card admin-service">
+          <div class="card-glow"></div>
+          <div class="card-header">
+            <div class="card-icon-wrap admin-svc">
+              <span class="card-icon">⚔️</span>
+            </div>
+            <div class="card-title-group">
+              <h3>Admin Service</h3>
+              <code class="endpoint-badge">/api/v1/admin</code>
+            </div>
+          </div>
+          <div class="card-body">
+            <ul class="api-list">
+              <li>
+                <span class="method-badge get">GET</span>
+                <span class="api-name">getAllUsers()</span>
+              </li>
+              <li>
+                <span class="method-badge put">PUT</span>
+                <span class="api-name">toggleUserStatus()</span>
+              </li>
+              <li>
+                <span class="method-badge put">PUT</span>
+                <span class="api-name">approveConsultant()</span>
+              </li>
+              <li>
+                <span class="method-badge get">GET</span>
+                <span class="api-name">getStatistics()</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Infrastructure Layer -->
+    <section class="layer-section infra-layer">
+      <div class="layer-header">
+        <div class="layer-icon">🏗️</div>
+        <div class="layer-info">
+          <h2>Infrastructure Layer</h2>
+          <span class="layer-tag">Security & Persistence</span>
+        </div>
+      </div>
+
+      <div class="infra-grid">
+        <!-- Security Block -->
+        <div class="infra-block security-block">
+          <div class="infra-icon">🔒</div>
+          <h4>Security</h4>
+          <div class="tech-tags">
+            <span class="tech-tag">JWT Auth</span>
+            <span class="tech-tag">Role Guards</span>
+            <span class="tech-tag">BCrypt</span>
+            <span class="tech-tag">Spring Security</span>
+          </div>
+        </div>
+
+        <!-- Database Block -->
+        <div class="infra-block database-block">
+          <div class="infra-icon">💾</div>
+          <h4>Database</h4>
+          <div class="tech-tags">
+            <span class="tech-tag">MySQL</span>
+            <span class="tech-tag">JPA/Hibernate</span>
+            <span class="tech-tag">Connection Pool</span>
+          </div>
+        </div>
+
+        <!-- Storage Block -->
+        <div class="infra-block storage-block">
+          <div class="infra-icon">📁</div>
+          <h4>File Storage</h4>
+          <div class="tech-tags">
+            <span class="tech-tag">Documents</span>
+            <span class="tech-tag">Images</span>
+            <span class="tech-tag">Reports</span>
+          </div>
+        </div>
+
+        <!-- External Services Block -->
+        <div class="infra-block external-block">
+          <div class="infra-icon">🌐</div>
+          <h4>External APIs</h4>
+          <div class="tech-tags">
+            <span class="tech-tag">Email Service</span>
+            <span class="tech-tag">Weather API</span>
+            <span class="tech-tag">Market Data</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="sitemap-footer">
+    <a routerLink="/" class="home-btn">
+      <span class="btn-icon">🏠</span>
+      <span class="btn-text">Return to Home</span>
+    </a>
+    <div class="tech-stack">
+      <span>Built with</span>
+      <div class="stack-icons">
+        <span class="stack-item" title="Angular">🅰️</span>
+        <span class="stack-item" title="Spring Boot">🍃</span>
+        <span class="stack-item" title="MySQL">🐬</span>
+        <span class="stack-item" title="TypeScript">📘</span>
+      </div>
+    </div>
+  </footer>
+</div>

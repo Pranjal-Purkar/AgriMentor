@@ -1,174 +1,80 @@
-<div class="weather-container">
-  <!-- Header -->
-
+<div class="weather-dashboard">
   <!-- Loading State -->
   <div *ngIf="loading" class="loading-state">
     <div class="loading-spinner"></div>
     <p class="loading-text">Fetching weather data...</p>
   </div>
 
-  <!-- Weather Cards Grid -->
-  <div *ngIf="!loading && weatherData" class="weather-grid">
-    <div
-      *ngFor="let day of weatherData.daily; let i = index"
-      class="weather-card"
-      [class.is-today]="i === 5"
-      [class.is-expanded]="expandedDayIndex === i"
-      (click)="toggleDay(i)"
-    >
-      <!-- Card Background Gradient -->
-      <div class="card-bg"></div>
+  <!-- Main Dashboard Content -->
+  <div *ngIf="!loading && weatherData && currentWeather" class="dashboard-content">
+    <!-- Left Column: Main Weather Card + Chart -->
+    <div class="left-column">
+      <!-- Current Location Badge -->
+      <div class="location-header">
+        <svg
+          class="location-icon text-sky-500"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+        >
+          <path
+            d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+            stroke-width="2"
+          />
+        </svg>
+        <span class="location-text text-slate-400">Current Location</span>
+        <span class="location-name text-slate-900 font-semibold">{{ locationName }}</span>
+      </div>
 
-      <!-- Main Card Content -->
-      <div class="card-main">
-        <div class="card-header">
-          <div class="day-info">
-            <h3 class="day-name">{{ getDayOfWeek(day.date) }}</h3>
-            <p class="day-date">{{ getFormattedDate(day.date) }}</p>
-          </div>
-          <span *ngIf="i === 5" class="today-badge">Today</span>
-        </div>
-
-        <div class="card-body">
-          <div class="weather-icon-large">
-            <ng-container [ngSwitch]="day.icon">
+      <!-- Main Weather Card -->
+      <div class="main-weather-card bg-gradient-to-br from-sky-400 to-blue-600 hover:shadow-2xl">
+        <div class="weather-visual">
+          <div class="weather-icon-main">
+            <ng-container [ngSwitch]="currentWeather.icon">
               <!-- Sun Icon -->
-              <svg
-                *ngSwitchCase="'sun'"
-                class="icon-svg"
-                viewBox="0 0 200 200"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+              <svg *ngSwitchCase="'sun'" class="icon-svg" viewBox="0 0 200 200">
                 <defs>
-                  <radialGradient id="sunGradient">
+                  <radialGradient id="sunGradientMain">
                     <stop offset="0%" stop-color="#FDB813" />
                     <stop offset="100%" stop-color="#FFAA00" />
                   </radialGradient>
                 </defs>
-                <circle cx="100" cy="100" r="40" fill="url(#sunGradient)">
+                <circle cx="100" cy="100" r="40" fill="url(#sunGradientMain)">
                   <animate attributeName="r" values="40;42;40" dur="3s" repeatCount="indefinite" />
                 </circle>
                 <g stroke="#FDB813" stroke-width="6" stroke-linecap="round">
-                  <line x1="100" y1="30" x2="100" y2="15">
-                    <animate
-                      attributeName="y1"
-                      values="30;25;30"
-                      dur="2s"
-                      repeatCount="indefinite"
-                    />
-                  </line>
-                  <line x1="100" y1="170" x2="100" y2="185">
-                    <animate
-                      attributeName="y1"
-                      values="170;175;170"
-                      dur="2s"
-                      repeatCount="indefinite"
-                    />
-                  </line>
-                  <line x1="170" y1="100" x2="185" y2="100">
-                    <animate
-                      attributeName="x1"
-                      values="170;175;170"
-                      dur="2s"
-                      repeatCount="indefinite"
-                    />
-                  </line>
-                  <line x1="30" y1="100" x2="15" y2="100">
-                    <animate
-                      attributeName="x1"
-                      values="30;25;30"
-                      dur="2s"
-                      repeatCount="indefinite"
-                    />
-                  </line>
-                  <line x1="148.5" y1="51.5" x2="159" y2="41">
-                    <animate
-                      attributeName="x1"
-                      values="148.5;153.5;148.5"
-                      dur="2s"
-                      repeatCount="indefinite"
-                    />
-                  </line>
-                  <line x1="51.5" y1="148.5" x2="41" y2="159">
-                    <animate
-                      attributeName="x1"
-                      values="51.5;46.5;51.5"
-                      dur="2s"
-                      repeatCount="indefinite"
-                    />
-                  </line>
-                  <line x1="148.5" y1="148.5" x2="159" y2="159">
-                    <animate
-                      attributeName="x1"
-                      values="148.5;153.5;148.5"
-                      dur="2s"
-                      repeatCount="indefinite"
-                    />
-                  </line>
-                  <line x1="51.5" y1="51.5" x2="41" y2="41">
-                    <animate
-                      attributeName="x1"
-                      values="51.5;46.5;51.5"
-                      dur="2s"
-                      repeatCount="indefinite"
-                    />
-                  </line>
+                  <line x1="100" y1="30" x2="100" y2="15"></line>
+                  <line x1="100" y1="170" x2="100" y2="185"></line>
+                  <line x1="170" y1="100" x2="185" y2="100"></line>
+                  <line x1="30" y1="100" x2="15" y2="100"></line>
+                  <line x1="148.5" y1="51.5" x2="159" y2="41"></line>
+                  <line x1="51.5" y1="148.5" x2="41" y2="159"></line>
+                  <line x1="148.5" y1="148.5" x2="159" y2="159"></line>
+                  <line x1="51.5" y1="51.5" x2="41" y2="41"></line>
                 </g>
               </svg>
 
               <!-- Partly Cloudy Icon -->
-              <svg
-                *ngSwitchCase="'partly-cloudy'"
-                class="icon-svg"
-                viewBox="0 0 200 200"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <defs>
-                  <radialGradient id="sunGradient2">
-                    <stop offset="0%" stop-color="#FDB813" />
-                    <stop offset="100%" stop-color="#FFAA00" />
-                  </radialGradient>
-                </defs>
-                <circle cx="140" cy="60" r="25" fill="url(#sunGradient2)" opacity="0.9" />
+              <svg *ngSwitchCase="'partly-cloudy'" class="icon-svg" viewBox="0 0 200 200">
+                <circle cx="140" cy="60" r="25" fill="#FDB813" opacity="0.9" />
                 <path
                   d="M140 100 Q100 80 60 80 Q30 80 30 110 Q30 140 60 140 L140 140 Q170 140 170 110 Q170 80 140 100 Z"
                   fill="#FFFFFF"
                   stroke="#E5E7EB"
                   stroke-width="2"
                 />
-                <path
-                  d="M140 100 Q100 80 60 80 Q30 80 30 110 Q30 140 60 140 L140 140 Q170 140 170 110 Q170 80 140 100 Z"
-                  fill="url(#cloudGradient)"
-                  opacity="0.3"
-                />
               </svg>
 
               <!-- Cloudy Icon -->
-              <svg
-                *ngSwitchCase="'cloudy'"
-                class="icon-svg"
-                viewBox="0 0 200 200"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <defs>
-                  <linearGradient id="cloudGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stop-color="#F3F4F6" />
-                    <stop offset="100%" stop-color="#D1D5DB" />
-                  </linearGradient>
-                </defs>
-                <ellipse cx="100" cy="85" rx="45" ry="35" fill="url(#cloudGradient)" />
-                <ellipse cx="70" cy="95" rx="35" ry="30" fill="url(#cloudGradient)" />
-                <ellipse cx="130" cy="95" rx="35" ry="30" fill="url(#cloudGradient)" />
-                <ellipse cx="100" cy="105" rx="50" ry="35" fill="url(#cloudGradient)" />
+              <svg *ngSwitchCase="'cloudy'" class="icon-svg" viewBox="0 0 200 200">
+                <ellipse cx="100" cy="85" rx="45" ry="35" fill="#D1D5DB" />
+                <ellipse cx="70" cy="95" rx="35" ry="30" fill="#D1D5DB" />
+                <ellipse cx="130" cy="95" rx="35" ry="30" fill="#D1D5DB" />
+                <ellipse cx="100" cy="105" rx="50" ry="35" fill="#D1D5DB" />
               </svg>
 
               <!-- Rain Icon -->
-              <svg
-                *ngSwitchCase="'rain'"
-                class="icon-svg"
-                viewBox="0 0 200 200"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+              <svg *ngSwitchCase="'rain'" class="icon-svg" viewBox="0 0 200 200">
                 <ellipse cx="100" cy="70" rx="45" ry="30" fill="#9CA3AF" />
                 <ellipse cx="70" cy="80" rx="35" ry="25" fill="#9CA3AF" />
                 <ellipse cx="130" cy="80" rx="35" ry="25" fill="#9CA3AF" />
@@ -212,12 +118,7 @@
               </svg>
 
               <!-- Snow Icon -->
-              <svg
-                *ngSwitchCase="'snow'"
-                class="icon-svg"
-                viewBox="0 0 200 200"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+              <svg *ngSwitchCase="'snow'" class="icon-svg" viewBox="0 0 200 200">
                 <ellipse cx="100" cy="70" rx="45" ry="30" fill="#E5E7EB" />
                 <ellipse cx="70" cy="80" rx="35" ry="25" fill="#E5E7EB" />
                 <ellipse cx="130" cy="80" rx="35" ry="25" fill="#E5E7EB" />
@@ -261,12 +162,7 @@
               </svg>
 
               <!-- Storm Icon -->
-              <svg
-                *ngSwitchCase="'storm'"
-                class="icon-svg"
-                viewBox="0 0 200 200"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+              <svg *ngSwitchCase="'storm'" class="icon-svg" viewBox="0 0 200 200">
                 <ellipse cx="100" cy="70" rx="45" ry="30" fill="#6B7280" />
                 <ellipse cx="70" cy="80" rx="35" ry="25" fill="#6B7280" />
                 <ellipse cx="130" cy="80" rx="35" ry="25" fill="#6B7280" />
@@ -288,34 +184,133 @@
             </ng-container>
           </div>
 
-          <div class="temp-info">
-            <div class="main-temp">{{ day.maxTemp }}°</div>
-            <div class="temp-range">
-              <span class="temp-high">{{ day.maxTemp }}°</span>
-              <span class="temp-divider">/</span>
-              <span class="temp-low">{{ day.minTemp }}°</span>
+          <div class="weather-info">
+            <div class="current-temp text-white">{{ Math.round(currentWeather.maxTemp) }}°C</div>
+            <div class="weather-condition text-white/95">
+              <svg class="cloud-icon text-white/90" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M6.5 20q-2.28 0-3.89-1.57Q1 16.85 1 14.58q0-1.95 1.17-3.48 1.18-1.53 3.08-1.95.63-2.3 2.5-3.72Q9.63 4 12 4q2.93 0 4.96 2.04Q19 8.07 19 11q1.73.2 2.86 1.5Q23 13.78 23 15.5q0 1.88-1.31 3.19Q20.37 20 18.5 20Z"
+                />
+              </svg>
+              <span>{{ currentWeather.description }}</span>
             </div>
-            <div class="weather-desc">{{ day.description }}</div>
+            <div class="current-date text-white/85">
+              {{ getDayOfWeek(currentWeather.date) }}, {{ getFormattedDate(currentWeather.date) }}
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Hourly Forecast (Visible on Expand Only) -->
-      <div class="card-hourly" *ngIf="expandedDayIndex === i">
-        <div class="hourly-header">
-          <h4>Hourly Forecast</h4>
-          <button class="close-btn" (click)="$event.stopPropagation(); expandedDayIndex = null">
-            ×
-          </button>
+      <!-- Precipitation Chart -->
+      <div class="precipitation-chart bg-white border border-sky-100">
+        <div class="chart-header">
+          <h3 class="text-slate-900">Chance of Rain</h3>
+          <div class="chart-scale text-slate-400">
+            <span>0</span>
+            <span>25</span>
+            <span>50</span>
+            <span>75</span>
+            <span>100%</span>
+          </div>
         </div>
+        <div class="chart-bars">
+          <div *ngFor="let data of precipitationChartData" class="bar-item">
+            <div class="bar-container bg-slate-100">
+              <div class="bar-fill" [style.height.%]="data.precip">
+                <div class="bar-gradient"></div>
+              </div>
+            </div>
+            <div class="bar-label text-slate-400">
+              {{
+                data.hour === 0
+                  ? '12 am'
+                  : data.hour === 12
+                  ? '12 pm'
+                  : data.hour > 12
+                  ? data.hour - 12 + ' pm'
+                  : data.hour + ' am'
+              }}
+            </div>
+          </div>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item text-slate-600">
+            <div class="legend-color sunny bg-gradient-to-r from-amber-400 to-amber-500"></div>
+            <span>Sunny</span>
+          </div>
+          <div class="legend-item text-slate-600">
+            <div class="legend-color rainy bg-gradient-to-r from-blue-400 to-blue-500"></div>
+            <span>Rainy</span>
+          </div>
+          <div class="legend-item text-slate-600">
+            <div
+              class="legend-color heavy-rain bg-gradient-to-r from-purple-500 to-purple-600"
+            ></div>
+            <span>Heavy Rain</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-        <div class="hourly-scroll">
-          <div class="hourly-item" *ngFor="let hour of day.hourly">
-            <div class="hour-time">{{ hour.time | date : 'h a' }}</div>
-
-            <div class="hour-icon">
-              <ng-container [ngSwitch]="hour.icon">
-                <svg *ngSwitchCase="'sun'" class="hour-svg" viewBox="0 0 64 64">
+    <!-- Right Column: 3-Day Forecast + Highlights -->
+    <div class="right-column">
+      <!-- 3-Day Forecast -->
+      <div class="forecast-section bg-white border border-sky-100">
+        <h3 class="section-title text-slate-900">3 Days Forecast</h3>
+        <div class="forecast-cards">
+          <div
+            *ngFor="let day of threeDayForecast; let i = index"
+            class="forecast-card"
+            [class.today]="i === 0"
+            [ngClass]="{
+              'bg-gradient-to-br from-sky-400 to-blue-600': i === 0,
+              'bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200 hover:from-slate-100 hover:to-slate-200':
+                i !== 0
+            }"
+          >
+            <div class="forecast-header">
+              <svg
+                class="forecast-temp-icon"
+                [ngClass]="{ 'text-white': i === 0, 'text-sky-500': i !== 0 }"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path
+                  d="M12 2v10m0 0a2 2 0 100 4 2 2 0 000-4z"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <span
+                class="forecast-temp-high"
+                [ngClass]="{ 'text-white': i === 0, 'text-slate-900': i !== 0 }"
+              >
+                {{ Math.round(day.maxTemp) }}°
+              </span>
+              <svg
+                class="forecast-temp-icon-down"
+                [ngClass]="{ 'text-white': i === 0, 'text-sky-500': i !== 0 }"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path
+                  d="M12 22V12m0 0a2 2 0 110-4 2 2 0 010 4z"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <span
+                class="forecast-temp-low"
+                [ngClass]="{ 'text-white/80': i === 0, 'text-slate-500': i !== 0 }"
+              >
+                {{ Math.round(day.minTemp) }}°
+              </span>
+            </div>
+            <div class="forecast-icon">
+              <ng-container [ngSwitch]="day.icon">
+                <svg *ngSwitchCase="'sun'" class="forecast-svg" viewBox="0 0 64 64">
                   <circle cx="32" cy="32" r="12" fill="#FDB813" />
                   <circle
                     cx="32"
@@ -327,31 +322,31 @@
                     stroke-dasharray="1 8"
                   />
                 </svg>
-                <svg *ngSwitchCase="'partly-cloudy'" class="hour-svg" viewBox="0 0 64 64">
+                <svg *ngSwitchCase="'partly-cloudy'" class="forecast-svg" viewBox="0 0 64 64">
                   <circle cx="45" cy="20" r="8" fill="#FDB813" />
                   <path
                     d="M50 40 H20 Q10 40 10 30 Q10 20 20 20 Q25 10 38 15 Q50 20 50 30 Z"
                     fill="#E5E7EB"
                   />
                 </svg>
-                <svg *ngSwitchCase="'cloudy'" class="hour-svg" viewBox="0 0 64 64">
+                <svg *ngSwitchCase="'cloudy'" class="forecast-svg" viewBox="0 0 64 64">
                   <ellipse cx="32" cy="28" rx="18" ry="12" fill="#D1D5DB" />
                   <ellipse cx="22" cy="32" rx="12" ry="10" fill="#D1D5DB" />
                   <ellipse cx="42" cy="32" rx="12" ry="10" fill="#D1D5DB" />
                 </svg>
-                <svg *ngSwitchCase="'rain'" class="hour-svg" viewBox="0 0 64 64">
+                <svg *ngSwitchCase="'rain'" class="forecast-svg" viewBox="0 0 64 64">
                   <ellipse cx="32" cy="24" rx="16" ry="10" fill="#9CA3AF" />
                   <line x1="26" y1="38" x2="24" y2="48" stroke="#3B82F6" stroke-width="2" />
                   <line x1="32" y1="38" x2="30" y2="48" stroke="#3B82F6" stroke-width="2" />
                   <line x1="38" y1="38" x2="36" y2="48" stroke="#3B82F6" stroke-width="2" />
                 </svg>
-                <svg *ngSwitchCase="'snow'" class="hour-svg" viewBox="0 0 64 64">
+                <svg *ngSwitchCase="'snow'" class="forecast-svg" viewBox="0 0 64 64">
                   <ellipse cx="32" cy="24" rx="16" ry="10" fill="#E5E7EB" />
                   <circle cx="26" cy="40" r="2" fill="#BFDBFE" />
                   <circle cx="32" cy="42" r="2" fill="#BFDBFE" />
                   <circle cx="38" cy="40" r="2" fill="#BFDBFE" />
                 </svg>
-                <svg *ngSwitchCase="'storm'" class="hour-svg" viewBox="0 0 64 64">
+                <svg *ngSwitchCase="'storm'" class="forecast-svg" viewBox="0 0 64 64">
                   <ellipse cx="32" cy="24" rx="16" ry="10" fill="#6B7280" />
                   <path
                     d="M32 35 L28 45 L34 45 L30 55"
@@ -362,17 +357,139 @@
                 </svg>
               </ng-container>
             </div>
+            <div class="forecast-day">
+              <span
+                class="day-name"
+                [ngClass]="{ 'text-white': i === 0, 'text-slate-900': i !== 0 }"
+              >
+                {{ i === 0 ? 'Today' : getDayOfWeek(day.date).substring(0, 3) }}
+              </span>
+              <span
+                class="day-condition"
+                [ngClass]="{ 'text-white/90': i === 0, 'text-slate-600': i !== 0 }"
+              >
+                {{ day.description }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-            <div class="hour-precip" *ngIf="isPrecipitation(hour.icon)">
-              <svg class="precip-icon" viewBox="0 0 16 16" fill="currentColor">
+      <!-- Today's Highlights -->
+      <div class="highlights-section bg-white border border-sky-100">
+        <h3 class="section-title text-slate-900">Today's Highlights</h3>
+        <div class="highlights-grid">
+          <!-- Precipitation -->
+          <div
+            class="highlight-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg"
+          >
+            <div class="highlight-header text-slate-600">
+              <svg
+                class="highlight-icon text-blue-500"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" stroke-width="2" />
+              </svg>
+              <span>Precipitation</span>
+            </div>
+            <div class="highlight-value text-slate-900">
+              {{ todayHighlights?.precipitation || 0 }}%
+            </div>
+          </div>
+
+          <!-- Humidity -->
+          <div
+            class="highlight-card bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200 hover:shadow-lg"
+          >
+            <div class="highlight-header text-slate-600">
+              <svg
+                class="highlight-icon text-slate-600"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" stroke-width="2" />
+              </svg>
+              <span>Humidity</span>
+            </div>
+            <div class="highlight-value text-slate-900">{{ todayHighlights?.humidity || 0 }}%</div>
+          </div>
+
+          <!-- Wind -->
+          <div
+            class="highlight-card bg-gradient-to-br from-cyan-50 to-cyan-100 border-cyan-200 hover:shadow-lg"
+          >
+            <div class="highlight-header text-slate-600">
+              <svg
+                class="highlight-icon text-cyan-500"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
                 <path
-                  d="M8 0a1 1 0 011 1v6h6a1 1 0 110 2H9v6a1 1 0 11-2 0V9H1a1 1 0 010-2h6V1a1 1 0 011-1z"
+                  d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1014 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2"
+                  stroke-width="2"
+                  stroke-linecap="round"
                 />
               </svg>
-              <span>{{ hour.precip }}%</span>
+              <span>Wind</span>
             </div>
+            <div class="highlight-value text-slate-900">
+              {{ Math.round(todayHighlights?.windSpeed || 0) }} km/h
+            </div>
+            <div class="highlight-subtext text-slate-600">
+              {{ getWindDirection(todayHighlights?.windDirection || 0) }}
+            </div>
+          </div>
 
-            <div class="hour-temp">{{ hour.temp }}°</div>
+          <!-- Sunrise & Sunset -->
+          <div
+            class="highlight-card sunrise-sunset bg-gradient-to-br from-amber-50 to-yellow-100 border-amber-200 hover:shadow-lg"
+          >
+            <div class="sun-times">
+              <div class="sun-time">
+                <svg
+                  class="sun-icon text-orange-500"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    d="M17 18a5 5 0 00-10 0M12 2v7m0 0L9 6m3 3l3-3"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+                <div class="time-info">
+                  <span class="time-label text-slate-600">Sunrise</span>
+                  <span class="time-value text-slate-900">{{
+                    (todayHighlights?.sunrise | date : 'h:mm a') || '6:18 am'
+                  }}</span>
+                </div>
+              </div>
+              <div class="sun-time">
+                <svg
+                  class="sun-icon text-orange-500"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    d="M17 18a5 5 0 00-10 0M12 9v7m0 0l-3-3m3 3l3-3"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+                <div class="time-info">
+                  <span class="time-label text-slate-600">Sunset</span>
+                  <span class="time-value text-slate-900">{{
+                    (todayHighlights?.sunset | date : 'h:mm a') || '7:27 pm'
+                  }}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -380,12 +497,12 @@
   </div>
 
   <!-- Error State -->
-  <div *ngIf="!loading && !weatherData" class="error-state">
-    <svg class="error-icon" viewBox="0 0 64 64" fill="none">
+  <div *ngIf="!loading && !weatherData" class="error-state bg-white border border-sky-100">
+    <svg class="error-icon text-slate-400" viewBox="0 0 64 64" fill="none">
       <circle cx="32" cy="32" r="30" stroke="currentColor" stroke-width="2" />
       <path d="M32 16v16M32 40v4" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
     </svg>
-    <h3>Unable to Load Weather Data</h3>
-    <p>Please check your connection and try again</p>
+    <h3 class="text-slate-900">Unable to Load Weather Data</h3>
+    <p class="text-slate-600">Please check your connection and try again</p>
   </div>
 </div>

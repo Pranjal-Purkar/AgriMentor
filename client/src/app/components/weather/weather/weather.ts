@@ -11,11 +11,20 @@ import { LocationService } from '../../../services/location/location-service';
   styleUrl: './weather.css',
 })
 export class Weather {
+  // Expose Math object to template
+  Math = Math;
+
   weatherData: any = null;
   loading = false;
   locationName: string = 'Locating...';
   expandedDayIndex: number | null = null;
   hoveredDayIndex: number | null = null;
+
+  // New properties for dashboard UI
+  currentWeather: any = null;
+  todayHighlights: any = null;
+  precipitationChartData: any[] = [];
+  threeDayForecast: any[] = [];
 
   constructor(
     private weatherService: WeatherService,
@@ -109,9 +118,68 @@ export class Weather {
       };
     });
 
+    // Extract current weather (today's data)
+    // API returns: past_days=5 (indices 0-4) + today (index 5) + forecast_days=4 (indices 6-9)
+    const todayIndex = 5; // This is today in the API response
+    this.currentWeather = days[todayIndex] || days[0];
+
+    // Extract 3-day forecast (today + next 2 days)
+    this.threeDayForecast = days.slice(todayIndex, todayIndex + 3);
+
+    // Extract precipitation chart data (next 8 hours from current time)
+    const now = new Date();
+    this.precipitationChartData = hourly.time
+      .map((t: string, i: number) => ({
+        time: t,
+        precip: this.calculatePrecipProbability(hourly.weathercode[i]),
+        hour: new Date(t).getHours(),
+      }))
+      .filter((h: any) => new Date(h.time) >= now)
+      .slice(0, 8);
+
+    // Extract today's highlights
+    const currentHourIndex = hourly.time.findIndex((t: string) => new Date(t) >= now);
+
+    // Calculate precipitation probability based on today's weather code and precipitation sum
+    const precipitationSum = daily.precipitation_sum[todayIndex] || 0;
+    const todayWeatherCode = daily.weathercode[todayIndex];
+    let precipitationProbability = 0;
+
+    // If there's actual precipitation, show high probability
+    if (precipitationSum > 0) {
+      precipitationProbability = Math.min(Math.round(precipitationSum * 10 + 50), 100);
+    } else {
+      // Otherwise, estimate based on weather code
+      precipitationProbability = this.calculatePrecipProbability(todayWeatherCode);
+    }
+
+    this.todayHighlights = {
+      precipitation: precipitationProbability,
+      humidity: hourly.relativehumidity_2m?.[currentHourIndex] || 87,
+      windSpeed: hourly.windspeed_10m?.[currentHourIndex] || 0,
+      windDirection: hourly.winddirection_10m?.[currentHourIndex] || 0,
+      sunrise: daily.sunrise?.[todayIndex] || new Date().toISOString(),
+      sunset: daily.sunset?.[todayIndex] || new Date().toISOString(),
+    };
+
     return {
       daily: days,
     };
+  }
+
+  calculatePrecipProbability(weatherCode: number): number {
+    // Calculate precipitation probability based on weather code
+    if (weatherCode >= 51 && weatherCode <= 67) return Math.floor(Math.random() * 30) + 60; // Rain: 60-90%
+    if (weatherCode >= 71 && weatherCode <= 86) return Math.floor(Math.random() * 30) + 50; // Snow: 50-80%
+    if (weatherCode >= 95) return Math.floor(Math.random() * 20) + 70; // Storm: 70-90%
+    if (weatherCode >= 1 && weatherCode <= 3) return Math.floor(Math.random() * 30) + 10; // Partly cloudy: 10-40%
+    return Math.floor(Math.random() * 10); // Clear: 0-10%
+  }
+
+  getWindDirection(degrees: number): string {
+    const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+    const index = Math.round(degrees / 45) % 8;
+    return directions[index];
   }
 
   getWeatherIcon(code: number): string {

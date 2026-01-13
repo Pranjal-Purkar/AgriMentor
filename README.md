@@ -359,4 +359,4 @@ For questions or support, please contact the development team.
 
 ---
 
-Made with ❤️ for farmers and agricultural consultants
+Made with ❤️ for farmers and agricultural consultants.
